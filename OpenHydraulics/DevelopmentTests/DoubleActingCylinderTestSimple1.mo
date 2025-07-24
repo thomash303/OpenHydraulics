@@ -42,8 +42,7 @@ model DoubleActingCylinderTestSimple1
   Components.Lines.NJunction j2
             annotation (Placement(transformation(extent={{30,-66},{50,-46}})));
 initial equation
-  //reliefValve.port_a.p = 101325;
-
+//reliefValve.port_a.p = 101325;
 equation
   connect(fixed.flange,   doubleActingCylinder.flange_a)
     annotation (Line(points={{-12,50},{22,50}}, color={0,127,0}));
@@ -56,7 +55,7 @@ equation
   connect(lineA.port_b, doubleActingCylinder.port_a)
     annotation (Line(points={{24,20},{24,42}}, color={255,0,0}));
   connect(doubleActingCylinder.port_b, lineB.port_b)
-    annotation (Line(points={{40,42},{40,20}}, color={255,0,0}));
+    annotation (Line(points={{40,42},{40, 20}}, color={255,0,0}));
   connect(pump.port_b, j1.port[1]) annotation (Line(points={{-14,-26},{-14,
           -16},{10,-16},{10,-16.6667}}, color={255,0,0}));
   connect(reliefValve.port_a, j1.port[2]) annotation (Line(points={{10,-36},{
@@ -68,7 +67,7 @@ equation
   connect(reliefValve.port_b, j2.port[2])
     annotation (Line(points={{10,-56},{25,-56},{25,-56},{40,-56}}, color={255,
           0,0}));
-  connect(lineB.port_a, j2.port[3]) annotation (Line(points={{40,0},{40,
+  connect(lineB.port_a, j2.port[3]) annotation (Line(points={{40, 0},{40,
           -55.3333}}, color={255,0,0}));
 annotation (
     experiment(StopTime=10, Tolerance=1e-006));

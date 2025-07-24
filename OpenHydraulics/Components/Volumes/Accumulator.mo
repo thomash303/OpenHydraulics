@@ -1,8 +1,7 @@
 within OpenHydraulics.Components.Volumes;
 model Accumulator
 
-  // The total amount of liquid that can be stored is defined by liquidVolume
-
+// The total amount of liquid that can be stored is defined by liquidVolume
   // the parameters
   parameter SI.Volume liquidVolume = 0.001 "Liquid Volume"
     annotation (Dialog(tab="Sizing"));
@@ -14,8 +13,7 @@ model Accumulator
   parameter SI.AbsolutePressure p_max = 3e7 "Maximum rated pressure"
     annotation (Dialog(tab="Sizing"));
 
-  // Advanced parameters
-
+// Advanced parameters
   // default residual is 2% of the total volume
   parameter SI.Volume residualVolLiquid = liquidVolume*0.02
     "Residual volume of liquid when accumulator is empty"
@@ -29,7 +27,7 @@ model Accumulator
     "Damping constant for bladder or piston"
     annotation (Dialog(tab="Advanced"));
 
-    // initialization parameters
+// initialization parameters
   parameter OpenHydraulics.Types.AccInit initType=OpenHydraulics.Types.AccInit.Pressure
     "Type of initialization (defines usage of start values below)"
     annotation (Dialog(tab="Initialization",group="Fluid"));
@@ -65,7 +63,7 @@ model Accumulator
                                                  d=pistonDamping)
     annotation (Placement(transformation(extent={{-40,30},{-20,50}})));
 
-  // the ports
+// the ports
   OpenHydraulics.Interfaces.FluidPort port_a
     annotation (Placement(transformation(extent={{-10,-110},{10,-90}})));
 
@@ -80,7 +78,6 @@ protected
 
 initial equation
   assert(gasVolume>liquidVolume,"gasVolume must be larger than liquidVolume");
-
 //  if initType == FluidPower.Types.AccInit.Volume then
 //    liquidChamber.s_rel = V_init/A;
 //  else

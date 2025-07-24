@@ -1,8 +1,12 @@
 within OpenHydraulics.Interfaces;
 partial model HorizontalTwoPort "Two horizontally oriented fluid ports"
+
   // include the base characteristics for ANY fluid two-port
   extends OpenHydraulics.Interfaces.PartialFluidComponent;
-
+  
+  // Importing from the MSL
+  import Modelica.Units.SI;
+  
   // the main variables (most commonly investigated during simulation
   SI.VolumeFlowRate q_flow_a = port_a.m_flow/oil.density(p_a);
   SI.VolumeFlowRate q_flow_b = port_b.m_flow/oil.density(p_b);

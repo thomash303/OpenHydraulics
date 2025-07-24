@@ -66,7 +66,8 @@ model VariableRestrictionSeriesValve
     tableOnFile=false,table=table,smoothness=smoothness)
     annotation (Placement(transformation(extent={{18,-32},{-2,-12}})));
 
-protected
+
+//protected
   BaseClasses.LossFactorData data(
       D_a=D_nom,
       D_b=D_nom,
@@ -76,6 +77,7 @@ protected
       D_Re=(8*kinv*zeta_nom/(pi*pi))^(1/4),
       zetaLaminarKnown=false,
       c0=0) "Data used when metering";
+      
   Real openFraction "Fraction of Restriction that is open";
   Real kinv "Loss factor (function of control input)";
   Real dummyState "just for diagnostic purposes";
