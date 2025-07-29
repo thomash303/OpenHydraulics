@@ -5,6 +5,10 @@ model System
  replaceable package Medium = OpenHydraulics.Custom.Media.BaseClasses.PartialMedium
     "Medium model for default start values"
       annotation (choicesAllMatching = true, Dialog(group = "Medium"));
+  // This one needs care, should get inherited from fluid properties
+  constant SI.Density rho_nom = Medium.rho_nom;   
+  
+     
   parameter SI.AbsolutePressure p_ambient=101325
     "Default ambient pressure"
     annotation(Dialog(group="Environment"));

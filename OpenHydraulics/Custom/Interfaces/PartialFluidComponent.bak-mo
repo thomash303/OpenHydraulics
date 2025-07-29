@@ -1,0 +1,9 @@
+within OpenHydraulics.Custom.Interfaces;
+
+partial model PartialFluidComponent "Base model for any component involving fluid"
+  outer Fluids.BaseClasses.PartialFluid oil "This model must be defined in each circuit; the type must be a subtype of PartialFluid";
+  parameter Modelica.Units.SI.AbsolutePressure p_init = environment.p_ambient "Initial pressure of the component" annotation(
+    Dialog(tab = "Initialization", group = "Fluid"));
+protected
+  outer Circuits.Environment environment;
+end PartialFluidComponent;

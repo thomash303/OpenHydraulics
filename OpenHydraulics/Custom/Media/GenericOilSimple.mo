@@ -15,7 +15,7 @@ model GenericOilSimple "Simple medium model for oil"
 
   algorithm
     //   for some reason OpenModelica doesn't like this expression... will try to make it constant
-    rho := 870 + 5e-7*(p-p0);
+    rho := 870 + 5e-7*(p-p_ambient);
     //    rho := 870;
     annotation (smoothOrder=2);
   end density;

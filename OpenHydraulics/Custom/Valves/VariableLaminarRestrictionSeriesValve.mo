@@ -8,7 +8,7 @@ model VariableLaminarRestrictionSeriesValve
   import Modelica.Fluid.Utilities;
   import Modelica.Fluid.Types.CvTypes;
 
-  extends Custom.Valves.BaseClasses.PartialLaminarRestriction(rho_avg = rho_nom);
+  extends BaseClasses.PartialLaminarRestriction(rho_avg = rho_nom);
   // Keep
   /*  mass balance eq, ValveCharacteristic, dp_small. Kv2Av, Cv2Av*/
   // Remove
@@ -34,8 +34,8 @@ parameter String valveEquation = "Orifice"
   "= true, if turbulent region is defined by Re, otherwise by m_flow_small"
     annotation(Dialog(tab="Advanced"), Evaluate=true);
   SI.AbsolutePressure dp_turbulent = if not use_Re then dp_small else
-    max(dp_small, (oil.dynamicViscosity(p_a) + oil.dynamicViscosity(p_b))^2*pi/8*Re_turbulent^2
-                  /(max(relativeFlowCoefficient,0.001)*Av*(oil.dynamicViscosity(p_a) + oil.dynamicViscosity(p_b))));   
+    max(dp_small, (system.Medium.dynamicViscosity(p_a) + system.Medium.dynamicViscosity(p_b))^2*pi/8*Re_turbulent^2
+                  /(max(relativeFlowCoefficient,0.001)*Av*(system.Medium.dynamicViscosity(p_a) + system.Medium.dynamicViscosity(p_b))));   
                    
 protected
   Real relativeFlowCoefficient = valveCharacteristic(opening_actual);

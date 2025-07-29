@@ -1,0 +1,45 @@
+within OpenHydraulics.Custom.Interfaces;
+
+model HorizontalTwoPort "Two horizontally oriented fluid ports"
+  // include the base characteristics for ANY fluid two-port
+  extends BaseClasses.PartialFluidComponent;
+  
+  // This needs to be done better
+  outer Systems.System system "System wide properties";
+  
+  // Importing from the MSL
+  import Modelica.Units.SI;
+  import Modelica.Constants.inf;
+  
+  // MSL Advanced
+  // Note: value of dp_start shall be refined by derived model, basing on local dp_nominal
+  parameter SI.Pressure dp_start(min=-inf) = 0.01*system.p_start
+      "Guess value of dp = port_a.p - port_b.p"
+    annotation(Dialog(tab = "Advanced"));
+  parameter SI.MassFlowRate m_flow_start = system.m_flow_start
+      "Guess value of m_flow = port_a.m_flow"
+    annotation(Dialog(tab = "Advanced"));
+  // Note: value of m_flow_small shall be refined by derived model, basing on local m_flow_nominal
+  parameter SI.MassFlowRate m_flow_small = if system.use_eps_Re then system.eps_m_flow*system.m_flow_nominal else system.m_flow_small
+      "Small mass flow rate for regularization of zero flow"
+    annotation(Dialog(tab = "Advanced"));
+    
+    
+  // the main variables (most commonly investigated during simulation
+  SI.VolumeFlowRate q_flow_a = port_a.m_flow/system.Medium.density(p_a);
+  SI.VolumeFlowRate q_flow_b = port_b.m_flow/system.Medium.density(p_b);
+  // the variables
+  SI.Pressure dp = port_a.p - port_b.p "Pressure drop (negative for pumps)";
+  // the media properties
+  SI.AbsolutePressure p_a(start = p_init) "Oil properties at the inlet";
+  SI.AbsolutePressure p_b(start = p_init) "Oil properties at the inlet";
+  // the connectors
+  FluidPort port_a(p(start = p_init)) annotation(
+    Placement(transformation(extent = {{-110, -10}, {-90, 10}})));
+  FluidPort port_b(p(start = p_init)) annotation(
+    Placement(transformation(extent = {{110, -10}, {90, 10}})));
+equation
+// set the fluid properties (set two state variable for each instance of medium)
+  p_a = port_a.p;
+  p_b = port_b.p;
+end HorizontalTwoPort;

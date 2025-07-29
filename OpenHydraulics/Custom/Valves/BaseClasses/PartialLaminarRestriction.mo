@@ -24,17 +24,19 @@ partial model PartialLaminarRestriction
   parameter SI.ReynoldsNumber Re_laminar = 2000 "Boundary of laminar flow regime" annotation(
     Dialog(tab = "Advanced", enable = check_Re));
   // since Re is used only for diagnostics, do not generate events --> noEvent
-  SI.ReynoldsNumber Re = noEvent(abs(port_a.m_flow))*4/(Modelica.Constants.pi*max(D, 1e-20)*eta_avg) "Reynolds number";
+  SI.ReynoldsNumber Re = noEvent(abs(port_a.m_flow))*4/(pi*max(D, 1e-20)*eta_avg) "Reynolds number";
   
   // Variable averages
-  SI.DynamicViscosity eta_avg = (oil.dynamicViscosity(p_a) + oil.dynamicViscosity(p_b))/2 "Average dynamic viscosity";
-  SI.Density rho_avg = (oil.density(p_a) + oil.density(p_b))/2 "Average density";
+  SI.DynamicViscosity eta_avg = (system.Medium.dynamicViscosity(p_a) + system.Medium.dynamicViscosity(p_b))/2 "Average dynamic viscosity";
+  SI.Density rho_avg = (system.Medium.density(p_a) + system.Medium.density(p_b))/2 "Average density";
   
   // Brought from VariableRestrictionSeriesValve to then inherit
   parameter SI.Pressure dp_nom = 1e6 "Nominal pressure drop" annotation(
-    Dialog(tab = "Nominal operating point"));
+    Dialog(group = "Nominal operating point"));
   parameter SI.MassFlowRate m_flow_nom = 0.85 "Nominal operating point"
-  annotation(Dialog(group="Nominal operating point"));    
+  annotation(Dialog(group="Nominal operating point"));  
+  // This one needs care, should get inherited from fluid properties
+  parameter SI.Density rho_nom = system.rho_nom;  
                     
   // Modifications from the MSL
   parameter CvTypes CvData=CvTypes.OpPoint
@@ -107,9 +109,6 @@ protected
   parameter SI.Pressure dp_small=if system.use_eps_Re then dp_nom/m_flow_nom*m_flow_small else system.dp_small
     "Regularisation of zero flow"
    annotation(Dialog(tab="Advanced"));
-   
-  // This one needs care, should get inherited from fluid properties
-  parameter SI.Density rho_nom = system.Medium.rho_nom;
                     
 initial equation
   if CvData == CvTypes.Kv then

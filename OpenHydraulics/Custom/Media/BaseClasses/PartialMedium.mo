@@ -8,9 +8,9 @@ partial model PartialMedium "Partial medium model"
   
   constant String mediumName = "unusablePartialMedium" "Name of the medium";
   constant SI.Temperature Toperating = 293.15 "Operating temperature of the medium";
-  constant SI.Temperature Tref = 298.15 "Reference temperature of Medium: default 25 deg Celsius";
-  constant SI.AbsolutePressure p0 = 101325 "Reference pressure of the medium";
-  parameter SI.Density rho_nom "nominal medium density" annotation(Dialog(group = "Medium")); 
+  constant SI.Temperature T_ambient = 298.15 "Reference temperature of Medium: default 25 deg Celsius";
+  constant SI.AbsolutePressure p_ambient = 101325 "Reference pressure of the medium";
+  constant SI.Density rho_nom "nominal medium density" annotation(Dialog(group = "Medium")); 
 
   replaceable function density "Return density as a function of p and T"
     extends Function;
