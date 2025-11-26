@@ -13,7 +13,7 @@ model HorizontalTwoPort "Two horizontally oriented fluid ports"
   
   // MSL Advanced
   // Note: value of dp_start shall be refined by derived model, basing on local dp_nominal
-  parameter SI.Pressure dp_start(min=-inf) = 0.01*system.p_start
+  parameter SI.Pressure dp_start(min=-inf) = system.p_start
       "Guess value of dp = port_a.p - port_b.p"
     annotation(Dialog(tab = "Advanced"));
   parameter SI.MassFlowRate m_flow_start = system.m_flow_start
@@ -25,9 +25,10 @@ model HorizontalTwoPort "Two horizontally oriented fluid ports"
     annotation(Dialog(tab = "Advanced"));
     
     
-  // the main variables (most commonly investigated during simulation
+  // the main variables (most commonly investigated during simulation)
   SI.VolumeFlowRate q_flow_a = port_a.m_flow/system.Medium.density(p_a);
   SI.VolumeFlowRate q_flow_b = port_b.m_flow/system.Medium.density(p_b);
+  SI.Density rho_avg = (system.Medium.density(p_a) + system.Medium.density(p_b)) / 2;
   // the variables
   SI.Pressure dp = port_a.p - port_b.p "Pressure drop (negative for pumps)";
   // the media properties

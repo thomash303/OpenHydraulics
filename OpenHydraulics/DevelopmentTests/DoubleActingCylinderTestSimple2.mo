@@ -1,61 +1,42 @@
 within OpenHydraulics.DevelopmentTests;
+
 model DoubleActingCylinderTestSimple2
-
-  extends OpenHydraulics.Interfaces.PartialFluidCircuit(redeclare
-      OpenHydraulics.Fluids.GenericOilSimple oil);
-
-  Modelica.Mechanics.Translational.Components.Fixed fixed
-    annotation (Placement(transformation(extent={{-22,40},{-2,60}})));
-  OpenHydraulics.Components.Cylinders.DoubleActingCylinder doubleActingCylinder(
-    initType=Types.RevoluteInit.Position,
-    strokeLength=0.2,
-    pistonMass=0.1,
-    s_init=0.185,
-    q_nom=1e-4) annotation (Placement(transformation(extent={{22,40},{42,60}})));
-  OpenHydraulics.Basic.FluidPower2MechRotConst pump(Dconst=5e-5)
-                                                         annotation (Placement(transformation(extent={{-24,-46},
-            {-4,-26}})));
-  OpenHydraulics.Components.Volumes.CircuitTank circuitTank
-    annotation (Placement(transformation(extent={{30,-90},{10,-70}})));
-  Modelica.Blocks.Sources.Ramp ramp(height=1000, duration=100)
-    annotation (Placement(transformation(extent={{-74,-46},{-54,-26}})));
-  OpenHydraulics.Components.Valves.ReliefValve reliefValve
-    annotation (Placement(transformation(
-        origin={10,-46},
-        extent={{-10,-10},{10,10}},
-        rotation=270)));
-  Modelica.Mechanics.Rotational.Sources.Position position(
-                                                  f_crit=1, useSupport=false)
-    annotation (Placement(transformation(extent={{-46,-46},{-26,-26}})));
-  Components.Lines.NJunction j1(n_ports=3)  annotation (Placement(
-        transformation(extent={{0,-26},{20,-6}})));
-  Components.Lines.NJunction j2(n_ports=3)
-    annotation (Placement(transformation(extent={{30,-66},{50,-46}})));
+  extends OpenHydraulics.Interfaces.PartialFluidCircuit(redeclare OpenHydraulics.Fluids.GenericOilSimple oil);
+  Modelica.Mechanics.Translational.Components.Fixed fixed annotation(
+    Placement(transformation(extent = {{-22, 40}, {-2, 60}})));
+  OpenHydraulics.Components.Cylinders.DoubleActingCylinderNoCushion doubleActingCylinder(initType = OpenHydraulics.Types.RevoluteInit.Free, strokeLength = 0.4, pistonMass = 0.1, s_init = 0.185, q_nom = 1e-4, useCushionHead = false, useCushionRod = false, L_A2B = 0, D_A2B = 0, L_A2Env = 0, D_A2Env = 0, L_B2Env = 0, D_B2Env = 0, cushionTableHead = [0, 0; 0, 0; 0, 0; 0, 0], cushionTableRod = [0, 0; 0, 0; 0, 0; 0, 0]) annotation(
+    Placement(transformation(extent = {{22, 40}, {42, 60}})));
+  OpenHydraulics.Basic.FluidPower2MechRotConst pump(Dconst = 5e-5) annotation(
+    Placement(transformation(extent = {{-24, -46}, {-4, -26}})));
+  OpenHydraulics.Components.Volumes.CircuitTank circuitTank annotation(
+    Placement(transformation(extent = {{30, -90}, {10, -70}})));
+  Modelica.Blocks.Sources.Ramp ramp(height = 1000, duration = 100) annotation(
+    Placement(transformation(extent = {{-74, -46}, {-54, -26}})));
+  Modelica.Mechanics.Rotational.Sources.Position position(f_crit = 1, useSupport = false) annotation(
+    Placement(transformation(extent = {{-46, -46}, {-26, -26}})));
+  Components.Lines.NJunction j1(n_ports = 3) annotation(
+    Placement(transformation(extent = {{0, -26}, {20, -6}})));
+  Components.Lines.NJunction j2(n_ports = 3) annotation(
+    Placement(transformation(extent = {{30, -66}, {50, -46}})));
 initial equation
-  //reliefValve.port_a.p = 101325;
-
+//reliefValve.port_a.p = 101325;
 equation
-  connect(fixed.flange,   doubleActingCylinder.flange_a)
-    annotation (Line(points={{-12,50},{22,50}}, color={0,127,0}));
-  connect(pump.port_a,circuitTank. port_b) annotation (Line(points={{-14,-46},
-          {-14,-80},{10,-80}}, color={255,0,0}));
-  connect(ramp.y, position.phi_ref)
-    annotation (Line(points={{-53,-36},{-48,-36}}, color={0,0,127}));
-  connect(position.flange,   pump.flange_a)
-    annotation (Line(points={{-26,-36},{-24,-36}}, color={0,0,0}));
-  connect(pump.port_b, j1.port[1]) annotation (Line(points={{-14,-26},{-14,
-          -16},{10,-16},{10,-16.6667}}, color={255,0,0}));
-  connect(reliefValve.port_a, j1.port[2]) annotation (Line(points={{10,-36},{
-          10,-26.025},{10,-16},{10,-16}}, color={255,0,0}));
-  connect(circuitTank.port_a, j2.port[1]) annotation (Line(points={{30,-80},{
-          40,-80},{40,-56.6667}}, color={255,0,0}));
-  connect(reliefValve.port_b, j2.port[2])
-    annotation (Line(points={{10,-56},{25,-56},{25,-56},{40,-56}}, color={255,
-          0,0}));
-  connect(doubleActingCylinder.port_b, j2.port[3]) annotation (Line(points={{40,42},
-          {40,-55.3333}},        color={255,0,0}));
-  connect(doubleActingCylinder.port_a, j1.port[3]) annotation (Line(points={{24,42},
-          {24,-16},{10,-16},{10,-15.3333}},        color={255,0,0}));
-annotation (
-    experiment(StopTime=10, Tolerance=1e-008));
+  connect(fixed.flange, doubleActingCylinder.flange_a) annotation(
+    Line(points = {{-12, 50}, {22, 50}}, color = {0, 127, 0}));
+  connect(pump.port_a, circuitTank.port_b) annotation(
+    Line(points = {{-14, -46}, {-14, -80}, {10, -80}}, color = {255, 0, 0}));
+  connect(ramp.y, position.phi_ref) annotation(
+    Line(points = {{-53, -36}, {-48, -36}}, color = {0, 0, 127}));
+  connect(position.flange, pump.flange_a) annotation(
+    Line(points = {{-26, -36}, {-24, -36}}, color = {0, 0, 0}));
+  connect(pump.port_b, j1.port[1]) annotation(
+    Line(points = {{-14, -26}, {-14, -16}, {10, -16}, {10, -16.6667}}, color = {255, 0, 0}));
+  connect(circuitTank.port_a, j2.port[1]) annotation(
+    Line(points = {{30, -80}, {40, -80}, {40, -56.6667}}, color = {255, 0, 0}));
+  connect(doubleActingCylinder.port_b, j2.port[3]) annotation(
+    Line(points = {{40, 42}, {40, -55.3333}}, color = {255, 0, 0}));
+  connect(doubleActingCylinder.port_a, j1.port[3]) annotation(
+    Line(points = {{24, 42}, {24, -16}, {10, -16}, {10, -15.3333}}, color = {255, 0, 0}));
+  annotation(
+    experiment(StopTime = 9, Tolerance = 1e-08, StartTime = 0, Interval = 0.02));
 end DoubleActingCylinderTestSimple2;

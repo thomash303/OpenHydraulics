@@ -17,21 +17,21 @@ model VariableDisplacementPump "Variable Displacement Pump with losses"
     Dialog(tab = "Efficiency", group = "Volumetric Efficiency"));
   parameter Real Vr = 0.54 "Volume ratio of pump or motor" annotation(
     Dialog(tab = "Efficiency", group = "Volumetric Efficiency"));
-  parameter Modelica.Units.SI.DynamicViscosity mu = oil.dynamicViscosity(p_init) "Dynamic viscosity (used only for efficiency computation)" annotation(
+  parameter Modelica.Units.SI.DynamicViscosity mu = system.Medium.dynamicViscosity(p_init) "Dynamic viscosity (used only for efficiency computation)" annotation(
     Dialog(tab = "Efficiency", group = "Related Parameters"));
-  parameter Modelica.Units.SI.BulkModulus B = oil.approxBulkModulus(p_init) "Approximate bulk modulus (used only for efficiency models)" annotation(
+  parameter Modelica.Units.SI.BulkModulus B = system.Medium.approxBulkModulus(p_init) "Approximate bulk modulus (used only for efficiency models)" annotation(
     Dialog(tab = "Efficiency", group = "Related Parameters"));
   // friction
-  Components.MotorsPumps.BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Modelica.Units.Cv, Cf = Cf, Dmax = Dlimit, mu = mu) annotation(
+  BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Cv, Cf = Cf, Dmax = Dlimit, mu = mu) annotation(
     Placement(transformation(extent = {{-80, -10}, {-60, 10}})));
   // the components
-  Basic.FluidPower2MechRotVar fluidPower2MechRot(final Dmax = Dmax, final Dmin = Dmin, final Dlimit = Dlimit) annotation(
+  FluidPower2MechRotVar fluidPower2MechRot(final Dmax = Dmax, final Dmin = Dmin, final Dlimit = Dlimit) annotation(
     Placement(transformation(extent = {{-10, -10}, {10, 10}})));
   Basic.VariableFlow leakage_P2T annotation(
     Placement(transformation(origin = {40, 0}, extent = {{-10, 10}, {10, -10}}, rotation = 270)));
-  Components.Lines.NJunction j1 annotation(
+  Lines.NJunction j1 annotation(
     Placement(transformation(extent = {{-10, -50}, {10, -30}})));
-  Components.Lines.NJunction j2 annotation(
+  Lines.NJunction j2 annotation(
     Placement(transformation(extent = {{-10, 30}, {10, 50}})));
   // the connectors
   Interfaces.FluidPort portP annotation(
@@ -42,7 +42,7 @@ model VariableDisplacementPump "Variable Displacement Pump with losses"
     Placement(transformation(extent = {{-110, -10}, {-90, 10}})));
   Modelica.Blocks.Interfaces.RealInput dispFraction annotation(
     Placement(transformation(extent = {{-100, -96}, {-68, -64}})));
-  extends Interfaces.PartialFluidComponent;
+  extends Interfaces.BaseClasses.PartialFluidComponent;
 protected
   Modelica.Units.SI.Pressure dp = portP.p - portT.p;
 equation

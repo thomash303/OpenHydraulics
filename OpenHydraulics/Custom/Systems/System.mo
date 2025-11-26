@@ -6,7 +6,7 @@ model System
     "Medium model for default start values"
       annotation (choicesAllMatching = true, Dialog(group = "Medium"));
   // This one needs care, should get inherited from fluid properties
-  constant SI.Density rho_nom = Medium.rho_nom;   
+  //constant SI.Density rho_nom = Medium.rho_nom;   
   
      
   parameter SI.AbsolutePressure p_ambient=101325
@@ -14,6 +14,9 @@ model System
     annotation(Dialog(group="Environment"));
   parameter SI.Temperature T_ambient=293.15
     "Default ambient temperature"
+    annotation(Dialog(group="Environment"));
+  parameter SI.Density rho_ambient=850
+    "Default ambient medium density"
     annotation(Dialog(group="Environment"));
   parameter SI.Acceleration g=Modelica.Constants.g_n
     "Constant gravity acceleration"

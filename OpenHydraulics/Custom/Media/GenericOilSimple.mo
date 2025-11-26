@@ -7,7 +7,14 @@ model GenericOilSimple "Simple medium model for oil"
   import Modelica.Units.SI;
   import Modelica.Icons.Function;
 
-  extends OpenHydraulics.Custom.Media.BaseClasses.PartialMedium(final mediumName="GenericOilSimple", rho_nom = 850);
+  extends OpenHydraulics.Custom.Media.BaseClasses.PartialMedium(final mediumName="GenericOilSimple");
+  
+  replaceable function density_nom "Return density as a function of p and T"
+    extends Function;
+    
+    algorithm
+    rho_nom := 850;
+  end density_nom;
 
   redeclare final function extends density
     "Return density as a function of p and T"

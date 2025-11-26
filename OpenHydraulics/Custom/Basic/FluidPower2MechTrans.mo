@@ -4,6 +4,10 @@ model FluidPower2MechTrans
   // parameterization and initialization are kept to minimum
   // the user of this basic building block is expected to be
   // familiar with its use
+  parameter Boolean compressibleEnable = false "Enable fluid compressibility model" annotation(
+    Dialog(tab = "Sizing"), choices(checkBox = true));
+  parameter Boolean fluidInertiaEnable = false "Enable fluid inertia model" annotation(
+    Dialog(tab = "Sizing"), choices(checkBox = true));
   parameter Modelica.Units.SI.Area A = 0.01 "Area of piston" annotation(
     Dialog(tab = "Sizing"));
   parameter Modelica.Units.SI.AbsolutePressure maxPressure = 3e7 "Maximum rated pressure" annotation(
@@ -17,19 +21,24 @@ model FluidPower2MechTrans
   // note: the default stiffness is such that the residual volume is reduced by
   // at most 10 percent
   Modelica.Units.SI.Volume V(start = residualVolume) "Volume of oil inside chamber";
-  Modelica.Units.SI.Mass m(start = residualVolume*oil.density(p_init)) "Mass of oil inside chamber";
+  Modelica.Units.SI.Mass m(start = residualVolume*system.Medium.density(p_init)) "Mass of oil inside chamber";
   Modelica.Units.SI.Power Wmech "Mechanical work performed onto chamber";
   Modelica.Units.SI.Velocity v_rel(start = 0) "relative velocity";
+  Modelica.Units.SI.Acceleration a_rel(start = 0) "relative acceleration";
   // the media properties
   Modelica.Units.SI.AbsolutePressure p_vol(start = p_init) "Oil pressure in the chamber";
   extends Modelica.Mechanics.Translational.Interfaces.PartialCompliant;
   extends Interfaces.NPort;
+  // Compressibility
+  Modelica.Units.SI.Density rho "Medium density (only used in compressible fluid models)";
 protected
   parameter Modelica.Units.SI.Position s_relMin = -0.001 "the s_rel value at which the volume is zero";
   Boolean empty "true when chamber reaches end of travel";
+  Modelica.Units.SI.Force f_inertia "inertial force of the fluid";
   Modelica.Units.SI.Force f_stop "contact force when chamber is empty";
   Modelica.Units.SI.Force f_damping "damping force when chamber is empty";
   Modelica.Units.SI.Force f_contact "contact force when the end of travel is reached";
+  //Modelica.Units.SI.MassFlowRate derm;
 algorithm
   assert(V > 0, "Volume in fluid chamber is negative or zero.\n" + "Increase the residualVolume or the stopStiffness");
   assert(p_vol < maxPressure or s_rel < 0, "Maxiumum pressure in chamber has been exceeded");
@@ -46,13 +55,27 @@ equation
   end for;
 // state of the volume
   V = max(s_rel, 0)*A + residualVolume;
-  m = V*oil.density(p_vol);
+  //m = V*850;
+  //m = V*system.Medium.density(p_vol); // to reveret, uncomment this line
+  rho = system.rho_ambient * (1 + (p_vol - system.p_ambient)/1e8);
+  if compressibleEnable then
+    m = V * rho;
+  else 
+    m = V*system.Medium.density(p_vol);
+  end if;
   v_rel = der(s_rel);
+  a_rel = der(v_rel);
   empty = s_rel < 0;
 // energy flows: work done by fluid
   Wmech = v_rel*(f + f_contact);
+  // inertial force
+  if fluidInertiaEnable then
+    f_inertia = - m * a_rel;
+  else
+    f_inertia = 0;
+  end if;
 // force equilibrium
-  0 = A*(p_vol - environment.p_ambient) + f_contact + f;
+  0 = A*(p_vol - system.p_ambient) + f_contact + f_inertia + f;
 // NOTE: the nonlinear spring force is most likely not physically accurate
 // but since impact is such a complex phenomenon, most other models would not be
 // accurate either.  The advantage of this model is that it is stable and smooth.
@@ -70,6 +93,8 @@ equation
     f_contact = 0;
   end if;
 // conservation of mass
+  // To revert, remove below line
+  //der(p_vol) = 1/V * (der(m)/1 - A*der(s_rel));
   der(m) = sum(port.m_flow);
   annotation(
     Diagram(graphics = {Rectangle(extent = {{-80, 40}, {80, -40}}, lineColor = {0, 0, 0}), Rectangle(extent = {{100, 4}, {40, -4}}, lineColor = {0, 0, 0}, fillColor = {175, 175, 175}, fillPattern = FillPattern.Solid), Rectangle(extent = {{30, 40}, {40, -40}}, lineColor = {0, 0, 0}, fillColor = {175, 175, 175}, fillPattern = FillPattern.Solid), Rectangle(extent = {{-30, 40}, {30, -40}}, lineColor = {0, 0, 0}, fillColor = {255, 0, 0}, fillPattern = FillPattern.Solid), Rectangle(extent = {{-40, 40}, {-30, -40}}, lineColor = {0, 0, 0}, fillColor = {175, 175, 175}, fillPattern = FillPattern.Solid), Rectangle(extent = {{-40, 4}, {-100, -4}}, lineColor = {0, 0, 0}, fillColor = {175, 175, 175}, fillPattern = FillPattern.Solid), Ellipse(extent = {{-16, 16}, {16, -16}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid)}),

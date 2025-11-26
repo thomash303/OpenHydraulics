@@ -10,13 +10,20 @@ partial model PartialMedium "Partial medium model"
   constant SI.Temperature Toperating = 293.15 "Operating temperature of the medium";
   constant SI.Temperature T_ambient = 298.15 "Reference temperature of Medium: default 25 deg Celsius";
   constant SI.AbsolutePressure p_ambient = 101325 "Reference pressure of the medium";
-  constant SI.Density rho_nom "nominal medium density" annotation(Dialog(group = "Medium")); 
+  /*constant SI.Density rho_nom = 850 "nominal medium density" annotation(Dialog(group = "Medium")); */
 
   replaceable function density "Return density as a function of p and T"
     extends Function;
     input SI.AbsolutePressure p;
     output SI.Density rho;
   end density;
+  
+    replaceable function density_nom "Return density as a function of p and T"
+    extends Function;
+    input SI.AbsolutePressure p;
+    output SI.Density rho_nom;
+  end density_nom;
+
 
   replaceable function dynamicViscosity
     extends Function;

@@ -2,3 +2,4 @@ BaseClasses
 FluidPower2MechRotConst
 VariableDisplacementPump
 ConstantDisplacementPump
+FluidPower2MechRotVar

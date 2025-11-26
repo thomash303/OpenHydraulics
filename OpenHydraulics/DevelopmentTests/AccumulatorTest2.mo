@@ -29,4 +29,6 @@ equation
   connect(accumulator1.port_a, idealConDispPump.port_a) annotation (Line(
         points={{1.22465e-015,-22},{0,-22},{0,0}}, color={255,0,0}));
 
+annotation(
+    experiment(StartTime = 0, StopTime = 50, Tolerance = 1e-06, Interval = 0.002));
 end AccumulatorTest2;
