@@ -1,5 +1,5 @@
 RestrictionInterface
 MinLimiter
 PartialLaminarRestriction
-ValveCharacteristics
 PartialValve
+ValveCharacteristics

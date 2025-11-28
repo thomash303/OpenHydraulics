@@ -1,6 +1,6 @@
 within OpenHydraulics.Custom.Media;
 
-model GenericOilSimple "Simple medium model for oil"
+package GenericOilSimple "Simple medium model for oil"
 
     
   // Importing from the MSL

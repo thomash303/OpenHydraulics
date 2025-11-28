@@ -1,12 +1,9 @@
-within OpenHydraulics.Custom.Volumes.BaseClasses;
+within OpenHydraulics.Developed.Volumes.BaseClasses;
 
 model VolumeClosed "A constant compressible volume"
-
-  extends Interfaces.NPort(n_ports = 1);
-
+  extends Interfaces.BaseClasses.NPort(n_ports = 1);
   // Importing from the MSL
   import Modelica.Units.SI;
-  
   // main parameters
   parameter SI.Volume V = 1e-6 "Nominal volume size (at atmospheric pressure)" annotation(
     Dialog(tab = "Sizing"));
@@ -17,16 +14,15 @@ model VolumeClosed "A constant compressible volume"
     Dialog(tab = "Sizing", enable = compressible));
   // the variables
   SI.Volume V_actual "Volume size";
-  SI.Mass m = V_actual*system.Medium.density_nom "Mass of fluid";
+  SI.Mass m = V_actual*system.Medium.BaseProperties.rho_ambient "Mass of fluid";
   SI.AbsolutePressure p_vol(start = p_init) "Pressure in the volume";
-
 equation
   V_actual = V + (if compressible then V*(p_vol - system.p_ambient)/volBulkMod else 0);
-  // The pressures are equal throughout the volume
+// the pressures are equal throughout the volume
   for i in 1:n_ports loop
     p[i] = p_vol;
   end for;
-  // Mass balances
+// Mass balances
   if V > 0 then
     der(m) = sum(port.m_flow);
   else

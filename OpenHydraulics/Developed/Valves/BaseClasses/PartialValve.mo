@@ -1,34 +1,50 @@
-within OpenHydraulics.Custom.Valves.BaseClasses;
+within OpenHydraulics.Developed.Valves.BaseClasses;
 
-partial model PartialValve "Base model for valves"
-
-  import Modelica.Fluid.Types.CvTypes;
+partial model PartialValve
+  "Partial model representing a partial valve"
+  
+  // Need to ensure all filter blocks are conditonal delcraration and relief valve mode is activated
+  
+  // Inheriting from the OET
   extends Interfaces.HorizontalTwoPort;
 
-  parameter Modelica.Fluid.Types.CvTypes CvData=Modelica.Fluid.Types.CvTypes.OpPoint
+  // Importing from the MSL
+  import Modelica.Fluid.Types.CvTypes;
+  import Modelica.Units.SI;
+  import Modelica.Blocks;
+  
+  // Relief valveCharacteristic
+  Boolean reliefValveEnable = false "Enable relief valve" annotation(choices(checkBox = true));
+
+  // Valve characteristic parameters
+  parameter CvTypes CvData=Modelica.Fluid.Types.CvTypes.OpPoint
     "Selection of flow coefficient"
    annotation(Dialog(group = "Flow coefficient"));
-  parameter Modelica.Units.SI.Area Av(
-    fixed= CvData == Modelica.Fluid.Types.CvTypes.Av,
+  // Av (default)
+  parameter SI.Area Av(
+    fixed= CvData == CvTypes.Av,
     start=system.m_flow_nominal/(sqrt(system.rho_ambient*system.dp_small))*valveCharacteristic(
         opening_nominal)) "Av (metric) flow coefficient"
    annotation(Dialog(group = "Flow coefficient",
                      enable = (CvData==Modelica.Fluid.Types.CvTypes.Av)));
+  // Kv (metric)
   parameter Real Kv = 0 "Kv (metric) flow coefficient [m3/h]"
   annotation(Dialog(group = "Flow coefficient",
                     enable = (CvData==Modelica.Fluid.Types.CvTypes.Kv)));
+  // Cv (imperial)
   parameter Real Cv = 0 "Cv (US) flow coefficient [USG/min]"
   annotation(Dialog(group = "Flow coefficient",
                     enable = (CvData==Modelica.Fluid.Types.CvTypes.Cv)));
-
+  // Nominal
   parameter Real opening_nominal(min=0,max=1)=1 "Nominal opening"
   annotation(Dialog(group="Nominal operating point",
                     enable = (CvData==Modelica.Fluid.Types.CvTypes.OpPoint)));
 
+  // Filtered opening parameters
   parameter Boolean filteredOpening=false
     "= true, if opening is filtered with a 2nd order CriticalDamping filter"
     annotation(Dialog(group="Filtered opening"),choices(checkBox=true));
-  parameter Modelica.Units.SI.Time riseTime=1
+  parameter SI.Time riseTime=1
     "Rise time of the filter (time to reach 99.6 % of an opening step)"
     annotation(Dialog(group="Filtered opening",enable=filteredOpening));
   parameter Real leakageOpening(min=0,max=1)=1e-3
@@ -37,19 +53,18 @@ partial model PartialValve "Base model for valves"
   parameter Boolean checkValve=false "Reverse flow stopped"
     annotation(Dialog(tab="Assumptions"));
 
-  replaceable function valveCharacteristic =
-      Modelica.Fluid.Valves.BaseClasses.ValveCharacteristics.linear
-    constrainedby
-    Modelica.Fluid.Valves.BaseClasses.ValveCharacteristics.baseFun
-    "Inherent flow characteristic"
+  replaceable function valveCharacteristic = ValveCharacteristics.linear
+    constrainedby ValveCharacteristics.baseFun
+    "Valve flow characteristic"
     annotation(choicesAllMatching=true);
 
-  constant Modelica.Units.SI.Area Kv2Av = 27.7e-6 "Conversion factor";
-  constant Modelica.Units.SI.Area Cv2Av = 24.0e-6 "Conversion factor";
+  // Conversion factors to Av
+  constant SI.Area Kv2Av = 27.7e-6 "Conversion factor";
+  constant SI.Area Cv2Av = 24.0e-6 "Conversion factor";
 
-  Modelica.Blocks.Interfaces.RealInput opening(min=0, max=1)
-    "Valve position in the range 0..1"
-                                   annotation (Placement(transformation(
+  // Filtered opening models
+  Blocks.Interfaces.RealInput opening(min=0, max=1)
+    "Valve position in the range 0..1"  annotation (Placement(transformation(
         origin={0,90},
         extent={{-20,-20},{20,20}},
         rotation=270), iconTransformation(
@@ -57,22 +72,25 @@ partial model PartialValve "Base model for valves"
         rotation=270,
         origin={0,80})));
 
-  Modelica.Blocks.Interfaces.RealOutput opening_filtered if filteredOpening
+  Blocks.Interfaces.RealOutput opening_filtered if filteredOpening
     "Filtered valve position in the range 0..1"
     annotation (Placement(transformation(extent={{60,40},{80,60}}),
         iconTransformation(extent={{60,50},{80,70}})));
 
-  Modelica.Blocks.Continuous.Filter filter(order=2, f_cut=5/(2*Modelica.Constants.pi
+  Blocks.Continuous.Filter filter(order=2, f_cut=5/(2*Modelica.Constants.pi
         *riseTime)) if filteredOpening
     annotation (Placement(transformation(extent={{34,44},{48,58}})));
 
 protected
-  Modelica.Blocks.Interfaces.RealOutput opening_actual
+  // Inheriting from the MSL
+  extends Modelica.Blocks.Interfaces.SISO;
+  
+  Blocks.Interfaces.RealOutput opening_actual if not reliefValveEnable
     annotation (Placement(transformation(extent={{60,10},{80,30}})));
 
-block MinLimiter "Limit the signal above a threshold"
- parameter Real uMin=0 "Lower limit of input signal";
-  extends Modelica.Blocks.Interfaces.SISO;
+  block MinLimiter "Limit the signal above a threshold"
+  parameter Real uMin=0 "Lower limit of input signal";
+
 
 equation
   y = smooth(0, noEvent( if u < uMin then uMin else u));
@@ -167,7 +185,7 @@ equation
       points={{24.7,51},{32.6,51}}, color={0,0,127}));
   connect(minLimiter.u, opening) annotation (Line(
       points={{8.6,51},{0,51},{0,90}}, color={0,0,127}));
-  /*annotation (
+      annotation (
     Icon(coordinateSystem(
         preserveAspectRatio=true,
         extent={{-100,-100},{100,100}}), graphics={
@@ -277,5 +295,5 @@ Documentation improved.</li>
 by <a href=\"mailto:francesco.casella@polimi.it\">Francesco Casella</a>:<br>
    Adapted from the ThermoPower library.</li>
 </ul>
-</html>")); */
+</html>"));
 end PartialValve;
