@@ -7,8 +7,8 @@ partial model VerticalTwoPort
   extends BaseClasses.PartialFluidComponent;
   
   // Volumetric flow rate
-  SI.VolumeFlowRate q_flow_a = port_a.m_flow/system.Medium.density(p_a);
-  SI.VolumeFlowRate q_flow_b = port_b.m_flow/system.Medium.density(p_b);
+  SI.VolumeFlowRate q_flow_a = port_a.m_flow/system.rho_ambient;
+  SI.VolumeFlowRate q_flow_b = port_b.m_flow/system.rho_ambient;
   
   // Pressure change
   SI.Pressure dp = port_a.p - port_b.p "Pressure drop (negative for pumps)";

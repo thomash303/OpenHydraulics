@@ -2,27 +2,30 @@ within OpenHydraulics.Developed.Volumes.BaseClasses;
 
 model VolumeOpen "An open constant-pressure volume"
   extends Custom.Interfaces.NPort(n_ports = 1);
+  
   // Importing from the MSL
   import Modelica.Units.SI;
-  // main parameters
+  
+  // Volume parameters
   parameter SI.Volume V_max = 1 "Tank Volume" annotation(
     Dialog(tab = "Sizing"));
   parameter SI.AbsolutePressure p_const = system.p_ambient "preload pressure" annotation(
     Dialog(tab = "Initialization"));
   parameter SI.Volume V_init = 0.1 "Initial Volume" annotation(
     Dialog(tab = "Initialization"));
-  // the variables
+  
+  // Variables
   SI.Volume V_actual "Volume size";
-  SI.Mass m = V_actual*system.Medium.density(p_vol) "Mass of fluid";
+  SI.Mass m = V_actual*system.rho_ambient "Mass of fluid";
   SI.AbsolutePressure p_vol(start = p_init) "Pressure in the volume";
 protected
-  parameter SI.Mass m_init = V_init*system.Medium.density(p_init) "Guess initial mass";
+  parameter SI.Mass m_init = V_init*system.rho_ambient "Guess initial mass";
 initial equation
   V_actual = V_init;
 equation
   assert(V_actual < V_max, "Volume has exceeded limit");
   p_vol = p_const;
-// the pressures are equal throughout the volume
+  // the pressures are equal throughout the volume
   for i in 1:n_ports loop
     p[i] = p_vol;
   end for;

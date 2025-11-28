@@ -1,63 +1,74 @@
 within OpenHydraulics.Developed.Volumes;
 
 model Accumulator
-  // The total amount of liquid that can be stored is defined by liquidVolume
-  // the parameters
+  "Model representing an accumulator"
+  
+  // Inheriting from the OET
+  extends Interfaces.BaseClasses.PartialFluidComponent(p_init = max(system.p_ambient, p_precharge));
+  
+  // Importing from the MSL
+  import Modelica.Units.SI;
+  import Modelica.Mechanics.Translational.Components;
+  
+  // Parameters
   parameter Real gamma = 1.4 "Adiabatic index for an ideal gas(default set assuming dry air)" annotation(
     Dialog(tab = "Sizing"));
-  parameter Modelica.Units.SI.Volume liquidVolume = 0.001 "Liquid Volume" annotation(
+  parameter SI.Volume liquidVolume = 0.001 "Liquid Volume" annotation(
     Dialog(tab = "Sizing"));
-  parameter Modelica.Units.SI.Volume gasVolume = 0.0011 "Gas Volume (must be larger than liquid volume)" annotation(
+  parameter SI.Volume gasVolume = 0.0011 "Gas Volume (must be larger than liquid volume)" annotation(
     Dialog(tab = "Sizing"));
-  parameter Modelica.Units.SI.AbsolutePressure p_precharge = 101325 "Gas precharge pressure" annotation(
+  parameter SI.AbsolutePressure p_precharge = 101325 "Gas precharge pressure" annotation(
     Dialog(tab = "Sizing"));
-  parameter Modelica.Units.SI.AbsolutePressure p_max = 3e7 "Maximum rated pressure" annotation(
+  parameter SI.AbsolutePressure p_max = 3e7 "Maximum rated pressure" annotation(
     Dialog(tab = "Sizing"));
+  
   // Advanced parameters
   // default residual is 2% of the total volume
-  parameter Modelica.Units.SI.Volume residualVolLiquid = liquidVolume*0.02 "Residual volume of liquid when accumulator is empty" annotation(
+  parameter SI.Volume residualVolLiquid = liquidVolume*0.02 "Residual volume of liquid when accumulator is empty" annotation(
     Dialog(tab = "Advanced"));
-  parameter Modelica.Units.SI.Volume residualVolGas = gasVolume - liquidVolume "Residual volume of gas when accumulator is full" annotation(
+  parameter SI.Volume residualVolGas = gasVolume - liquidVolume "Residual volume of gas when accumulator is full" annotation(
     Dialog(tab = "Advanced"));
-  parameter Modelica.Units.SI.Mass pistonMass = 0.01 "Mass of bladder or piston" annotation(
+  parameter SI.Mass pistonMass = 0.01 "Mass of bladder or piston" annotation(
     Dialog(tab = "Advanced"));
-  parameter Modelica.Units.SI.TranslationalDampingConstant pistonDamping(final min = 0) = 1 "Damping constant for bladder or piston" annotation(
+  parameter SI.TranslationalDampingConstant pistonDamping(final min = 0) = 1 "Damping constant for bladder or piston" annotation(
     Dialog(tab = "Advanced"));
-  // initialization parameters
+  
+  // Initialization parameters
   parameter Types.AccInit initType = Types.AccInit.Pressure "Type of initialization (defines usage of start values below)" annotation(
     Dialog(tab = "Initialization", group = "Fluid"));
-  parameter Modelica.Units.SI.Volume V_init = residualVolLiquid "Initial liquid volume" annotation(
+  parameter SI.Volume V_init = residualVolLiquid "Initial liquid volume" annotation(
     Dialog(tab = "Initialization", group = "Fluid"));
-  // the components
-  Custom.Basic.FluidPower2MechTrans liquidChamber(A = A, residualVolume = residualVolLiquid, maxPressure = p_max, n_ports = 1) annotation(
+  
+  // Fluid components
+  BaseClasses.FluidPower2MechTrans liquidChamber(A = A, residualVolume = residualVolLiquid, maxPressure = p_max, n_ports = 1) annotation(
     Placement(transformation(extent = {{20, -10}, {40, 10}})));
-  Custom.Volumes.BaseClasses.AirChamber gasChamber(gamma = gamma, V_precharge = gasVolume, p_precharge = p_precharge, A = A, residualVolume = residualVolGas, initializePressure = initType == Types.AccInit.Pressure, p_init = p_init, V_init = gasVolume - V_init) annotation(
+  BaseClasses.AirChamber gasChamber(gamma = gamma, V_precharge = gasVolume, p_precharge = p_precharge, A = A, residualVolume = residualVolGas, initializePressure = initType == Types.AccInit.Pressure, p_init = p_init, V_init = gasVolume - V_init) annotation(
     Placement(transformation(extent = {{-40, -10}, {-20, 10}})));
-  Modelica.Mechanics.Translational.Components.Fixed fixedLeft(s0 = 0.0) annotation(
+  
+  // Translational components
+  Components.Fixed fixedLeft(s0 = 0.0) annotation(
     Placement(transformation(extent = {{-70, -10}, {-50, 10}})));
-  Modelica.Mechanics.Translational.Components.Fixed fixedRight(final s0 = liquidVolume/A) annotation(
+  Components.Fixed fixedRight(final s0 = liquidVolume/A) annotation(
     Placement(transformation(extent = {{50, -10}, {70, 10}})));
-  Modelica.Mechanics.Translational.Components.Mass slidingMass(m = pistonMass, final L = 0, stateSelect = StateSelect.prefer) annotation(
+  Components.Mass slidingMass(m = pistonMass, final L = 0, stateSelect = StateSelect.prefer) annotation(
     Placement(transformation(extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.Translational.Components.Damper damper(d = pistonDamping, stateSelect = StateSelect.default) annotation(
+  Components.Damper damper(d = pistonDamping, stateSelect = StateSelect.default) annotation(
     Placement(transformation(extent = {{-40, 30}, {-20, 50}})));
-  // the ports
-  Custom.Interfaces.FluidPort port_a annotation(
+  
+  // Fluid ports
+  Interfaces.FluidPort port_a annotation(
     Placement(transformation(extent = {{-10, -110}, {10, -90}})));
-  extends Custom.Interfaces.BaseClasses.PartialFluidComponent(p_init = max(system.p_ambient, p_precharge));
+
   // NOTE: from a behavioral perspective the surface area of the piston
   // is not really relevant.  We will therefore assume that it is
   // equal to the liquidVolume resulting in a total travel of the piston of 1m.
 protected
   parameter Modelica.Units.SI.Length Lnom = 1 "Dummy nominal length";
   parameter Modelica.Units.SI.Area A = liquidVolume/Lnom;
+  
 initial equation
   assert(gasVolume > liquidVolume, "gasVolume must be larger than liquidVolume");
-//  if initType == FluidPower.Types.AccInit.Volume then
-//    liquidChamber.s_rel = V_init/A;
-//  else
-//    liquidChamber.volMedium.p = p_init;
-//  end if;
+
 equation
   assert(gasChamber.p < p_max, "Pressure in accumulator exceeded p_max");
   connect(liquidChamber.flange_b, fixedRight.flange) annotation(

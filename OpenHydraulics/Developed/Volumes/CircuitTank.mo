@@ -1,16 +1,21 @@
 within OpenHydraulics.Developed.Volumes;
 
-model CircuitTank "Model for a Oil Tank"
-  extends Custom.Interfaces.BaseClasses.PartialFluidComponent;
-  // Importing from the MSL
-  import Modelica.Units.SI;
+model CircuitTank 
+  "Model for a Oil Tank"
   // tank is a reservoir with two inputs!
   // two inputs are necessary to alow for taking cooling into account
   // inflowing fluid is mixed with fluid in the reservoir assuming perfect mixing
   // heat transfer occurs from this fluid to the environment (heat path not part of model)
   // We need to specify a preload pressure for the tank -- necessary boundary condition
   // we should allow for the initial temperature and quantity of the oil to be specified.
-  // main parameters
+
+  // Inheriting from the OET
+  extends Interfaces.BaseClasses.PartialFluidComponent;
+  
+  // Importing from the MSL
+  import Modelica.Units.SI;
+  
+  // Main parameters
   parameter SI.Volume V_max = 1 "Tank Volume" annotation(
     Dialog(tab = "Sizing"));
   parameter SI.AbsolutePressure p_const = system.p_ambient "preload pressure" annotation(
@@ -18,12 +23,12 @@ model CircuitTank "Model for a Oil Tank"
   parameter SI.Volume V_init = 0.1 "Initial Volume" annotation(
     Dialog(tab = "Initialization"));
   // the connectors
-  Custom.Interfaces.FluidPort port_a annotation(
+  Interfaces.FluidPort port_a annotation(
     Placement(transformation(extent = {{-110, -10}, {-90, 10}})));
-  Custom.Interfaces.FluidPort port_b annotation(
+  Interfaces.FluidPort port_b annotation(
     Placement(transformation(extent = {{110, -10}, {90, 10}})));
   // the components
-  Custom.Volumes.BaseClasses.VolumeOpen volumeOpen(final n_ports = 2) annotation(
+  Volumes.BaseClasses.VolumeOpen volumeOpen(final n_ports = 2) annotation(
     Placement(transformation(extent = {{-10, -10}, {10, 10}})));
 equation
   connect(port_a, volumeOpen.port[1]) annotation(

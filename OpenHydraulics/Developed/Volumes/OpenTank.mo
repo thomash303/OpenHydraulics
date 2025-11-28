@@ -1,12 +1,22 @@
 within OpenHydraulics.Developed.Volumes;
 
-model OpenTank "Boundary pressure, temperature and mass fraction source"
-  Custom.Interfaces.FluidPort port annotation(
-    Placement(transformation(extent = {{-10, 90}, {10, 110}})));
-  parameter Modelica.Units.SI.AbsolutePressure p_const = system.p_ambient "Tank pressure";
+model OpenTank 
+  "Boundary pressure, temperature and mass fraction source"
+  
+  // Inheriting from the OET
   extends Custom.Interfaces.BaseClasses.PartialFluidComponent;
+  
+  // Importing from the MSL
+  import Modelica.Units.SI;
+  
+  parameter Modelica.Units.SI.AbsolutePressure p_const = system.p_ambient "Tank pressure";
+  
+  Interfaces.FluidPort port annotation(
+    Placement(transformation(extent = {{-10, 90}, {10, 110}})));
+  
 equation
   port.p = p_const;
+  
   annotation(
     defaultComponentName = "tank",
     Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}, grid = {2, 2}), graphics = {Text(extent = {{-100, 20}, {100, -20}}, textString = "%name"), Line(points = {{0, 100}, {0, 20}}, color = {255, 0, 0}), Line(points = {{-80, 20}, {-80, -20}, {80, -20}, {80, 20}}, color = {0, 0, 0}), Text(extent = {{-80, -20}, {80, -60}}, lineColor = {255, 0, 0}, fillColor = {255, 0, 0}, fillPattern = FillPattern.Solid, textString = "p=%p_const"), Text(extent = {{-80, -60}, {80, -100}}, lineColor = {255, 0, 0}, fillColor = {255, 0, 0}, fillPattern = FillPattern.Solid)}),

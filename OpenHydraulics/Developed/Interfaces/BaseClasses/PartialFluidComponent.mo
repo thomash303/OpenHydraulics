@@ -23,8 +23,6 @@ partial model PartialFluidComponent
   // Fluid properties
   SI.AbsolutePressure p_a(start = p_init) "Fluid properties at the inlet";
   SI.AbsolutePressure p_b(start = p_init) "Fluid properties at the inlet";
-
-protected
   
   parameter SI.AbsolutePressure p_init = system.p_ambient "Initial pressure of the component";
   

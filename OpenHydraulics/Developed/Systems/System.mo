@@ -8,9 +8,16 @@ model System
   import Modelica.Constants.g_n;
   
   // Medium model
-  replaceable model Medium = Media.GenericOil constrainedby Media.BaseClasses.PartialMedium "Medium model for default start values" annotation(
+  replaceable package Medium = Media.GenericOil constrainedby Media.BaseClasses.PartialMedium "Medium model for default start values" annotation(
     choicesAllMatching = true,
     Dialog(group = "Medium"));
+    
+  // Medium parameters 
+  final constant SI.Temperature T_ambient_med = Medium.T_ambient_med "Reference temperature of Medium: default 25 deg Celsius";
+  final constant SI.AbsolutePressure p_ambient_med = Medium.T_ambient_med "Reference pressure of the medium";
+  final constant SI.Density rho_ambient = Medium.rho_ambient "Reference density of the medium";
+  final constant SI.BulkModulus beta = Medium.beta "Effective bulk modulus";
+  final constant SI.DynamicViscosity mu = Medium.mu "Dynamic viscosity";
     
   // Ambient environment parameters
   parameter SI.AbsolutePressure p_ambient = 101325 "Default ambient pressure" annotation(
@@ -26,6 +33,7 @@ model System
     Dialog(tab = "Initialization"));
   parameter SI.Temperature T_start = T_ambient "Default start value for temperatures" annotation(
     Dialog(tab = "Initialization"));
+  
   
   // Advanced
   parameter Boolean use_eps_Re = false "= true to determine turbulent region automatically using Reynolds number" annotation(

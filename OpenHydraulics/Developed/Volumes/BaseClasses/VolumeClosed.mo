@@ -10,14 +10,12 @@ model VolumeClosed "A constant compressible volume"
   parameter Boolean compressible = true "=true if encclosure volume depends on pressure" annotation(
     Evaluate = true,
     Dialog(tab = "Sizing"));
-  parameter SI.BulkModulus volBulkMod = 1e7 "Bulk Modulus of the enclosure" annotation(
-    Dialog(tab = "Sizing", enable = compressible));
   // the variables
   SI.Volume V_actual "Volume size";
-  SI.Mass m = V_actual*system.Medium.BaseProperties.rho_ambient "Mass of fluid";
+  SI.Mass m = V_actual*system.rho_ambient "Mass of fluid";
   SI.AbsolutePressure p_vol(start = p_init) "Pressure in the volume";
 equation
-  V_actual = V + (if compressible then V*(p_vol - system.p_ambient)/volBulkMod else 0);
+  V_actual = V + (if compressible then V*(p_vol - system.p_ambient)/system.beta else 0);
 // the pressures are equal throughout the volume
   for i in 1:n_ports loop
     p[i] = p_vol;
