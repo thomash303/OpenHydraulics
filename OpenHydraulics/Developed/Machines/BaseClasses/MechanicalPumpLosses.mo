@@ -11,10 +11,14 @@ model MechanicalPumpLosses
   import Modelica.Units.SI;
   import Modelica.Blocks.Interfaces.RealInput;
   
+  
   // Loss parameters
-  parameter Real Cv = 0.1 "Coefficient of viscous drag";
-  parameter Real Cf = 0.01 "Coefficient of Coulomb friction (fraction of full stroke torque)";
-  parameter SI.Volume Dmax = 1e-4 "Full stroke pump Displacement";
+  parameter Real Cv = 0.1 "Coefficient of viscous drag" annotation(
+    Dialog(group = "Friction"));
+  parameter Real Cf = 0.01 "Coefficient of Coulomb friction (fraction of full stroke torque)" annotation(
+    Dialog(group = "Friction"));
+  
+  parameter SI.Volume Dmax = 1e-4 "Pump displacement";
   parameter SI.DynamicViscosity mu = 0.036 "Dynamic Viscosity of liquid";
   
   // Variables
@@ -28,7 +32,7 @@ model MechanicalPumpLosses
     Placement(transformation(extent = {{-120, -80}, {-80, -40}})));
 
 protected
-  parameter Real b = Cv*Dmax*mu "Viscous friction constant";
+  parameter SI.TranslationalDampingConstant b = Cv*Dmax*mu "Viscous friction constant";
 
 equation
   // Constant auxiliary variables
@@ -41,8 +45,6 @@ equation
   // Angular velocity and angular acceleration of flanges
   w = der(phi);
   a = der(w);
-  w_relfric = w;
-  a_relfric = a;
   
   // Torque equilibrium
   0 = flange_a.tau + flange_b.tau - tau;

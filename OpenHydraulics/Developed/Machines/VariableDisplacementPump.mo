@@ -13,10 +13,10 @@ model VariableDisplacementPump
   import Modelica.Blocks.Interfaces.RealInput;
   
     // Additional model improvement flags
-  parameter Boolean frictionEnable = true "Enable friction model" annotation(
+  parameter Boolean frictionEnable = false "Enable friction model" annotation(
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
-  parameter Boolean leakageEnable = true "Enable fluid leakage model" annotation(
+  parameter Boolean leakageEnable = false "Enable fluid leakage model" annotation(
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
   
@@ -33,17 +33,25 @@ model VariableDisplacementPump
     Dialog(group = "Leakage"));  
   
   // Torque loss parameters
+  /*
+  parameter SI.Torque C_T1 = 0 "Schlosser torque loss parameter" annotation(
+    Dialog(group = "Friction"));
+  parameter SI.Volume C_T2 = 0 "Schlosser torque loss parameter" annotation(
+    Dialog(group = "Friction"));
+  parameter Real C_T3(unit="N.m.s") = 0 "Schlosser torque loss parameter" annotation(
+    Dialog(group = "Friction"));
+  parameter Real C_T4(unit="N.m.s2") = 0 "Schlosser torque loss parameter" annotation(
+    Dialog(group = "Friction"));
+  */
+  
+  // Torque loss parameters
   parameter Real Cv = 60000 "Coefficient of viscous drag" annotation(
-    Dialog(tab = "Efficiency", group = "Mechanical Efficiency"));
+    Dialog(group = "Friction"));
   parameter Real Cf = 0.007 "Coefficient of Coulomb friction (fraction of full stroke torque)" annotation(
-    Dialog(tab = "Efficiency", group = "Mechanical Efficiency"));
-  parameter Real Cs = 1.8e-9 "Leakage coefficient" annotation(
-    Dialog(tab = "Efficiency", group = "Volumetric Efficiency"));
-  parameter Real Vr = 0.54 "Volume ratio of pump or motor" annotation(
-    Dialog(tab = "Efficiency", group = "Volumetric Efficiency"));
+    Dialog(group = "Friction"));
 
   // Friction
-  BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Cv, Cf = Cf, Dmax = Dlimit) annotation(
+  BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Cv, Cf = Cf, Dmax = Dlimit) if frictionEnable annotation(
     Placement(transformation(extent = {{-80, -10}, {-60, 10}})));
   
   // Fluid components
@@ -94,6 +102,12 @@ equation
     Line(points = {{36, 8}, {34, 8}, {34, 40}, {0, 40}}, color = {255, 0, 0}));
   connect(motorLeakage.port_b, j1.port[3]) annotation(
     Line(points = {{36, -12}, {36, -40}, {0, -40}}, color = {255, 0, 0}));
+  
+  if not frictionEnable then
+    connect(flange_a, fluidPower2MechRot.flange_a) annotation(
+    Line(points = {{-10, 0}, {-100, 0}}));
+  end if;
+
   annotation(
     Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Ellipse(extent = {{-54, 54}, {54, -54}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Line(points = {{0, -54}, {0, -100}}, color = {255, 0, 0}), Line(points = {{0, 100}, {0, 54}}, color = {255, 0, 0}), Rectangle(extent = {{-90, 8}, {-54, -8}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Text(extent = {{100, -54}, {-100, -90}}, textString = "%name"), Text(extent = {{10, -80}, {40, -120}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "T"), Polygon(points = {{-20, 34}, {0, 54}, {20, 34}, {-20, 34}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Polygon(points = {{-20, -34}, {0, -54}, {20, -34}, {-20, -34}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Text(extent = {{10, 120}, {40, 80}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "P"), Polygon(points = {{80, 80}, {52, 66}, {66, 52}, {80, 80}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Line(points = {{-80, -80}, {80, 80}}, color = {0, 0, 0})}),
     Diagram(graphics = {Text(extent = {{52, 76}, {52, 64}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, textString = "section for"), Text(extent = {{52, 88}, {52, 76}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, textString = "see equations"), Rectangle(extent = {{12, 88}, {90, 52}}, lineColor = {0, 0, 255}), Text(extent = {{52, 64}, {52, 52}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, textString = "loss relationships")}));
