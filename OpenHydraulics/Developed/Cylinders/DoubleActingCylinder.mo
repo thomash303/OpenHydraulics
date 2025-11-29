@@ -14,15 +14,40 @@ model DoubleActingCylinder
   import Modelica.Blocks;
   
   // Additional model improvement flags
-  parameter Boolean compressibleEnable = true "Enable fluid compressibility model" annotation(
-    Dialog(tab = "Sizing", group = "Non-Ideal Models"),
+  parameter Boolean compressibleEnable = false "Enable fluid compressibility model" annotation(
+    Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
-  parameter Boolean fluidInertiaEnable = true "Enable fluid inertia model" annotation(
-    Dialog(tab = "Sizing", group = "Non-Ideal Models"),
+  parameter Boolean fluidInertiaEnable = false "Enable fluid inertia model" annotation(
+    Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
   parameter Boolean gravityAccelerationEnable = false "Enable acceleration due to gravity model" annotation(
-    Dialog(tab = "Sizing", group = "Non-Ideal Models"),
+    Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
+  parameter Boolean stribeckFrictionEnable = false "Enable Stribeck friction model" annotation(
+    Dialog(group = "Non-Ideal Models"),
+    choices(checkBox = true));
+  parameter Boolean leakageEnable = false "Enable fluid leakage model" annotation(
+    Dialog(group = "Non-Ideal Models"),
+    choices(checkBox = true));
+    
+  // Stribeck friction parameters
+  parameter SI.TranslationalDampingConstant Cv = 1 "Viscous damping coefficient" annotation(
+    Dialog(group = "Stribeck Friction"));
+  parameter SI.Force f_c = 5 "Coulomb friction force" annotation(
+    Dialog(group = "Stribeck Friction"));
+  parameter SI.Velocity Cst = 0.5 "Stribeck characteristic velocity" annotation(
+    Dialog(group = "Stribeck Friction"));
+  parameter SI.Force f_st = 10 "Stribeck friction force" annotation(
+    Dialog(group = "Stribeck Friction"));
+  SI.Force f_fric "Total friction force"; 
+  
+  // Leakage parameters
+   parameter Types.HydraulicLeakage CHeadExLeakage = 0 "Cylinder head external leakage coefficient" annotation(
+    Dialog(group = "Leakage"));
+   parameter Types.HydraulicLeakage CRodExLeakage = 0 "Cylinder rod external leakage coefficient" annotation(
+    Dialog(group = "Leakage"));
+   parameter Types.HydraulicLeakage CInLeakage = 0 "Cylinder internal leakage coefficient" annotation(
+    Dialog(group = "Leakage"));
   
   // Sizing parameters
   parameter SI.Length boreDiameter = 0.05 "Bore diameter" annotation(
@@ -43,7 +68,7 @@ model DoubleActingCylinder
     Dialog(tab = "Sizing", group = "Hydraulics"));
   
   // Dynamics parameters
-  parameter SI.Mass pistonMass = 0 "Mass of the piston and rod" annotation(
+  parameter SI.Mass pistonRodMass = 0 "Mass of the piston and rod" annotation(
     Dialog(tab = "Dynamics"));
   parameter SI.TranslationalDampingConstant damping = 1e4 "damping between piston and cylinder" annotation(
     Dialog(tab = "Dynamics"));
@@ -81,7 +106,7 @@ model DoubleActingCylinder
     Placement(transformation(extent = {{30, -10}, {50, 10}})));
   
   // Translational components
-  Components.Mass piston(m = pistonMass) annotation(
+  Components.Mass piston(m = pistonRodMass) annotation(
     Placement(transformation(extent = {{-10, -10}, {10, 10}})));
   Components.Rod cylinder(L = strokeLength) annotation(
     Placement(transformation(extent = {{-10, 70}, {10, 90}})));
@@ -91,8 +116,6 @@ model DoubleActingCylinder
     Placement(transformation(extent = {{-110, -10}, {-90, 10}})));
   Translational.Interfaces.Flange_b flange_b "(right) driven flange (flange axis directed OUT OF cut plane, i. e. from right to left)" annotation(
     Placement(transformation(extent = {{90, -10}, {110, 10}})));
-  Components.Damper damper(d = damping) annotation(
-    Placement(transformation(extent = {{-48, 58}, {-28, 78}})));
   
   // Fluid junctions
   Interfaces.NJunction jA(n_ports = 2) annotation(
@@ -105,6 +128,20 @@ model DoubleActingCylinder
     Placement(transformation(origin = {34, 50}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
   Blocks.Sources.Constant gravityForceSource(k = -piston.m*system.g) if gravityAccelerationEnable annotation(
     Placement(transformation(origin = {84, 50}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
+  BaseClasses.StribeckFriction stribeckFriction(Cv = Cv, f_c = f_c, Cst = Cst, f_st = f_st)  if stribeckFrictionEnable annotation(
+    Placement(transformation(origin = {-44, 58}, extent = {{-10, -10}, {10, 10}})));
+  
+  // Leakage models
+  Volumes.BaseClasses.ConstantPressureSource headEnvSink if leakageEnable annotation(
+    Placement(transformation(origin = {-88, -30}, extent = {{-10, -10}, {10, 10}})));
+  Volumes.BaseClasses.ConstantPressureSource rodEnvSink if leakageEnable annotation(
+    Placement(transformation(origin = {94, -30}, extent = {{-10, -10}, {10, 10}})));
+  BaseClasses.Leakage internalLeakage(CLeakage = CInLeakage) if leakageEnable annotation(
+    Placement(transformation(origin = {0, -26}, extent = {{-10, -10}, {10, 10}})));
+  BaseClasses.Leakage headExternalLeakage(CLeakage = CHeadExLeakage) if leakageEnable annotation(
+    Placement(transformation(origin = {-62, -16}, extent = {{-10, -10}, {10, 10}})));
+  BaseClasses.Leakage rodExternalLeakage(CLeakage = CRodExLeakage) if leakageEnable annotation(
+    Placement(transformation(origin = {66, -18}, extent = {{-10, -10}, {10, 10}})));
 
 initial equation
   assert(cylinderChamberHead.s_rel >= 0, "Initial position is smaller than zero");
@@ -154,10 +191,6 @@ equation
     Line(points = {{-50, 0}, {-100, 0}}, color = {0, 127, 0}));
   connect(rod.flange_b, flange_b) annotation(
     Line(points = {{90, 0}, {100, 0}}, color = {0, 127, 0}));
-  connect(flange_a, damper.flange_a) annotation(
-    Line(points = {{-100, 0}, {-80, 0}, {-80, 68}, {-62, 68}, {-62, 70}, {-58, 70}, {-58, 68}, {-48, 68}}, color = {0, 127, 0}));
-  connect(damper.flange_b, cylinderChamberHead.flange_b) annotation(
-    Line(points = {{-28, 68}, {-14, 68}, {-14, 0}, {-30, 0}}, color = {0, 127, 0}));
   connect(port_a, jA.port[1]) annotation(
     Line(points = {{-80, -80}, {-40, -80}, {-40, -80.5}}, color = {255, 0, 0}));
   connect(port_b, jB.port[1]) annotation(
@@ -170,6 +203,22 @@ equation
     Line(points = {{24, 50}, {10, 50}, {10, 0}}, color = {0, 127, 0}));
   connect(gravityForceSource.y, gravityForce.f) annotation(
     Line(points = {{74, 50}, {46, 50}}, color = {0, 0, 127}));
+  connect(stribeckFriction.flange_b, piston.flange_a) annotation(
+    Line(points = {{-34, 58}, {-20, 58}, {-20, 0}, {-10, 0}}, color = {0, 127, 0}));
+  connect(stribeckFriction.flange_a, flange_a) annotation(
+    Line(points = {{-54, 58}, {-76, 58}, {-76, 0}, {-100, 0}}, color = {0, 127, 0}));
+  connect(internalLeakage.port_a, cylinderChamberHead.port[2]) annotation(
+    Line(points = {{-10, -26}, {-40, -26}, {-40, 0}}, color = {255, 0, 0}));
+  connect(internalLeakage.port_b, cylinderChamberRod.port[2]) annotation(
+    Line(points = {{10, -26}, {40, -26}, {40, 0}}, color = {255, 0, 0}));
+  connect(headEnvSink.port, headExternalLeakage.port_a) annotation(
+    Line(points = {{-88, -20}, {-88, -16}, {-72, -16}}, color = {255, 0, 0}));
+  connect(headExternalLeakage.port_b, cylinderChamberHead.port[3]) annotation(
+    Line(points = {{-52, -16}, {-40, -16}, {-40, 0}}, color = {255, 0, 0}));
+  connect(rodExternalLeakage.port_b, rodEnvSink.port) annotation(
+    Line(points = {{76, -18}, {94, -18}, {94, -20}}, color = {255, 0, 0}));
+  connect(rodExternalLeakage.port_a, cylinderChamberRod.port[3]) annotation(
+    Line(points = {{56, -18}, {40, -18}, {40, 0}}, color = {255, 0, 0}));
   annotation(
     Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-90, 80}, {90, -90}}, lineColor = {255, 255, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Rectangle(extent = {{-90, 40}, {90, -40}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Rectangle(extent = {{100, 10}, {0, -10}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Rectangle(extent = {{-18, 39}, {0, -39}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Line(points = {{-80, -40}, {-80, -40}, {-80, -40}, {-80, -80}}, color = {255, 0, 0}), Line(points = {{80, -40}, {80, -40}, {80, -40}, {80, -78}}, color = {255, 0, 0}), Polygon(points = {{-88, -40}, {-80, -30}, {-72, -40}, {-88, -40}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Polygon(points = {{72, -40}, {80, -30}, {88, -40}, {72, -40}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Text(extent = {{-64, -56}, {-34, -96}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "A"), Text(extent = {{34, -56}, {64, -96}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "B"), Text(extent = {{0, 84}, {0, 60}}, lineColor = {0, 0, 255}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "%name"), Rectangle(extent = {{-34, 18}, {16, -18}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Line(points = {{-22, -26}, {8, 34}}, color = {0, 0, 0}), Polygon(points = {{8, 34}, {-8, 18}, {4, 12}, {8, 34}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}));
 end DoubleActingCylinder;

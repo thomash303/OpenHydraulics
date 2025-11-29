@@ -12,6 +12,14 @@ model VariableDisplacementPump
   import Modelica.Mechanics.Rotational.Interfaces.Flange_a;
   import Modelica.Blocks.Interfaces.RealInput;
   
+    // Additional model improvement flags
+  parameter Boolean frictionEnable = true "Enable friction model" annotation(
+    Dialog(group = "Non-Ideal Models"),
+    choices(checkBox = true));
+  parameter Boolean leakageEnable = true "Enable fluid leakage model" annotation(
+    Dialog(group = "Non-Ideal Models"),
+    choices(checkBox = true));
+  
   // Sizing parameters
   parameter SI.Volume Dmax = 0.001 "Maximum pump displacement" annotation(
     Dialog(tab = "Sizing"));
@@ -20,7 +28,11 @@ model VariableDisplacementPump
   parameter SI.Volume Dlimit = max(abs(Dmax), abs(Dmin)) "Displacement of pump" annotation(
     Dialog(tab = "Sizing"));
   
-  // Loss parameters
+  // Fluid leakage parameters
+   parameter Types.HydraulicLeakage CMotorLeakage = 0 "Motor leakage coefficient" annotation(
+    Dialog(group = "Leakage"));  
+  
+  // Torque loss parameters
   parameter Real Cv = 60000 "Coefficient of viscous drag" annotation(
     Dialog(tab = "Efficiency", group = "Mechanical Efficiency"));
   parameter Real Cf = 0.007 "Coefficient of Coulomb friction (fraction of full stroke torque)" annotation(
@@ -54,7 +66,10 @@ model VariableDisplacementPump
   
   RealInput dispFraction annotation(
     Placement(transformation(extent = {{-100, -96}, {-68, -64}})));
-
+  
+  // Motor leakage
+  Cylinders.BaseClasses.Leakage motorLeakage(CLeakage = CMotorLeakage) if leakageEnable annotation(
+    Placement(transformation(origin = {36, -2}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
 protected
   SI.Pressure dp = portP.p - portT.p;
   
@@ -75,6 +90,10 @@ equation
     Line(points = {{-100, 0}, {-80, 0}}, color = {0, 0, 0}));
   connect(mechanicalPumpLosses.flange_b, fluidPower2MechRot.flange_a) annotation(
     Line(points = {{-60, 0}, {-10, 0}}, color = {0, 0, 0}));
+  connect(motorLeakage.port_a, j2.port[3]) annotation(
+    Line(points = {{36, 8}, {34, 8}, {34, 40}, {0, 40}}, color = {255, 0, 0}));
+  connect(motorLeakage.port_b, j1.port[3]) annotation(
+    Line(points = {{36, -12}, {36, -40}, {0, -40}}, color = {255, 0, 0}));
   annotation(
     Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Ellipse(extent = {{-54, 54}, {54, -54}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Line(points = {{0, -54}, {0, -100}}, color = {255, 0, 0}), Line(points = {{0, 100}, {0, 54}}, color = {255, 0, 0}), Rectangle(extent = {{-90, 8}, {-54, -8}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Text(extent = {{100, -54}, {-100, -90}}, textString = "%name"), Text(extent = {{10, -80}, {40, -120}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "T"), Polygon(points = {{-20, 34}, {0, 54}, {20, 34}, {-20, 34}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Polygon(points = {{-20, -34}, {0, -54}, {20, -34}, {-20, -34}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Text(extent = {{10, 120}, {40, 80}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "P"), Polygon(points = {{80, 80}, {52, 66}, {66, 52}, {80, 80}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Line(points = {{-80, -80}, {80, 80}}, color = {0, 0, 0})}),
     Diagram(graphics = {Text(extent = {{52, 76}, {52, 64}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, textString = "section for"), Text(extent = {{52, 88}, {52, 76}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, textString = "see equations"), Rectangle(extent = {{12, 88}, {90, 52}}, lineColor = {0, 0, 255}), Text(extent = {{52, 64}, {52, 52}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, textString = "loss relationships")}));

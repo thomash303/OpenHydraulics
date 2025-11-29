@@ -9,7 +9,7 @@ model FluidPower2MechTrans
   // Importing and inheriting from the MSL
   import Modelica.Units.SI;
   import Modelica.Utilities.Streams.print;
-  extends Modelica.Mechanics.Translational.Interfaces.PartialCompliant;
+  extends Modelica.Mechanics.Translational.Interfaces.PartialCompliantWithRelativeStates;
   
   // Additional model improvement flags
   parameter Boolean compressibleEnable = false "Enable fluid compressibility model" annotation(
@@ -38,8 +38,7 @@ model FluidPower2MechTrans
   
   // Mechanical variables
   SI.Power Wmech "Mechanical work performed onto chamber";
-  SI.Velocity v_rel(start = 0) "relative velocity";
-  SI.Acceleration a_rel(start = 0) "relative acceleration";
+  SI.Acceleration a_rel(start = 0) "Relative acceleration";
   
   // Media properties
   Modelica.Units.SI.AbsolutePressure p_vol(start = p_init) "Oil pressure in the chamber";
@@ -90,7 +89,6 @@ equation
   end if;
   
   // Computing mechanical states
-  v_rel = der(s_rel);
   a_rel = der(v_rel);
   
   // If empty volume

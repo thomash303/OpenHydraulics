@@ -1,14 +1,24 @@
-within OpenHydraulics.Basic;
-model ConstPressureSource "Boundary pressure and temperature source"
-  extends OpenHydraulics.Interfaces.PartialFluidComponent;
+within OpenHydraulics.Developed.Volumes.BaseClasses;
 
-  OpenHydraulics.Interfaces.FluidPort port
-    annotation (Placement(transformation(extent={{-10,90},{10,110}})));
+model ConstantPressureSource
+  "Model representing a constant pressure source/sink"
+  
+  // Inheriting from the OET
+  extends Interfaces.BaseClasses.PartialFluidComponent;
+  
+  // Importing from the MSL
+  import Modelica.Units.SI;
+  
+  // Parameters
+  parameter SI.AbsolutePressure p_const = system.p_ambient "Source/sink pressure";
+  
+  // Fluid port
+  Interfaces.FluidPort port annotation(Placement(transformation(extent={{-10,90},{10,110}})));
 
-  parameter SI.AbsolutePressure p_const = environment.p_ambient "Tank pressure";
 equation
   port.p = p_const;
-  annotation (defaultComponentName = "constPSource",
+
+annotation (defaultComponentName = "constPSource",
     Icon(coordinateSystem(
         preserveAspectRatio=false,
         extent={{-100,-100},{100,100}},
@@ -55,4 +65,4 @@ is out of the tank. If mass is flowing into the tank, the temperature is free.
           lineColor={0,0,0},
           fillColor={0,0,0},
           fillPattern=FillPattern.Solid)}));
-end ConstPressureSource;
+end ConstantPressureSource;
