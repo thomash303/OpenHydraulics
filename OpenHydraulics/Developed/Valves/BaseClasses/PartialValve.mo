@@ -1,224 +1,90 @@
 within OpenHydraulics.Developed.Valves.BaseClasses;
 
-partial model PartialValve
-  "Partial model representing a partial valve"
-  
+partial model PartialValve "Partial model representing a partial valve"
   // Need to ensure all filter blocks are conditonal delcraration and relief valve mode is activated
-  
   // Inheriting from the OET
   extends Interfaces.HorizontalTwoPort;
-
   // Importing from the MSL
   import Modelica.Fluid.Types.CvTypes;
   import Modelica.Units.SI;
   import Modelica.Blocks;
-  
   // Relief valveCharacteristic
-  Boolean reliefValveEnable = false "Enable relief valve" annotation(choices(checkBox = true));
-
+  parameter Boolean reliefValveEnable = false "Enable relief valve" annotation(
+    choices(checkBox = true));
   // Valve characteristic parameters
-  parameter CvTypes CvData=Modelica.Fluid.Types.CvTypes.OpPoint
-    "Selection of flow coefficient"
-   annotation(Dialog(group = "Flow coefficient"));
+  parameter SI.Pressure p_crack = 5 "Valve cracking/relief pressure";
+  parameter SI.Pressure p_open = 5.1 "Valve fully open pressure";
+  parameter CvTypes CvData = Modelica.Fluid.Types.CvTypes.OpPoint "Selection of flow coefficient" annotation(
+    Dialog(group = "Flow coefficient"));
   // Av (default)
-  parameter SI.Area Av(
-    fixed= CvData == CvTypes.Av,
-    start=system.m_flow_nominal/(sqrt(system.rho_ambient*system.dp_small))*valveCharacteristic(
-        opening_nominal)) "Av (metric) flow coefficient"
-   annotation(Dialog(group = "Flow coefficient",
-                     enable = (CvData==Modelica.Fluid.Types.CvTypes.Av)));
+  parameter SI.Area Av(fixed = CvData == CvTypes.Av, start = system.m_flow_nominal/(sqrt(system.rho_ambient*system.dp_small))*valveCharacteristic(opening_nominal)) "Av (metric) flow coefficient" annotation(
+    Dialog(group = "Flow coefficient", enable = (CvData == Modelica.Fluid.Types.CvTypes.Av)));
   // Kv (metric)
-  parameter Real Kv = 0 "Kv (metric) flow coefficient [m3/h]"
-  annotation(Dialog(group = "Flow coefficient",
-                    enable = (CvData==Modelica.Fluid.Types.CvTypes.Kv)));
+  parameter Real Kv = 0 "Kv (metric) flow coefficient [m3/h]" annotation(
+    Dialog(group = "Flow coefficient", enable = (CvData == Modelica.Fluid.Types.CvTypes.Kv)));
   // Cv (imperial)
-  parameter Real Cv = 0 "Cv (US) flow coefficient [USG/min]"
-  annotation(Dialog(group = "Flow coefficient",
-                    enable = (CvData==Modelica.Fluid.Types.CvTypes.Cv)));
+  parameter Real Cv = 0 "Cv (US) flow coefficient [USG/min]" annotation(
+    Dialog(group = "Flow coefficient", enable = (CvData == Modelica.Fluid.Types.CvTypes.Cv)));
   // Nominal
-  parameter Real opening_nominal(min=0,max=1)=1 "Nominal opening"
-  annotation(Dialog(group="Nominal operating point",
-                    enable = (CvData==Modelica.Fluid.Types.CvTypes.OpPoint)));
-
+  parameter Real opening_nominal(min = 0, max = 1) = 1 "Nominal opening" annotation(
+    Dialog(group = "Nominal operating point", enable = (CvData == Modelica.Fluid.Types.CvTypes.OpPoint)));
   // Filtered opening parameters
-  parameter Boolean filteredOpening=false
-    "= true, if opening is filtered with a 2nd order CriticalDamping filter"
-    annotation(Dialog(group="Filtered opening"),choices(checkBox=true));
-  parameter SI.Time riseTime=1
-    "Rise time of the filter (time to reach 99.6 % of an opening step)"
-    annotation(Dialog(group="Filtered opening",enable=filteredOpening));
-  parameter Real leakageOpening(min=0,max=1)=1e-3
-    "The opening signal is limited by leakageOpening (to improve the numerics)"
-    annotation(Dialog(group="Filtered opening",enable=filteredOpening));
-  parameter Boolean checkValve=false "Reverse flow stopped"
-    annotation(Dialog(tab="Assumptions"));
-
-  replaceable function valveCharacteristic = ValveCharacteristics.linear
-    constrainedby ValveCharacteristics.baseFun
-    "Valve flow characteristic"
-    annotation(choicesAllMatching=true);
-
+  parameter Boolean filteredOpening = false "= true, if opening is filtered with a 2nd order CriticalDamping filter" annotation(
+    Dialog(group = "Filtered opening"),
+    choices(checkBox = true));
+  parameter SI.Time riseTime = 1 "Rise time of the filter (time to reach 99.6 % of an opening step)" annotation(
+    Dialog(group = "Filtered opening", enable = filteredOpening));
+  parameter Real leakageOpening(min = 0, max = 1) = 1e-3 "The opening signal is limited by leakageOpening (to improve the numerics)" annotation(
+    Dialog(group = "Filtered opening", enable = filteredOpening));
+  parameter Boolean checkValve = false "Reverse flow stopped" annotation(
+    Dialog(tab = "Assumptions"));
+  replaceable function valveCharacteristic = ValveCharacteristics.linear constrainedby ValveCharacteristics.baseFun "Valve flow characteristic" annotation(
+     choicesAllMatching = true);
   // Conversion factors to Av
   constant SI.Area Kv2Av = 27.7e-6 "Conversion factor";
   constant SI.Area Cv2Av = 24.0e-6 "Conversion factor";
-
   // Filtered opening models
-  Blocks.Interfaces.RealInput opening(min=0, max=1)
-    "Valve position in the range 0..1"  annotation (Placement(transformation(
-        origin={0,90},
-        extent={{-20,-20},{20,20}},
-        rotation=270), iconTransformation(
-        extent={{-20,-20},{20,20}},
-        rotation=270,
-        origin={0,80})));
-
-  Blocks.Interfaces.RealOutput opening_filtered if filteredOpening
-    "Filtered valve position in the range 0..1"
-    annotation (Placement(transformation(extent={{60,40},{80,60}}),
-        iconTransformation(extent={{60,50},{80,70}})));
-
-  Blocks.Continuous.Filter filter(order=2, f_cut=5/(2*Modelica.Constants.pi
-        *riseTime)) if filteredOpening
-    annotation (Placement(transformation(extent={{34,44},{48,58}})));
-
+  Blocks.Interfaces.RealInput opening(min = 0, max = 1) if not reliefValveEnable "Valve position in the range 0..1" annotation(
+    Placement(transformation(origin = {0, 90}, extent = {{-20, -20}, {20, 20}}, rotation = 270), iconTransformation(extent = {{-20, -20}, {20, 20}}, rotation = 270, origin = {0, 80})));
+  Blocks.Interfaces.RealOutput opening_filtered if filteredOpening "Filtered valve position in the range 0..1" annotation(
+    Placement(transformation(extent = {{60, 40}, {80, 60}}), iconTransformation(extent = {{60, 50}, {80, 70}})));
+  Blocks.Continuous.Filter filter(order = 2, f_cut = 5/(2*Modelica.Constants.pi*riseTime)) if filteredOpening annotation(
+    Placement(transformation(extent = {{34, 44}, {48, 58}})));
+  PressureOpening pressureOpening(dp = dp, p_crack = p_crack, p_open = p_open, reliefValveEnable = reliefValveEnable) if reliefValveEnable annotation(
+    Placement(transformation(origin = {14, -14}, extent = {{-10, -10}, {10, 10}})));
 protected
-  // Inheriting from the MSL
-  extends Modelica.Blocks.Interfaces.SISO;
-  
-  Blocks.Interfaces.RealOutput opening_actual if not reliefValveEnable
-    annotation (Placement(transformation(extent={{60,10},{80,30}})));
-
-  block MinLimiter "Limit the signal above a threshold"
-  parameter Real uMin=0 "Lower limit of input signal";
-
-
-equation
-  y = smooth(0, noEvent( if u < uMin then uMin else u));
-  annotation (
-    Documentation(info="<html>
-<p>
-The block passes its input signal as output signal
-as long as the input is above uMin. If this is not the case,
-y=uMin is passed as output.
-</p>
-</html>"), Icon(coordinateSystem(
-    preserveAspectRatio=true,
-    extent={{-100,-100},{100,100}}), graphics={
-    Line(points={{0,-90},{0,68}}, color={192,192,192}),
-    Polygon(
-      points={{0,90},{-8,68},{8,68},{0,90}},
-      lineColor={192,192,192},
-      fillColor={192,192,192},
-      fillPattern=FillPattern.Solid),
-    Line(points={{-90,0},{68,0}}, color={192,192,192}),
-    Polygon(
-      points={{90,0},{68,-8},{68,8},{90,0}},
-      lineColor={192,192,192},
-      fillColor={192,192,192},
-      fillPattern=FillPattern.Solid),
-    Line(points={{-80,-70},{-50,-70},{50,70},{64,90}}),
-    Text(
-      extent={{-150,-150},{150,-110}},
-      textString="uMin=%uMin"),
-    Text(
-      extent={{-150,150},{150,110}},
-      textString="%name",
-      textColor={0,0,255})}),
-    Diagram(coordinateSystem(
-    preserveAspectRatio=true,
-    extent={{-100,-100},{100,100}}), graphics={
-    Line(points={{0,-60},{0,50}}, color={192,192,192}),
-    Polygon(
-      points={{0,60},{-5,50},{5,50},{0,60}},
-      lineColor={192,192,192},
-      fillColor={192,192,192},
-      fillPattern=FillPattern.Solid),
-    Line(points={{-60,0},{50,0}}, color={192,192,192}),
-    Polygon(
-      points={{60,0},{50,-5},{50,5},{60,0}},
-      lineColor={192,192,192},
-      fillColor={192,192,192},
-      fillPattern=FillPattern.Solid),
-    Line(points={{-50,-40},{-30,-40},{30,40},{50,40}}),
-    Text(
-      extent={{46,-6},{68,-18}},
-      textColor={128,128,128},
-      textString="u"),
-    Text(
-      extent={{-30,70},{-5,50}},
-      textColor={128,128,128},
-      textString="y"),
-    Text(
-      extent={{-58,-54},{-28,-42}},
-      textColor={128,128,128},
-      textString="uMin"),
-    Text(
-      extent={{26,40},{66,56}},
-      textColor={128,128,128},
-      textString="uMax")}));
-end MinLimiter;
-
-  MinLimiter minLimiter(uMin=leakageOpening)
-    annotation (Placement(transformation(extent={{10,44},{24,58}})));
+  Blocks.Interfaces.RealOutput opening_actual annotation(
+    Placement(transformation(extent = {{60, 10}, {80, 30}})));
+  MinLimiter minLimiter(uMin = leakageOpening) if filteredOpening annotation(
+    Placement(transformation(extent = {{10, 44}, {24, 58}})));
 initial equation
   if CvData == CvTypes.Kv then
     Av = Kv*Kv2Av "Unit conversion";
   elseif CvData == CvTypes.Cv then
     Av = Cv*Cv2Av "Unit conversion";
   end if;
-
 equation
-
-  // mass balance
+// Mass balance
   0 = port_a.m_flow + port_b.m_flow "Mass balance";
-
-  connect(filter.y, opening_filtered) annotation (Line(
-      points={{48.7,51},{60,51},{60,50},{70,50}}, color={0,0,127}));
-
-  if filteredOpening then
-     connect(filter.y, opening_actual);
+  connect(filter.y, opening_filtered) annotation(
+    Line(points = {{48.7, 51}, {60, 51}, {60, 50}, {70, 50}}, color = {0, 0, 127}));
+// Relief valve
+  if reliefValveEnable then
+    connect(pressureOpening.y, opening_actual);
+// Manually controlled valve opening (including check valve) w/ filter
+  elseif filteredOpening then
+    connect(filter.y, opening_actual);
+// Manually controlled valve opening (including check valve)
   else
-     connect(opening, opening_actual);
+    connect(opening, opening_actual);
   end if;
-
-  connect(minLimiter.y, filter.u) annotation (Line(
-      points={{24.7,51},{32.6,51}}, color={0,0,127}));
-  connect(minLimiter.u, opening) annotation (Line(
-      points={{8.6,51},{0,51},{0,90}}, color={0,0,127}));
-      annotation (
-    Icon(coordinateSystem(
-        preserveAspectRatio=true,
-        extent={{-100,-100},{100,100}}), graphics={
-        Line(points={{0,52},{0,0}}),
-        Rectangle(
-          extent={{-20,60},{20,52}},
-          fillPattern=FillPattern.Solid),
-        Polygon(
-          points={{-100,50},{100,-50},{100,50},{0,0},{-100,-50},{-100,50}},
-          fillColor={255,255,255},
-          fillPattern=FillPattern.Solid),
-        Polygon(
-          points=DynamicSelect({{-100,0},{100,-0},{100,0},{0,0},{-100,-0},{
-              -100,0}}, {{-100,50*opening_actual},{-100,50*opening_actual},{100,-50*
-              opening},{100,50*opening_actual},{0,0},{-100,-50*opening_actual},{-100,50*
-              opening}}),
-          fillColor={0,255,0},
-          lineColor={255,255,255},
-          fillPattern=FillPattern.Solid),
-        Polygon(points={{-100,50},{100,-50},{100,50},{0,0},{-100,-50},{-100,
-              50}}),
-        Ellipse(visible=filteredOpening,
-          extent={{-40,94},{40,14}},
-          lineColor={0,0,127},
-          fillColor={255,255,255},
-          fillPattern=FillPattern.Solid),
-        Line(visible=filteredOpening,
-          points={{-20,25},{-20,63},{0,41},{20,63},{20,25}},
-          thickness=0.5),
-        Line(visible=filteredOpening,
-          points={{40,60},{60,60}},
-          color={0,0,127})}),
-    Documentation(info="<html>
+  connect(minLimiter.y, filter.u) annotation(
+    Line(points = {{24.7, 51}, {32.6, 51}}, color = {0, 0, 127}));
+  connect(minLimiter.u, opening) annotation(
+    Line(points = {{8.6, 51}, {0, 51}, {0, 90}}, color = {0, 0, 127}));
+  annotation(
+    Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Line(points = {{0, 52}, {0, 0}}), Rectangle(fillPattern = FillPattern.Solid, extent = {{-20, 60}, {20, 52}}), Polygon(lineColor = {255, 255, 255}, fillColor = {0, 255, 0}, fillPattern = FillPattern.Solid, points = DynamicSelect({{-100, 0}, {100, 0}, {100, 0}, {0, 0}, {-100, 0}, {-100, 0}}, {{-100, (50*opening_actual)}, {-100, (50*opening_actual)}, {100, -(50*opening)}, {100, (50*opening_actual)}, {0, 0}, {-100, -(50*opening_actual)}, {-100, (50*opening)}})), Ellipse(visible = filteredOpening, lineColor = {0, 0, 127}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-40, 94}, {40, 14}}), Line(visible = filteredOpening, points = {{-20, 25}, {-20, 63}, {0, 41}, {20, 63}, {20, 25}}, thickness = 0.5), Line(visible = filteredOpening, points = {{40, 60}, {60, 60}}, color = {0, 0, 127})}),
+    Documentation(info = "<html>
 <p>This is the base model for the <code>ValveIncompressible</code>, <code>ValveVaporizing</code>, and <code>ValveCompressible</code> valve models. The model is based on the IEC 534 / ISA S.75 standards for valve sizing.</p>
 <p>The model optionally supports reverse flow conditions (assuming symmetrical behaviour) or check valve operation, and has been suitably regularized, compared to the equations in the standard, in order to avoid numerical singularities around zero pressure drop operating conditions.</p>
 <p>The model assumes adiabatic operation (no heat losses to the ambient); changes in kinetic energy
@@ -284,7 +150,7 @@ filteredOpening = <strong>true</strong>, riseTime = 1 s, and leakageOpening = 0.
  alt=\"ValveFilteredOpening.png\">
 </blockquote>
 
-</html>", revisions="<html>
+</html>", revisions = "<html>
 <ul>
 <li><em>Sept. 5, 2010</em>
 by <a href=\"mailto:martin.otter@dlr.de\">Martin Otter</a>:<br>

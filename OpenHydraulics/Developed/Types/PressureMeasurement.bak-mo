@@ -1,0 +1,7 @@
+within OpenHydraulics.Developed.Types;
+
+type PressureMeasurement = enumeration(
+  Absolute,
+  Gauge,
+  Relative
+) "Type specifying whether pressure is absolute, gauge, or relative";

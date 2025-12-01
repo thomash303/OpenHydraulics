@@ -20,7 +20,7 @@ partial model PartialIncompressibleValve
   // Valve characteristics
   Modelica.Units.SI.Area Aveff "Effective valve area"; 
   Real valveOpening "Valve opening ratio[0-1]";
-
+  
 protected
   // Nominal parameters
   parameter SI.Pressure dp_small = system.dp_small "Pressure difference region for enforcing continuous derivatives";
@@ -29,17 +29,18 @@ protected
   
 initial equation
   if CvData == CvTypes.OpPoint then
-      m_flow_nominal = valveCharacteristic(opening_nominal) * Av * sqrt(system.Medium.rho_nominal) * Utilities.regRoot(dp_nominal, dp_small)
+      m_flow_nominal = valveCharacteristic(opening_nominal) * Av * sqrt(system.rho_ambient) * Utilities.regRoot(dp_nominal, dp_small)
     "Determination of Av by the operating point";
   end if;
 
 equation
+
   // Valve opening characteristic
   valveOpening = valveCharacteristic(opening_actual);
   Aveff = valveOpening * Av;
  
   // Mass flow
-  m_flow = homotopy(Aveff * sqrt(rho_nom) * Utilities.regRoot2(dp,dp_small,1.0,0.0,use_yd0=true,yd0=0.0),
+  m_flow = homotopy(Aveff * sqrt(system.rho_ambient) * Utilities.regRoot2(dp,dp_small,1.0,0.0,use_yd0=true,yd0=0.0),
                       valveOpening*system.m_flow_nominal*dp/dp_nominal);
   m_flow = port_a.m_flow;
 annotation (

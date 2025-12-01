@@ -1,18 +1,18 @@
 within OpenHydraulics.Developed.Interfaces;
 
 model NJunction "Splitting/joining component with static balances for an infinitesimal control volume"
-  extends Custom.Interfaces.BaseClasses.PartialFluidComponent;
+  extends BaseClasses.PartialFluidComponent;
   
   // Importing from the MSL
   import Modelica.Units.SI;
   
   // Junction parameters
-  parameter Integer n_ports(min = 1) = 3 "Number of ports (min=1)";
+  parameter Integer n_ports(min = 1) = 5 "Number of ports (min=1)";
   parameter SI.Volume V = 1e-6 "Volume of junction" annotation(
     Dialog(tab = "Sizing"));
   parameter Boolean fixPressure = false "True if pressure at junction is fixed" annotation(
     Dialog(tab = "Initialization"));
-  Interfaces.FluidPort port[n_ports](m_flow(each start = 0), p(each start = p_init)) annotation(
+  FluidPort port[n_ports](m_flow(each start = 0), p(each start = p_init)) annotation(
     Placement(transformation(extent = {{-10, -10}, {10, 10}})));
   Volumes.BaseClasses.VolumeClosed volumeClosed(final n_ports = n_ports, final V = V, compressible = false) annotation(
     Placement(transformation(extent = {{-10, -40}, {10, -20}})));
