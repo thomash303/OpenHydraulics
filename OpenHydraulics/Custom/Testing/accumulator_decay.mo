@@ -7,12 +7,8 @@ model accumulator_decay
     Placement(transformation(origin = {4, 58}, extent = {{-10, -10}, {10, 10}})));
   Volumes.Accumulator LP_accumulator(liquidVolume = 1000, gasVolume = 1100)  annotation(
     Placement(transformation(origin = {2, -66}, extent = {{-10, 10}, {10, -10}})));
-  Modelica.Blocks.Sources.RealExpression realExpression(y = 1)  annotation(
-    Placement(transformation(origin = {-72, -12}, extent = {{-10, -10}, {10, 10}})));
   Machines.FluidPower2MechRotConst fluidPower2MechRotConst(Dconst = -0.001)  annotation(
     Placement(transformation(origin = {-4, 0}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.Rotational.Components.Inertia inertia(J = 0.001)  annotation(
-    Placement(transformation(origin = {40, -4}, extent = {{-10, -10}, {10, 10}})));
 
   model pumping
   inner Systems.System system(redeclare package Medium = OpenHydraulics.Custom.Media.GenericOilSimple, T_ambient = 288.15)  annotation(
@@ -47,22 +43,11 @@ Line(points = {{34, -54}, {28, -54}, {28, 54}}, color = {255, 0, 0}));
     annotation(
       experiment(StartTime = 0, StopTime = 9, Tolerance = 1e-08, Interval = 0.002));
 end pumping;
-
-  Modelica.Blocks.Sources.Ramp ramp(height = 3, duration = 5)  annotation(
-    Placement(transformation(origin = {38, -38}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.Rotational.Sources.Speed speed annotation(
-    Placement(transformation(origin = {84, -18}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(LP_accumulator.port_a, fluidPower2MechRotConst.port_a) annotation(
     Line(points = {{2, -56}, {-4, -56}, {-4, -10}}, color = {255, 0, 0}));
   connect(fluidPower2MechRotConst.port_b, HP_accumulator.port_a) annotation(
     Line(points = {{-4, 10}, {4, 10}, {4, 48}}, color = {255, 0, 0}));
-  connect(fluidPower2MechRotConst.flange_b, inertia.flange_a) annotation(
-    Line(points = {{6, 0}, {30, 0}, {30, -4}}));
-  connect(ramp.y, speed.w_ref) annotation(
-    Line(points = {{50, -38}, {72, -38}, {72, -18}}, color = {0, 0, 127}));
-  connect(speed.flange, inertia.flange_b) annotation(
-    Line(points = {{94, -18}, {50, -18}, {50, -4}}));
   annotation(
     experiment(StartTime = 0, StopTime = 10, Tolerance = 1e-06, Interval = 0.002));
 end accumulator_decay;

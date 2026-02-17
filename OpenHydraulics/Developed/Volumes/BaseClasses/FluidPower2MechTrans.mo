@@ -34,7 +34,8 @@ model FluidPower2MechTrans
   // note: the default stiffness is such that the residual volume is reduced by
   // at most 10 percent
   SI.Volume V(start = residualVolume) "Volume of oil inside chamber";
-  SI.Mass m(start = residualVolume*system.rho_ambient) "Mass of oil inside chamber";
+  //SI.Mass m(start = residualVolume*system.rho_ambient) "Mass of oil inside chamber";
+  SI.Mass m(start = residualVolume*system.Medium.density(p_init));
   
   // Mechanical variables
   SI.Power Wmech "Mechanical work performed onto chamber";
@@ -76,16 +77,19 @@ equation
   V = max(s_rel, 0)*A + residualVolume;
 
   // New compressible density
-  rho = system.rho_ambient*(1 + (p_vol - system.p_ambient)/system.beta);
-  
+  //rho = system.rho_ambient*(1 + (p_vol - system.p_ambient)/system.beta);
+  rho = system.Medium.density(p_vol)*(1 + (p_vol - system.p_ambient)/system.beta);
+  //rho = system.Medium.density(p_vol)*(1 + (p_vol - system.p_ambient)/1e6);
+  //rho = (system.rho_ambient + 20) + 5e-7*(p_vol-system.p_ambient);
+  //rho = 850;
   // Compressible media
   if compressibleEnable then
     m = V*rho;
     
   // Incompressible media
   else
-    m = V*system.rho_ambient;
-    
+    //m = V*system.rho_ambient;
+    m = V*system.Medium.density(p_vol);
   end if;
   
   // Computing mechanical states

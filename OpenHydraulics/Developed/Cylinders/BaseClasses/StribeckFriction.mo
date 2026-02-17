@@ -10,22 +10,29 @@ model StribeckFriction "Stribeck friction"
   // Friction forces
   parameter SI.TranslationalDampingConstant Cv = 1 "Viscous damping coefficient" annotation(
     Dialog(group = "Friction"));
-  SI.Force f_v(start = 0) "Viscous friction force";
+  //SI.Force f_v(start = 0) "Viscous friction force";
   parameter SI.Force f_c(start = 5) "Coulomb friction force" annotation(
     Dialog(group = "Friction"));
   parameter SI.Velocity Cst(start = 0.5) "Stribeck characteristic velocity" annotation(
     Dialog(group = "Friction"));
   parameter SI.Force f_st(start = 10) "Stribeck friction force" annotation(
     Dialog(group = "Friction"));
+
 equation
 // Relative acceleration
   a_rel = der(v_rel);
+  v_relfric = v_rel;
+  a_relfric = a_rel;
+  
+  f0 = (f_c + f_st); // Variables defined in partial friction, defined similar to MassWithStopAndFriction
+  f0_max = f0*1.001; // Variables defined in partial friction, defined similar to MassWithStopAndFriction
+  free = f0 <= 0 and Cv <= 0; // Variables defined in partial friction, defined similar to MassWithStopAndFriction
   
   // Total friction force (handled "cleanly" by state events)
   f = if locked then sa*unitForce else if free then 0 else (if startForward
-     then f_v*v_rel + f_c + f_st else if startBackward then
-    f_v*v_rel - f_c - f_st else if pre(mode) == Forward then
-    f_v*v_rel + f_c + f_st*exp(-abs(v_rel)/Cst) else f_v*v_rel -
+     then Cv*v_rel + f_c + f_st else if startBackward then
+    Cv*v_rel - f_c - f_st else if pre(mode) == Forward then
+    Cv*v_rel + f_c + f_st*exp(-abs(v_rel)/Cst) else Cv*v_rel -
     f_c - f_st*exp(-abs(v_rel)/Cst));
 
   annotation(

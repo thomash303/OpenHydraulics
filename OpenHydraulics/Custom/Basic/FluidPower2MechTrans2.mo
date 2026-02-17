@@ -1,6 +1,6 @@
 within OpenHydraulics.Custom.Basic;
 
-model FluidPower2MechTrans
+model FluidPower2MechTrans2
   // parameterization and initialization are kept to minimum
   // the user of this basic building block is expected to be
   // familiar with its use
@@ -21,7 +21,7 @@ model FluidPower2MechTrans
   // note: the default stiffness is such that the residual volume is reduced by
   // at most 10 percent
   Modelica.Units.SI.Volume V(start = residualVolume) "Volume of oil inside chamber";
-  Modelica.Units.SI.Mass m(start = residualVolume*850) "Mass of oil inside chamber";
+  Modelica.Units.SI.Mass m(start = residualVolume*system.Medium.density(p_init)) "Mass of oil inside chamber";
   Modelica.Units.SI.Power Wmech "Mechanical work performed onto chamber";
   Modelica.Units.SI.Velocity v_rel(start = 0) "relative velocity";
   Modelica.Units.SI.Acceleration a_rel(start = 0) "relative acceleration";
@@ -57,9 +57,8 @@ equation
   V = max(s_rel, 0)*A + residualVolume;
   //m = V*850;
   //m = V*system.Medium.density(p_vol); // to reveret, uncomment this line
-  //rho = system.rho_ambient * (1 + (p_vol - system.p_ambient)/1.5e9);
-  rho = (system.rho_ambient + 20) + 5e-7*(p_vol-system.p_ambient);
-  
+  //rho = system.rho_ambient * (1 + (p_vol - system.p_ambient)/1e8);
+  rho = (system.rho_ambient + 20) + 5e-7*(p_vol-system.p_ambient) ;
   if compressibleEnable then
     m = V * rho;
   else 
@@ -101,4 +100,4 @@ equation
   annotation(
     Diagram(graphics = {Rectangle(extent = {{-80, 40}, {80, -40}}, lineColor = {0, 0, 0}), Rectangle(extent = {{100, 4}, {40, -4}}, lineColor = {0, 0, 0}, fillColor = {175, 175, 175}, fillPattern = FillPattern.Solid), Rectangle(extent = {{30, 40}, {40, -40}}, lineColor = {0, 0, 0}, fillColor = {175, 175, 175}, fillPattern = FillPattern.Solid), Rectangle(extent = {{-30, 40}, {30, -40}}, lineColor = {0, 0, 0}, fillColor = {255, 0, 0}, fillPattern = FillPattern.Solid), Rectangle(extent = {{-40, 40}, {-30, -40}}, lineColor = {0, 0, 0}, fillColor = {175, 175, 175}, fillPattern = FillPattern.Solid), Rectangle(extent = {{-40, 4}, {-100, -4}}, lineColor = {0, 0, 0}, fillColor = {175, 175, 175}, fillPattern = FillPattern.Solid), Ellipse(extent = {{-16, 16}, {16, -16}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid)}),
     Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-80, 40}, {80, -40}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Rectangle(extent = {{100, 4}, {44, -4}}, lineColor = {0, 0, 0}, fillColor = {175, 175, 175}, fillPattern = FillPattern.Solid), Rectangle(extent = {{34, 39}, {44, -39}}, lineColor = {0, 0, 0}, fillColor = {175, 175, 175}, fillPattern = FillPattern.Solid), Rectangle(extent = {{-34, 40}, {34, -40}}, lineColor = {0, 0, 0}, fillColor = {255, 0, 0}, fillPattern = FillPattern.Solid), Rectangle(extent = {{-44, 39}, {-34, -39}}, lineColor = {0, 0, 0}, fillColor = {175, 175, 175}, fillPattern = FillPattern.Solid), Rectangle(extent = {{-44, 4}, {-100, -4}}, lineColor = {0, 0, 0}, fillColor = {175, 175, 175}, fillPattern = FillPattern.Solid), Text(extent = {{0, 100}, {0, 60}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, textString = "%name"), Ellipse(extent = {{-16, 16}, {16, -16}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid)}));
-end FluidPower2MechTrans;
+end FluidPower2MechTrans2;

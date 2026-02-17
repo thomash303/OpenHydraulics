@@ -15,7 +15,7 @@ partial model PartialLaminarRestriction
   Modelica.Units.SI.DynamicViscosity eta = 0.036 "Average dynamic viscosity";
   Modelica.Units.SI.Density d = 850 "Average density";
   Types.HydraulicConductance conductance "Hydraulic Conductance of restriction";
-  extends Interfaces.HorizontalTwoPort;
+  extends OpenHydraulics.Custom.Interfaces.HorizontalTwoPort;
 equation
   if check_Re and D > 0 then
     assert(Re <= Re_laminar, "Flow is outside laminar region: Re = " + String(Re));

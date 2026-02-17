@@ -86,6 +86,11 @@ model DoubleActingCylinder
   Basic.FluidPower2MechTrans cylinderChamberRod(compressibleEnable = compressibleEnable, A = pi/4*(boreDiameter^2 - rodDiameter^2), stopStiffness = stopStiffness, stopDamping = stopDamping, n_ports = 3, p_init = p_init, maxPressure = maxPressure*10) annotation(
     Placement(transformation(extent = {{30, -10}, {50, 10}})));
   
+    /*Developed.Volumes.BaseClasses.FluidPower2MechTrans cylinderChamberHead(compressibleEnable = compressibleEnable, A = pi/4*boreDiameter^2, stopStiffness = stopStiffness, stopDamping = stopDamping, n_ports = 3, p_init = p_init, maxPressure = maxPressure*10) annotation(
+    Placement(transformation(extent = {{-50, -10}, {-30, 10}})));
+  Developed.Volumes.BaseClasses.FluidPower2MechTrans cylinderChamberRod(compressibleEnable = compressibleEnable, A = pi/4*(boreDiameter^2 - rodDiameter^2), stopStiffness = stopStiffness, stopDamping = stopDamping, n_ports = 3, p_init = p_init, maxPressure = maxPressure*10) annotation(
+    Placement(transformation(extent = {{30, -10}, {50, 10}})));  */
+  
   
   Modelica.Mechanics.Translational.Components.Mass piston(m = pistonMass) annotation(
     Placement(transformation(extent = {{-10, -10}, {10, 10}})));

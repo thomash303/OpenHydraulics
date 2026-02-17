@@ -24,7 +24,7 @@ partial model PartialIncompressibleValve
 protected
   // Nominal parameters
   parameter SI.Pressure dp_small = system.dp_small "Pressure difference region for enforcing continuous derivatives";
-  parameter SI.MassFlowRate m_flow_nominal "Nominal mass flow rate";
+  SI.MassFlowRate m_flow_nominal "Nominal mass flow rate";
   parameter SI.Pressure dp_nominal = 0.1 "Nominal pressure difference";
   
 initial equation

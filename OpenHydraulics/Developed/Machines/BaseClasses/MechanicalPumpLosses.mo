@@ -45,6 +45,8 @@ equation
   // Angular velocity and angular acceleration of flanges
   w = der(phi);
   a = der(w);
+  w_relfric = w;
+  a_relfric = a;
   
   // Torque equilibrium
   0 = flange_a.tau + flange_b.tau - tau;

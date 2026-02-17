@@ -12,7 +12,7 @@ model VolumeClosed "A constant compressible volume"
     Dialog(tab = "Sizing"));
   // the variables
   SI.Volume V_actual "Volume size";
-  SI.Mass m = V_actual*system.rho_ambient "Mass of fluid";
+  SI.Mass m = V_actual*system.Medium.density(p_vol) "Mass of fluid";
   SI.AbsolutePressure p_vol(start = p_init) "Pressure in the volume";
 equation
   V_actual = V + (if compressible then V*(p_vol - system.p_ambient)/system.beta else 0);
