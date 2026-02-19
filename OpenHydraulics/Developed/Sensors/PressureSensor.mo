@@ -19,8 +19,10 @@ model PressureSensor "Model representing a pressure sensor"
     Placement(transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
   Volumes.BaseClasses.VolumeClosed volumeClosed_b(final V = V, final n_ports = 1) if pressureType == Types.PressureTypes.Relative annotation(
     Placement(transformation(origin = {48, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-  RealOutput y annotation(
+  RealOutput y(unit="Pa", displayUnit="bar") annotation(
     Placement(transformation(origin = {34, 0}, extent = {{60, -10}, {80, 10}}), iconTransformation(extent = {{60, -10}, {80, 10}})));
+
+  SI.Pressure P;
 equation
 // Absolute
   if pressureType == Types.PressureTypes.Absolute then
@@ -28,7 +30,8 @@ equation
   elseif pressureType == Types.PressureTypes.Gauge then
     y = port_a.p - system.p_ambient;
   else
-    y = port_a.p - port_b.p;
+    P = port_a.p - port_b.p;
+    y = P;
   end if;
   
   connect(port_a, volumeClosed_a.port[1]) annotation(

@@ -18,4 +18,6 @@ equation
     Line(points = {{-24, 42}, {0, 42}, {0, 8}}, color = {255, 0, 0}));
  connect(LP_accumulator.port_a, fluidPower2MechRotConst.port_a) annotation(
     Line(points = {{4, -50}, {0, -50}, {0, -12}}, color = {255, 0, 0}));
+annotation(
+    experiment(StartTime = 0, StopTime = 15, Tolerance = 1e-06, Interval = 0.002));
 end accumulator_decay;

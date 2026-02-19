@@ -31,6 +31,8 @@ model FluidPower2MechTrans
 
   // the media properties
   SI.AbsolutePressure p_vol(start=p_init) "Oil pressure in the chamber";
+  
+  SI.Density rho;
 
   extends Modelica.Mechanics.Translational.Interfaces.PartialCompliant;
   extends OpenHydraulics.Interfaces.NPort;
@@ -62,6 +64,7 @@ equation
   // state of the volume
   V = max(s_rel,0)*A + residualVolume;
   m = V*oil.density(p_vol);
+  rho = oil.density(p_vol);
 
   v_rel = der(s_rel);
   empty = s_rel<0;

@@ -10,9 +10,6 @@ partial model PartialFluidComponent
   // Calling from the top-level model
   outer Systems.System system "System wide properties";
     outer OpenHydraulics.Circuits.Environment environment;
-    
-      outer OpenHydraulics.Fluids.BaseClasses.PartialFluid oil
-    "This model must be defined in each circuit; the type must be a subtype of PartialFluid";
 /*
   // Note: value of dp_start shall be refined by derived model, basing on local dp_nominal
   parameter SI.Pressure dp_start(min = -inf) = system.p_start "Guess value of dp = port_a.p - port_b.p" annotation(
@@ -31,5 +28,6 @@ partial model PartialFluidComponent
   parameter SI.AbsolutePressure p_init = system.p_ambient "Initial pressure of the component" annotation(
     Dialog(tab = "Initialization", group = "Fluid"));
     
+
   
 end PartialFluidComponent;

@@ -40,6 +40,6 @@ equation
   connect(sine.y, position.phi_ref) annotation(
     Line(points = {{-64, 2}, {-48, 2}, {-48, -36}}, color = {0, 0, 127}));
   annotation(
-    experiment(StopTime = 9, Tolerance = 1e-08, StartTime = 0, Interval = 0.02),
+    experiment(StopTime = 25, Tolerance = 1e-08, StartTime = 0, Interval = 0.02),
     Diagram);
 end DoubleActingCylinderTestSimple2;

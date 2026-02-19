@@ -9,7 +9,10 @@ model FluidPower2MechTrans
   // Importing and inheriting from the MSL
   import Modelica.Units.SI;
   import Modelica.Utilities.Streams.print;
-  extends Modelica.Mechanics.Translational.Interfaces.PartialCompliantWithRelativeStates;
+  //extends Modelica.Mechanics.Translational.Interfaces.PartialCompliantWithRelativeStates;
+  // remove
+    extends Modelica.Mechanics.Translational.Interfaces.PartialCompliant;
+  
   
   // Additional model improvement flags
   parameter Boolean compressibleEnable = false "Enable fluid compressibility model" annotation(
@@ -35,7 +38,7 @@ model FluidPower2MechTrans
   // at most 10 percent
   SI.Volume V(start = residualVolume) "Volume of oil inside chamber";
   //SI.Mass m(start = residualVolume*system.rho_ambient) "Mass of oil inside chamber";
-  SI.Mass m(start = residualVolume*system.Medium.density(p_init));
+  SI.Mass m(start = residualVolume*system.rho_ambient);
   
   // Mechanical variables
   SI.Power Wmech "Mechanical work performed onto chamber";
@@ -46,6 +49,14 @@ model FluidPower2MechTrans
 
   // Compressibility
   Modelica.Units.SI.Density rho "Medium density (only used in compressible fluid models)";
+  
+  
+  
+  // remove
+    Modelica.Units.SI.Velocity v_rel(start = 0) "relative velocity";
+  //Modelica.Units.SI.Acceleration a_rel(start = 0) "relative acceleration";
+  
+  
 protected
   // Empty volume
   parameter SI.Position s_relMin = -0.001 "the s_rel value at which the volume is zero";
@@ -78,9 +89,11 @@ equation
 
   // New compressible density
   //rho = system.rho_ambient*(1 + (p_vol - system.p_ambient)/system.beta);
-  rho = system.Medium.density(p_vol)*(1 + (p_vol - system.p_ambient)/system.beta);
+  //rho = system.Medium.density(p_vol)*(1 + (p_vol - system.p_ambient)/system.beta);
   //rho = system.Medium.density(p_vol)*(1 + (p_vol - system.p_ambient)/1e6);
   //rho = (system.rho_ambient + 20) + 5e-7*(p_vol-system.p_ambient);
+  rho = system.rho_ambient*(1 + (p_vol - system.p_ambient)/system.beta);
+
   //rho = 850;
   // Compressible media
   if compressibleEnable then
@@ -94,6 +107,8 @@ equation
   
   // Computing mechanical states
   a_rel = der(v_rel);
+  //remove
+    v_rel = der(s_rel);
   
   // If empty volume
   empty = s_rel < 0;

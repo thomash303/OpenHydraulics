@@ -8,9 +8,10 @@ partial model PartialValve "Partial model representing a partial valve"
   import Modelica.Fluid.Types.CvTypes;
   import Modelica.Units.SI;
   import Modelica.Blocks;
+  import Modelica.Constants.pi;
   // Relief valveCharacteristic
-  parameter Boolean reliefValveEnable = false "Enable relief valve" annotation(
-    choices(checkBox = true));
+
+  
   // Valve characteristic parameters
   parameter SI.Pressure p_crack = 5 "Valve cracking/relief pressure";
   parameter SI.Pressure p_open = 5.1 "Valve fully open pressure";
@@ -29,12 +30,12 @@ partial model PartialValve "Partial model representing a partial valve"
   parameter Real opening_nominal(min = 0, max = 1) = 1 "Nominal opening" annotation(
     Dialog(group = "Nominal operating point", enable = (CvData == Modelica.Fluid.Types.CvTypes.OpPoint)));
   // Filtered opening parameters
-  parameter Boolean filteredOpening = false "= true, if opening is filtered with a 2nd order CriticalDamping filter" annotation(
+  parameter Boolean filteredOpening = true "= true, if opening is filtered with a 2nd order CriticalDamping filter" annotation(
     Dialog(group = "Filtered opening"),
     choices(checkBox = true));
   parameter SI.Time riseTime = 1 "Rise time of the filter (time to reach 99.6 % of an opening step)" annotation(
     Dialog(group = "Filtered opening", enable = filteredOpening));
-  parameter Real leakageOpening(min = 0, max = 1) = 1e-3 "The opening signal is limited by leakageOpening (to improve the numerics)" annotation(
+  parameter Real leakageOpening(min = 0, max = 1) = 0 "The opening signal is limited by leakageOpening (to improve the numerics)" annotation(
     Dialog(group = "Filtered opening", enable = filteredOpening));
   parameter Boolean checkValve = false "Reverse flow stopped" annotation(
     Dialog(tab = "Assumptions"));
@@ -44,19 +45,25 @@ partial model PartialValve "Partial model representing a partial valve"
   constant SI.Area Kv2Av = 27.7e-6 "Conversion factor";
   constant SI.Area Cv2Av = 24.0e-6 "Conversion factor";
   // Filtered opening models
-  Blocks.Interfaces.RealInput opening(min = 0, max = 1) if not reliefValveEnable "Valve position in the range 0..1" annotation(
-    Placement(transformation(origin = {0, 90}, extent = {{-20, -20}, {20, 20}}, rotation = 270), iconTransformation(extent = {{-20, -20}, {20, 20}}, rotation = 270, origin = {0, 80})));
-  Blocks.Interfaces.RealOutput opening_filtered if filteredOpening "Filtered valve position in the range 0..1" annotation(
-    Placement(transformation(extent = {{60, 40}, {80, 60}}), iconTransformation(extent = {{60, 50}, {80, 70}})));
-  Blocks.Continuous.Filter filter(order = 2, f_cut = 5/(2*Modelica.Constants.pi*riseTime)) if filteredOpening annotation(
-    Placement(transformation(extent = {{34, 44}, {48, 58}})));
-  PressureOpening pressureOpening(dp = dp, p_crack = p_crack, p_open = p_open, reliefValveEnable = reliefValveEnable) if reliefValveEnable annotation(
-    Placement(transformation(origin = {14, -14}, extent = {{-10, -10}, {10, 10}})));
+
+  PressureOpening pressureOpening(dp = dp, p_crack = p_crack, p_open = p_open) if true annotation(
+    Placement(transformation(origin = {22, -40}, extent = {{-10, -10}, {10, 10}})));  // reliefValveEnable
+    
+  // Dynamic response parameters
+  parameter SI.Frequency bandwidth = 10 "Bandwidth of 2nd order response"
+    annotation(Dialog(tab="Dynamics"));
+  parameter Real dampCoeff = 1 "Damping coefficient of 2nd order response"
+    annotation(Dialog(tab="Dynamics"));
+  //protected
+  MinMax minMax annotation(
+    Placement(transformation(origin = {24, 40}, extent = {{-10, -10}, {10, 10}})));
 protected
-  Blocks.Interfaces.RealOutput opening_actual annotation(
-    Placement(transformation(extent = {{60, 10}, {80, 30}})));
-  MinLimiter minLimiter(uMin = leakageOpening) if filteredOpening annotation(
-    Placement(transformation(extent = {{10, 44}, {24, 58}})));
+  Modelica.Blocks.Interfaces.RealOutput opening_filter annotation(
+    Placement(transformation(origin = {70, 40}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {66, -2}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealOutput opening_actual annotation(
+    Placement(transformation(origin = {70, -40}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {68, -40}, extent = {{-10, -10}, {10, 10}})));
+
+
 initial equation
   if CvData == CvTypes.Kv then
     Av = Kv*Kv2Av "Unit conversion";
@@ -66,24 +73,29 @@ initial equation
 equation
 // Mass balance
   0 = port_a.m_flow + port_b.m_flow "Mass balance";
-  connect(filter.y, opening_filtered) annotation(
-    Line(points = {{48.7, 51}, {60, 51}, {60, 50}, {70, 50}}, color = {0, 0, 127}));
 // Relief valve
-  if reliefValveEnable then
+  if true then
+// reliefValveEnable
+//connect(pressureOpening.u, opening_filtered);
     connect(pressureOpening.y, opening_actual);
+//connect(pressureOpening.u, opening);
+//connect(pressureOpening.y, opening_actual);
 // Manually controlled valve opening (including check valve) w/ filter
+//connect(opening_actual, opening_filtered);
   elseif filteredOpening then
-    connect(filter.y, opening_actual);
+    //connect(filter.y, opening_actual);
 // Manually controlled valve opening (including check valve)
   else
-    connect(opening, opening_actual);
+   // connect(opening, opening_actual);
   end if;
-  connect(minLimiter.y, filter.u) annotation(
-    Line(points = {{24.7, 51}, {32.6, 51}}, color = {0, 0, 127}));
-  connect(minLimiter.u, opening) annotation(
-    Line(points = {{8.6, 51}, {0, 51}, {0, 90}}, color = {0, 0, 127}));
+//connect(secondOrderResponse.y, opening_response) annotation(
+//  Line(points = {{32, 0}, {70, 0}}, color = {0, 0, 127}));
+//connect(pressureOpening.y, opening_actual) annotation(
+// Line(points = {{34, -40}, {70, -40}}, color = {0, 0, 127}));
+  connect(minMax.y, opening_filter) annotation(
+    Line(points = {{35, 40}, {70, 40}}, color = {0, 0, 127}));
   annotation(
-    Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Line(points = {{0, 52}, {0, 0}}), Rectangle(fillPattern = FillPattern.Solid, extent = {{-20, 60}, {20, 52}}), Polygon(lineColor = {255, 255, 255}, fillColor = {0, 255, 0}, fillPattern = FillPattern.Solid, points = DynamicSelect({{-100, 0}, {100, 0}, {100, 0}, {0, 0}, {-100, 0}, {-100, 0}}, {{-100, (50*opening_actual)}, {-100, (50*opening_actual)}, {100, -(50*opening)}, {100, (50*opening_actual)}, {0, 0}, {-100, -(50*opening_actual)}, {-100, (50*opening)}})), Ellipse(visible = filteredOpening, lineColor = {0, 0, 127}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-40, 94}, {40, 14}}), Line(visible = filteredOpening, points = {{-20, 25}, {-20, 63}, {0, 41}, {20, 63}, {20, 25}}, thickness = 0.5), Line(visible = filteredOpening, points = {{40, 60}, {60, 60}}, color = {0, 0, 127})}),
+    Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}})),
     Documentation(info = "<html>
 <p>This is the base model for the <code>ValveIncompressible</code>, <code>ValveVaporizing</code>, and <code>ValveCompressible</code> valve models. The model is based on the IEC 534 / ISA S.75 standards for valve sizing.</p>
 <p>The model optionally supports reverse flow conditions (assuming symmetrical behaviour) or check valve operation, and has been suitably regularized, compared to the equations in the standard, in order to avoid numerical singularities around zero pressure drop operating conditions.</p>

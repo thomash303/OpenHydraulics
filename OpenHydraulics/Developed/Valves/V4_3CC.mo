@@ -3,13 +3,18 @@ within OpenHydraulics.Developed.Valves;
 model V4_3CC
 
 extends BaseClasses.V4_3CC_Interface;
-  CheckValve vPA annotation(
+
+  parameter SI.Pressure p_crack = 5 "Valve cracking/relief pressure";
+  parameter SI.Pressure p_open = 5.1 "Valve fully open pressure";
+  parameter Real Av = 0.000012;
+
+  CheckValve vPA(p_crack = p_crack, p_open = p_open, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av) annotation(
     Placement(transformation(origin = {-68, 0}, extent = {{10, 10}, {-10, -10}}, rotation = 90)));
-  CheckValve vBT annotation(
+  CheckValve vBT(p_crack = p_crack, p_open = p_open, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av) annotation(
     Placement(transformation(origin = {64, 0}, extent = {{-10, 10}, {10, -10}}, rotation = 90)));
-  CheckValve vTA annotation(
+  CheckValve vTA(p_crack = p_crack, p_open = p_open, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av) annotation(
     Placement(transformation(origin = {-22, 0}, extent = {{-10, -10}, {10, 10}})));
-  CheckValve vBP annotation(
+  CheckValve vBP(p_crack = p_crack, p_open = p_open, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av) annotation(
     Placement(transformation(origin = {20, 0}, extent = {{-10, -10}, {10, 10}})));
   Interfaces.NJunction jB annotation(
     Placement(transformation(origin = {40, 60}, extent = {{-10, -10}, {10, 10}})));
