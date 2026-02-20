@@ -8,13 +8,13 @@ extends BaseClasses.V4_3CC_Interface;
   parameter SI.Pressure p_open = 5.1 "Valve fully open pressure";
   parameter Real Av = 0.000012;
 
-  CheckValve vPA(p_crack = p_crack, p_open = p_open, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av) annotation(
-    Placement(transformation(origin = {-68, 0}, extent = {{10, 10}, {-10, -10}}, rotation = 90)));
-  CheckValve vBT(p_crack = p_crack, p_open = p_open, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av) annotation(
-    Placement(transformation(origin = {64, 0}, extent = {{-10, 10}, {10, -10}}, rotation = 90)));
-  CheckValve vTA(p_crack = p_crack, p_open = p_open, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av) annotation(
-    Placement(transformation(origin = {-22, 0}, extent = {{-10, -10}, {10, 10}})));
-  CheckValve vBP(p_crack = p_crack, p_open = p_open, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av) annotation(
+  CheckValve vPA(p_crack = p_crack, p_open = p_open, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av, manualValveControl = manualValveControl) annotation(
+    Placement(transformation(origin = {-68, 0}, extent = {{10, -10}, {-10, 10}}, rotation = -90)));
+  CheckValve vBT(p_crack = p_crack, p_open = p_open, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av, manualValveControl = manualValveControl) annotation(
+    Placement(transformation(origin = {64, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
+  CheckValve vAT(p_crack = p_crack, p_open = p_open, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av, manualValveControl = manualValveControl) annotation(
+    Placement(transformation(origin = {-22, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -0)));
+  CheckValve vPB(p_crack = p_crack, p_open = p_open, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av, manualValveControl = manualValveControl) annotation(
     Placement(transformation(origin = {20, 0}, extent = {{-10, -10}, {10, 10}})));
   Interfaces.NJunction jB annotation(
     Placement(transformation(origin = {40, 60}, extent = {{-10, -10}, {10, 10}})));
@@ -24,10 +24,8 @@ extends BaseClasses.V4_3CC_Interface;
     Placement(transformation(origin = {-40, 60}, extent = {{-10, -10}, {10, 10}})));
   Interfaces.NJunction jT annotation(
     Placement(transformation(origin = {40, -60}, extent = {{-10, -10}, {10, 10}})));
-  Sensors.PressureSensor pressureSensorPA(pressureType = OpenHydraulics.Developed.Types.PressureTypes.Relative)  annotation(
-    Placement(transformation(origin = {-82, 34}, extent = {{-10, -10}, {10, 10}})));
-  Sensors.PressureSensor pressureSensorTA(pressureType = OpenHydraulics.Developed.Types.PressureTypes.Relative)  annotation(
-    Placement(transformation(origin = {76, -36}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
+  Modelica.Blocks.Math.Gain gain(k = -1) if manualValveControl annotation(
+    Placement(transformation(origin = {2, 50}, extent = {{8, -8}, {-8, 8}}, rotation = -0)));
 equation
   connect(jA.port[1], portA) annotation(
     Line(points = {{-40, 60}, {-40, 80}}, color = {255, 0, 0}));
@@ -37,38 +35,32 @@ equation
     Line(points = {{40, 60}, {40, 80}}, color = {255, 0, 0}));
   connect(jT.port[1], portT) annotation(
     Line(points = {{40, -60}, {40, -80}}, color = {255, 0, 0}));
-  connect(vPA.port_b, jP.port[2]) annotation(
+  connect(vPA.port_a, jP.port[2]) annotation(
     Line(points = {{-68, -10}, {-68, -60}, {-40, -60}}, color = {255, 0, 0}));
-  connect(vPA.port_a, jA.port[2]) annotation(
+  connect(vPA.port_b, jA.port[2]) annotation(
     Line(points = {{-68, 10}, {-68, 60}, {-40, 60}}, color = {255, 0, 0}));
-  connect(vBT.port_a, jT.port[2]) annotation(
+  connect(vBT.port_b, jT.port[2]) annotation(
     Line(points = {{64, -10}, {64, -60}, {40, -60}}, color = {255, 0, 0}));
-  connect(vBT.port_b, jB.port[2]) annotation(
+  connect(vBT.port_a, jB.port[2]) annotation(
     Line(points = {{64, 10}, {64, 60}, {40, 60}}, color = {255, 0, 0}));
-  connect(jT.port[3], vTA.port_b) annotation(
+  connect(jT.port[3], vAT.port_b) annotation(
     Line(points = {{40, -60}, {-14, -60}, {-14, 0}, {-12, 0}}, color = {255, 0, 0}));
-  connect(vTA.port_a, jA.port[3]) annotation(
+  connect(vAT.port_a, jA.port[3]) annotation(
     Line(points = {{-32, 0}, {-40, 0}, {-40, 60}}, color = {255, 0, 0}));
-  connect(vBP.port_b, jB.port[3]) annotation(
+  connect(vPB.port_b, jB.port[3]) annotation(
     Line(points = {{30, 0}, {40, 0}, {40, 60}}, color = {255, 0, 0}));
-  connect(vBP.port_a, jP.port[3]) annotation(
+  connect(vPB.port_a, jP.port[3]) annotation(
     Line(points = {{10, 0}, {8, 0}, {8, -60}, {-40, -60}}, color = {255, 0, 0}));
-  connect(pressureSensorPA.port_b, jA.port[4]) annotation(
-    Line(points = {{-78, 24}, {-18, 24}, {-18, 60}, {-40, 60}}, color = {255, 0, 0}));
-  connect(pressureSensorPA.y, vPA.opening) annotation(
-    Line(points = {{-74, 34}, {-50, 34}, {-50, 0}, {-60, 0}}, color = {0, 0, 127}));
-  connect(pressureSensorPA.y, vBT.opening) annotation(
-    Line(points = {{-74, 34}, {80, 34}, {80, 0}, {72, 0}}, color = {0, 0, 127}));
-  connect(pressureSensorTA.port_b, jT.port[4]) annotation(
-    Line(points = {{74, -46}, {40, -46}, {40, -60}}, color = {255, 0, 0}));
-  connect(pressureSensorTA.port_a, jA.port[5]) annotation(
-    Line(points = {{80, -46}, {80, 70}, {-40, 70}, {-40, 60}}, color = {255, 0, 0}));
-  connect(pressureSensorTA.y, vBP.opening) annotation(
-    Line(points = {{70, -36}, {36, -36}, {36, 26}, {20, 26}, {20, 8}}, color = {0, 0, 127}));
-  connect(pressureSensorTA.y, vTA.opening) annotation(
-    Line(points = {{70, -36}, {-36, -36}, {-36, 16}, {-22, 16}, {-22, 8}}, color = {0, 0, 127}));
-  connect(pressureSensorPA.port_a, jP.port[4]) annotation(
-    Line(points = {{-84, 24}, {-84, -52}, {-40, -52}, {-40, -60}}, color = {255, 0, 0}));
+  connect(control, vBT.opening_input) annotation(
+    Line(points = {{110, 0}, {72, 0}}, color = {0, 0, 127}));
+  connect(control, vPA.opening_input) annotation(
+    Line(points = {{110, 0}, {84, 0}, {84, 34}, {-52, 34}, {-52, 0}, {-60, 0}}, color = {0, 0, 127}));
+  connect(control, gain.u) annotation(
+    Line(points = {{110, 0}, {84, 0}, {84, 50}, {12, 50}}, color = {0, 0, 127}));
+  connect(gain.y, vAT.opening_input) annotation(
+    Line(points = {{-6, 50}, {-22, 50}, {-22, 8}}, color = {0, 0, 127}));
+  connect(gain.y, vPB.opening_input) annotation(
+    Line(points = {{-6, 50}, {-6, 22}, {20, 22}, {20, 8}}, color = {0, 0, 127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{
             -100,-100},{100,100}}), graphics={
         Line(points={{-74,-30},{-74,30}}, color={0,0,0}),

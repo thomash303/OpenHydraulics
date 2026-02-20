@@ -27,8 +27,6 @@ protected
   SI.MassFlowRate m_flow_nominal = system.m_flow_nominal "Nominal mass flow rate";
   parameter SI.Pressure dp_nominal = 1e6 "Nominal pressure difference";
   
-  
-    SI.Pressure pDif = opening_filtered;
 initial equation
   if CvData == CvTypes.OpPoint then
       m_flow_nominal = valveCharacteristic(opening_nominal) * Av * sqrt(system.rho_ambient) * Utilities.regRoot(dp_nominal, dp_small)
@@ -37,9 +35,6 @@ initial equation
  
 
 equation
-  // Valve opening characteristic
-  valveOpening = valveCharacteristic(opening_actual);
-  Aveff = valveOpening * Av;
                       
   m_flow = port_a.m_flow;
 annotation (

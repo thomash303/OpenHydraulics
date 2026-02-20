@@ -6,7 +6,7 @@ model MinMax
   extends Modelica.Blocks.Interfaces.SISO;
   // Minimum and maximum parameters
   parameter Real uMin = 0 "Lower limit of input signal";
-  parameter Real uMax = 0 "Upper limit of input signal";
+  parameter Real uMax = 1 "Upper limit of input signal";
 equation
   y = smooth(2, min(uMax, max(uMin, u)));
 // Continuous second derivatives and no events triggered

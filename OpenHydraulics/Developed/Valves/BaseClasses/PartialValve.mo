@@ -8,14 +8,19 @@ partial model PartialValve "Partial model representing a partial valve"
   import Modelica.Fluid.Types.CvTypes;
   import Modelica.Units.SI;
   import Modelica.Blocks;
-  import Modelica.Constants.pi;
-  // Relief valveCharacteristic
-
+  
+  // Manual control
+  parameter Boolean manualValveControl = true "Enable manual valve control" annotation(
+    Dialog(group = "Valve Characteristics"));
   
   // Valve characteristic parameters
-  parameter SI.Pressure p_crack = 5 "Valve cracking/relief pressure";
-  parameter SI.Pressure p_open = 5.1 "Valve fully open pressure";
-  parameter CvTypes CvData = Modelica.Fluid.Types.CvTypes.OpPoint "Selection of flow coefficient" annotation(
+  parameter SI.Pressure p_crack = 5 "Valve cracking/relief pressure" annotation(
+    Dialog(group = "Valve Characteristics"));
+  parameter SI.Pressure p_open = 5.1 "Valve fully open pressure" annotation(
+    Dialog(group = "Valve Characteristics"));
+  
+  // Flow coefficient
+  parameter CvTypes CvData = CvTypes.OpPoint "Selection of flow coefficient" annotation(
     Dialog(group = "Flow coefficient"));
   // Av (default)
   parameter SI.Area Av(fixed = CvData == CvTypes.Av, start = system.m_flow_nominal/(sqrt(system.rho_ambient*system.dp_small))*valveCharacteristic(opening_nominal)) "Av (metric) flow coefficient" annotation(
@@ -26,43 +31,23 @@ partial model PartialValve "Partial model representing a partial valve"
   // Cv (imperial)
   parameter Real Cv = 0 "Cv (US) flow coefficient [USG/min]" annotation(
     Dialog(group = "Flow coefficient", enable = (CvData == Modelica.Fluid.Types.CvTypes.Cv)));
-  // Nominal
-  parameter Real opening_nominal(min = 0, max = 1) = 1 "Nominal opening" annotation(
-    Dialog(group = "Nominal operating point", enable = (CvData == Modelica.Fluid.Types.CvTypes.OpPoint)));
-  // Filtered opening parameters
-  parameter Boolean filteredOpening = true "= true, if opening is filtered with a 2nd order CriticalDamping filter" annotation(
-    Dialog(group = "Filtered opening"),
-    choices(checkBox = true));
-  parameter SI.Time riseTime = 1 "Rise time of the filter (time to reach 99.6 % of an opening step)" annotation(
-    Dialog(group = "Filtered opening", enable = filteredOpening));
-  parameter Real leakageOpening(min = 0, max = 1) = 0 "The opening signal is limited by leakageOpening (to improve the numerics)" annotation(
-    Dialog(group = "Filtered opening", enable = filteredOpening));
-  parameter Boolean checkValve = false "Reverse flow stopped" annotation(
-    Dialog(tab = "Assumptions"));
-  replaceable function valveCharacteristic = ValveCharacteristics.linear constrainedby ValveCharacteristics.baseFun "Valve flow characteristic" annotation(
+
+  replaceable function valveCharacteristic = ValveCharacteristics.linear constrainedby ValveCharacteristics.baseFun "Valve flow characteristic" annotation(Dialog(group = "Valve Characteristics"),
      choicesAllMatching = true);
   // Conversion factors to Av
   constant SI.Area Kv2Av = 27.7e-6 "Conversion factor";
   constant SI.Area Cv2Av = 24.0e-6 "Conversion factor";
-  // Filtered opening models
-
-  PressureOpening pressureOpening(dp = dp, p_crack = p_crack, p_open = p_open) if true annotation(
-    Placement(transformation(origin = {22, -40}, extent = {{-10, -10}, {10, 10}})));  // reliefValveEnable
-    
-  // Dynamic response parameters
-  parameter SI.Frequency bandwidth = 10 "Bandwidth of 2nd order response"
-    annotation(Dialog(tab="Dynamics"));
-  parameter Real dampCoeff = 1 "Damping coefficient of 2nd order response"
-    annotation(Dialog(tab="Dynamics"));
-  //protected
-  MinMax minMax annotation(
-    Placement(transformation(origin = {24, 40}, extent = {{-10, -10}, {10, 10}})));
+  
+  // Pressure opening models
+  Real opening "Valve opening fraction";
+  PressureOpening pressureOpening(dp = dp, p_crack = p_crack, p_open = p_open) if not manualValveControl annotation(
+    Placement(transformation(origin = {22, -40}, extent = {{-10, -10}, {10, 10}})));
+ 
 protected
-  Modelica.Blocks.Interfaces.RealOutput opening_filter annotation(
-    Placement(transformation(origin = {70, 40}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {66, -2}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Interfaces.RealOutput opening_actual annotation(
+  // Nominal
+  parameter Real opening_nominal(min=0,max=1)=1 "Nominal opening";
+  Modelica.Blocks.Interfaces.RealOutput opening_pressure if not manualValveControl annotation(
     Placement(transformation(origin = {70, -40}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {68, -40}, extent = {{-10, -10}, {10, 10}})));
-
 
 initial equation
   if CvData == CvTypes.Kv then
@@ -74,26 +59,28 @@ equation
 // Mass balance
   0 = port_a.m_flow + port_b.m_flow "Mass balance";
 // Relief valve
-  if true then
+  //if true then
 // reliefValveEnable
 //connect(pressureOpening.u, opening_filtered);
-    connect(pressureOpening.y, opening_actual);
+    //connect(pressureOpening.y, opening_pressure);
 //connect(pressureOpening.u, opening);
 //connect(pressureOpening.y, opening_actual);
 // Manually controlled valve opening (including check valve) w/ filter
 //connect(opening_actual, opening_filtered);
-  elseif filteredOpening then
+  //elseif filteredOpening then
     //connect(filter.y, opening_actual);
 // Manually controlled valve opening (including check valve)
-  else
+  //else
    // connect(opening, opening_actual);
-  end if;
+  //end if;
 //connect(secondOrderResponse.y, opening_response) annotation(
 //  Line(points = {{32, 0}, {70, 0}}, color = {0, 0, 127}));
 //connect(pressureOpening.y, opening_actual) annotation(
 // Line(points = {{34, -40}, {70, -40}}, color = {0, 0, 127}));
-  connect(minMax.y, opening_filter) annotation(
-    Line(points = {{35, 40}, {70, 40}}, color = {0, 0, 127}));
+  //connect(minMax.y, opening_filter) annotation(
+   // Line(points = {{35, 40}, {70, 40}}, color = {0, 0, 127}));
+  connect(pressureOpening.y, opening_pressure) annotation(
+    Line(points = {{34, -40}, {70, -40}}, color = {0, 0, 127}));
   annotation(
     Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}})),
     Documentation(info = "<html>

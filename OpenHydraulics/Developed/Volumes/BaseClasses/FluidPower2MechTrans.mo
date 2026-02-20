@@ -71,6 +71,7 @@ protected
 algorithm
   assert(V > 0, "Volume in fluid chamber is negative or zero.\n" + "Increase the residualVolume or the stopStiffness");
   assert(p_vol < maxPressure or s_rel < 0, "Maxiumum pressure in chamber has been exceeded");
+  assert(rho > 0, "Zero or negative fluid density");
   
   when empty then
     print("\nWARNING: CylinderChamber has reached end of travel.");
