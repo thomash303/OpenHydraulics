@@ -12,14 +12,14 @@ model CheckValve "Model representing a check valve"
   // Enabling parameters
   parameter Boolean filterEnable = true "Enable min/max filtering of the input signal (0-1). Strongly recommend to enable." annotation(Dialog(group = "Valve Characteristics"),
     choices(checkBox = true));  
-  parameter Boolean responseEnable = false "Enable dynamic (second-order) response" annotation(Dialog(tab="Dynamic Response"),
+  parameter Boolean responseEnable = false "Enable dynamic (second-order) response" annotation(Dialog(tab="Dynamic Response", enable = manualValveControl),
     choices(checkBox = true));
   
   // Dynamic response parameters
   parameter SI.Frequency bandwidth = 10 "Bandwidth of 2nd order response"
-    annotation(Dialog(tab="Dynamic Response"));
+    annotation(Dialog(tab="Dynamic Response", enable = responseEnable));
   parameter Real dampingCoeff = 1 "Damping coefficient of 2nd order response"
-    annotation(Dialog(tab="Dynamic Response"));
+    annotation(Dialog(tab="Dynamic Response", enable = responseEnable));
   
   Interfaces.RealInput opening_input(min = 0, max = 1) if manualValveControl "Manually controlled valve position in the range 0..1" annotation(
     Placement(transformation(origin = {0, 90}, extent = {{-20, -20}, {20, 20}}, rotation = 270), iconTransformation(extent = {{-20, -20}, {20, 20}}, rotation = 270, origin = {0, 80})));

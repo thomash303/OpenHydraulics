@@ -2,9 +2,13 @@ within OpenHydraulics.Developed.Valves;
 
 model ReliefValve
   "Model representing a relief valve"
+  
+    // Valve characteristic parameters
+  parameter SI.Pressure p_relief = 1e7 "Valve relief pressure" annotation(
+    Dialog(group = "Valve Characteristics"));
 
   // Inheriting from the OET
-  extends BaseClasses.PartialIncompressibleValve(manualValveControl=false);
+  extends BaseClasses.PartialIncompressibleValve(final manualValveControl=false, final p_crack = p_relief);
   
   // Importing from the MSL
   import Modelica.Fluid.Utilities.regRoot2;

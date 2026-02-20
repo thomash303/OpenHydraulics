@@ -11,13 +11,13 @@ partial model PartialValve "Partial model representing a partial valve"
   
   // Manual control
   parameter Boolean manualValveControl = true "Enable manual valve control" annotation(
-    Dialog(group = "Valve Characteristics"));
+    Dialog(group = "Valve Characteristics"), choices(checkBox = true));
   
   // Valve characteristic parameters
-  parameter SI.Pressure p_crack = 5 "Valve cracking/relief pressure" annotation(
-    Dialog(group = "Valve Characteristics"));
+  parameter SI.Pressure p_crack = 5 "Valve cracking pressure" annotation(
+    Dialog(group = "Valve Characteristics", enable = not manualValveControl));
   parameter SI.Pressure p_open = 5.1 "Valve fully open pressure" annotation(
-    Dialog(group = "Valve Characteristics"));
+    Dialog(group = "Valve Characteristics", enable = not manualValveControl));
   
   // Flow coefficient
   parameter CvTypes CvData = CvTypes.OpPoint "Selection of flow coefficient" annotation(

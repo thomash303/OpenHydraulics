@@ -17,12 +17,16 @@ partial model VerticalTwoPort
   SI.Pressure dp = port_a.p - port_b.p "Pressure drop (negative for pumps)";
  
   // Fluid ports
-  SI.AbsolutePressure p_a(start = p_init) "Oil properties at the inlet";
-  SI.AbsolutePressure p_b(start = p_init) "Oil properties at the inlet";
   FluidPort port_a(p(start = p_init)) annotation(
     Placement(transformation(extent = {{10, -110}, {-10, -90}})));
   FluidPort port_b(p(start = p_init)) annotation(
     Placement(transformation(extent = {{-10, 90}, {10, 110}})));
+
+protected
+  // Fluid port pressures
+  SI.AbsolutePressure p_a(start = p_init) "Fluid properties at the inlet";
+  SI.AbsolutePressure p_b(start = p_init) "Fluid properties at the oulet";
+
 equation
   // Set the fluid properties (set two state variable for each instance of medium)
   p_a = port_a.p;

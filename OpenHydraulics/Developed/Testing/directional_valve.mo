@@ -11,7 +11,7 @@ model directional_valve
     Placement(transformation(origin = {-20, 0}, extent = {{-10, -10}, {10, 10}})));
   Volumes.CircuitTank circuitTank(V_max = 200000, V_init = 100000)  annotation(
     Placement(transformation(origin = {-2, -26}, extent = {{-10, -10}, {10, 10}})));
-  Valves.V4_3CC v4_3cc(p_crack = 2e5, p_open = 2.5e5, manualValveControl = true)  annotation(
+  Valves.V4_3CC v4_3cc(p_crack = 2e5, p_open = 2.5e5, manualValveControl = true, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = 0.000012)  annotation(
     Placement(transformation(origin = {14, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   Custom.Basic.LaminarRestriction laminarRestriction(L = 0.1, D = 0.01)  annotation(
     Placement(transformation(origin = {60, -4}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
@@ -21,10 +21,6 @@ model directional_valve
     Placement(transformation(origin = {10, 34}, extent = {{-96, -10}, {-76, 10}})));
   Modelica.Blocks.Sources.Sine sinusoid11(amplitude = 1, f = 0.5, startTime = 0) annotation(
     Placement(transformation(origin = {22, -66}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Valves.ReliefValve reliefValve annotation(
-    Placement(transformation(origin = {26, 70}, extent = {{-10, -10}, {10, 10}})));
-  Valves.CheckValve checkValve   annotation(
-    Placement(transformation(origin = {76, 72}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(torque.flange, fluidPower2MechRotConst.flange_a) annotation(
     Line(points = {{-40, 0}, {-30, 0}}));
