@@ -1,7 +1,7 @@
 within OpenHydraulics.Developed.Circuits;
 
 model cylinder
-  Cylinders.DoubleActingCylinder doubleActingCylinder(compressibleEnable = true, strokeLength = 1, initType = OpenHydraulics.Developed.Types.RevoluteInit.Position, s_init = 0.5, boreDiameter = 0.1729)  annotation(
+  Cylinders.DoubleActingCylinder doubleActingCylinder(compressibleEnable = true, strokeLength = 1.5, initType = OpenHydraulics.Developed.Types.RevoluteInit.Position, s_init = 0.75, boreDiameter = 0.1729)  annotation(
     Placement(transformation(origin = {-54, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Modelica.Mechanics.Translational.Components.Mass mass(m = 7.285e4 + 8.694e4)  annotation(
     Placement(transformation(origin = {-56, 36}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));

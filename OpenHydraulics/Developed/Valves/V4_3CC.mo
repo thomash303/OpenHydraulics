@@ -52,7 +52,7 @@ model V4_3CC
     Placement(transformation(origin = {64, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   CheckValve vAT(p_crack = p_crack, p_open = p_open, CvData = CvData, Av = Av, manualValveControl = manualValveControl, Kv = Kv, Cv = Cv, redeclare replaceable function valveCharacteristic = valveCharacteristic, responseEnable = responseEnable, bandwidth = bandwidth, dampingCoeff = dampingCoeff) annotation(
     Placement(transformation(origin = {-22, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -0)));
-  CheckValve vPB(p_crack = p_crack, p_open = p_open, CvData = CvData, Av = Av, manualValveControl = true, Kv = Kv, Cv = Cv, redeclare replaceable function valveCharacteristic = valveCharacteristic, responseEnable = responseEnable, bandwidth = bandwidth, dampingCoeff = dampingCoeff) annotation(
+  CheckValve vPB(p_crack = p_crack, p_open = p_open, CvData = CvData, Av = Av, manualValveControl = false, Kv = Kv, Cv = Cv, redeclare replaceable function valveCharacteristic = valveCharacteristic, responseEnable = responseEnable, bandwidth = bandwidth, dampingCoeff = dampingCoeff) annotation(
     Placement(transformation(origin = {20, 0}, extent = {{-10, -10}, {10, 10}})));
   Interfaces.NJunction jB annotation(
     Placement(transformation(origin = {40, 60}, extent = {{-10, -10}, {10, 10}})));
@@ -99,44 +99,7 @@ equation
     Line(points = {{-6, 50}, {-22, 50}, {-22, 8}}, color = {0, 0, 127}));
   connect(gain.y, vPB.opening_input) annotation(
     Line(points = {{-6, 50}, {-6, 22}, {20, 22}, {20, 8}}, color = {0, 0, 127}));
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{
-            -100,-100},{100,100}}), graphics={
-        Line(points={{-74,-30},{-74,30}}, color={0,0,0}),
-        Line(points={{-46,-30},{-46,30}}, color={0,0,0}),
-        Polygon(
-          points={{-74,30},{-80,10},{-68,10},{-74,30}},
-          lineColor={0,0,0},
-          fillColor={0,0,0},
-          fillPattern=FillPattern.Solid),
-        Polygon(
-          points={{-46,-30},{-52,-10},{-40,-10},{-46,-30}},
-          lineColor={0,0,0},
-          fillColor={0,0,0},
-          fillPattern=FillPattern.Solid),
-        Line(points={{74,-30},{46,30}}, color={0,0,0}),
-        Line(points={{46,-30},{74,30}}, color={0,0,0}),
-        Polygon(
-          points={{74,-30},{58,-14},{70,-8},{74,-30}},
-          lineColor={0,0,0},
-          fillColor={0,0,0},
-          fillPattern=FillPattern.Solid),
-        Polygon(
-          points={{74,30},{70,6},{58,12},{74,30}},
-          lineColor={0,0,0},
-          fillColor={0,0,0},
-          fillPattern=FillPattern.Solid),
-        Line(points={{-14,-30},{-14,-12}}, color={0,0,0}),
-        Line(points={{-20,-12},{-8,-12}}, color={0,0,0}),
-        Line(points={{-20,12},{-8,12}}, color={0,0,0}),
-        Line(points={{8,12},{20,12}}, color={0,0,0}),
-        Line(points={{8,-12},{20,-12}}, color={0,0,0}),
-        Line(points={{-14,12},{-14,30}}, color={0,0,0}),
-        Line(points={{14,12},{14,30}}, color={0,0,0}),
-        Line(points={{14,-30},{14,-12}}, color={0,0,0}),
-        Line(points={{-14,30},{-14,60},{-40,60},{-40,80}}, color={255,0,0}),
-        Line(points={{14,30},{14,60},{40,60},{40,80}}, color={255,0,0}),
-        Line(points={{-14,-30},{-14,-60},{-40,-60},{-40,-80}}, color={255,
-              0,0}),
-        Line(points={{14,-30},{14,-60},{40,-60},{40,-80}}, color={255,0,0})}));
+  annotation (Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Line(points = {{-74, -30}, {-74, 30}}, color = {0, 0, 0}), Line(points = {{-46, -30}, {-46, 30}}, color = {0, 0, 0}), Polygon(points = {{-74, 30}, {-80, 10}, {-68, 10}, {-74, 30}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Polygon(points = {{-46, -30}, {-52, -10}, {-40, -10}, {-46, -30}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Line(points = {{74, -30}, {46, 30}}, color = {0, 0, 0}), Line(points = {{46, -30}, {74, 30}}, color = {0, 0, 0}), Polygon(points = {{74, -30}, {58, -14}, {70, -8}, {74, -30}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Polygon(points = {{74, 30}, {70, 6}, {58, 12}, {74, 30}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Line(points = {{-14, -30}, {-14, -12}}, color = {0, 0, 0}), Line(points = {{-20, -12}, {-8, -12}}, color = {0, 0, 0}), Line(points = {{-20, 12}, {-8, 12}}, color = {0, 0, 0}), Line(points = {{8, 12}, {20, 12}}, color = {0, 0, 0}), Line(points = {{8, -12}, {20, -12}}, color = {0, 0, 0}), Line(points = {{-14, 12}, {-14, 30}}, color = {0, 0, 0}), Line(points = {{14, 12}, {14, 30}}, color = {0, 0, 0}), Line(points = {{14, -30}, {14, -12}}, color = {0, 0, 0}), Line(points = {{-14, 30}, {-14, 60}, {-40, 60}, {-40, 80}}, color = {255, 0, 0}), Line(points = {{14, 30}, {14, 60}, {40, 60}, {40, 80}}, color = {255, 0, 0}), Line(points = {{-14, -30}, {-14, -60}, {-40, -60}, {-40, -80}}, color = {255, 0, 0}), Line(points = {{14, -30}, {14, -60}, {40, -60}, {40, -80}}, color = {255, 0, 0})}),
+  Diagram(coordinateSystem(extent = {{-80, 100}, {140, -100}})));
 
 end V4_3CC;

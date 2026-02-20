@@ -17,9 +17,9 @@ model valve
     Placement(transformation(origin = {32, 34}, extent = {{-10, -10}, {10, 10}})));
   Custom.Basic.LaminarRestriction laminarRestriction1(L = 10)  annotation(
     Placement(transformation(origin = {28, -20}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Sine sine(amplitude = 14e5, f = 10e5)  annotation(
+  Modelica.Blocks.Sources.Sine sine(amplitude = 14e5, f = 0.1, offset = 10e5)  annotation(
     Placement(transformation(origin = {-110, 34}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Sine sine1(amplitude = 14e5, f = 10e5, phase = 3.141592653589793) annotation(
+  Modelica.Blocks.Sources.Sine sine1(amplitude = 14e5, f = 0.1, phase = 3.141592653589793, offset = 10e5) annotation(
     Placement(transformation(origin = {-108, -20}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(laminarRestriction.port_b, HPTank.port) annotation(

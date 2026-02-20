@@ -13,7 +13,7 @@ model V4_3CC_Interface
   Interfaces.FluidPort portB annotation(
     Placement(transformation(extent = {{30, 70}, {50, 90}})));
   // Control input
-  parameter Boolean manualValveControl = true "Enable manual valve control" annotation(Dialog(group = "Valve Characteristics"), choices(checkBox = true));
+  parameter Boolean manualValveControl = false "Enable manual valve control" annotation(Dialog(group = "Valve Characteristics"), choices(checkBox = true));
   Modelica.Blocks.Interfaces.RealInput control if manualValveControl
     annotation (Placement(transformation(extent={{130,-20},{90,20}})));
   annotation(
