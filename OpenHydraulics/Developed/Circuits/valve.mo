@@ -38,4 +38,6 @@ equation
     Line(points = {{-96, -20}, {-66, -20}, {-66, -32}}, color = {0, 0, 127}));
   connect(sine.y, varPSourceA.control) annotation(
     Line(points = {{-98, 34}, {-83, 34}, {-83, 32}, {-66, 32}}, color = {0, 0, 127}));
+annotation(
+    experiment(StartTime = 0, StopTime = 1, Tolerance = 1e-06, Interval = 0.002));
 end valve;

@@ -15,6 +15,8 @@ model Accumulator
     Dialog(tab = "Sizing"));
   parameter SI.Volume gasVolume = 0.0011 "Gas Volume (must be larger than liquid volume)" annotation(
     Dialog(tab = "Sizing"));
+  parameter SI.Volume V_precharge = gasVolume "initial precharge volume" annotation(
+    Dialog(tab = "Sizing"));
   parameter SI.AbsolutePressure p_precharge = 101325 "Gas precharge pressure" annotation(
     Dialog(tab = "Sizing"));
   parameter SI.AbsolutePressure p_max = 3e7 "Maximum rated pressure" annotation(
@@ -39,7 +41,7 @@ model Accumulator
     Placement(transformation(extent = {{20, -10}, {40, 10}})));
   //  OpenHydraulics.Custom.Basic.FluidPower2MechTrans old directory
   
-  BaseClasses.AirChamber gasChamber(gamma = gamma, V_precharge = gasVolume, p_precharge = p_precharge, A = A, residualVolume = residualVolGas, initializePressure = initType == Types.AccInit.Pressure, p_init = p_init, V_init = gasVolume - V_init) annotation(
+  BaseClasses.AirChamber gasChamber(gamma = gamma, V_precharge = V_precharge, p_precharge = p_precharge, A = A, residualVolume = residualVolGas, initializePressure = initType == Types.AccInit.Pressure, p_init = p_init, V_init = gasVolume - V_init) annotation(
     Placement(transformation(extent = {{-40, -10}, {-20, 10}})));
   // OpenHydraulics.Custom.Volumes.BaseClasses.AirChamber old directory
   

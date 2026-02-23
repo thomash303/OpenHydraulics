@@ -3,18 +3,15 @@ within OpenHydraulics.Developed.Valves;
 model CheckValve "Model representing a check valve"
   // Inheriting from the OET
   extends BaseClasses.PartialIncompressibleValve;
-  
   // Importing from the MSL
   import Modelica.Blocks.Interfaces;
   import Modelica.Constants.pi;
   import Modelica.Fluid.Utilities.regRoot2;
-  
   // Enabling parameters
   parameter Boolean filterEnable = true "Enable min/max filtering of the input signal (0-1). Strongly recommend to enable." annotation(Dialog(group = "Valve Characteristics"),
     choices(checkBox = true));  
   parameter Boolean responseEnable = false "Enable dynamic (second-order) response" annotation(Dialog(tab="Dynamic Response", enable = manualValveControl),
     choices(checkBox = true));
-  
   // Dynamic response parameters
   parameter SI.Frequency bandwidth = 10 "Bandwidth of 2nd order response"
     annotation(Dialog(tab="Dynamic Response", enable = responseEnable));
@@ -34,33 +31,29 @@ protected
   Modelica.Blocks.Interfaces.RealOutput opening_filter if filterEnable and manualValveControl annotation(
     Placement(transformation(origin = {70, 40}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {66, -2}, extent = {{-10, -10}, {10, 10}})));
 equation
-  // Valve opening characteristic
+// Valve opening characteristic
   valveOpening = valveCharacteristic(opening);
   Aveff = valveOpening * Av;
-
 // For mass flow equation
 // Optional inputs to regRoot2 specify what the conditions are for x>0 and x<0, in that order. 1 enables normal flow is valve direction, 0 prevents reverse flow (needed for check valve only).
 // homotopy can provide an initial guess to a nonlinear equation
-  
-  // Declaration cases
-  // Case 1.0: Input used directly as valve opening
+// Declaration cases
+// Case 1.0: Input used directly as valve opening
   if manualValveControl  then
     m_flow = homotopy(Aveff * sqrt(system.rho_ambient) * regRoot2(dp,dp_small,1.0,0.0,use_yd0=true,yd0=0.0),Av*m_flow_nominal*dp/dp_nominal);
     
     if not (responseEnable or filterEnable) then
       opening = opening_input;
-    // Case 1.1: Input used with filter only or with filter and response (through connects)
+// Case 1.1: Input used with filter only or with filter and response (through connects)
     elseif manualValveControl and filterEnable then
       opening = opening_filter;
-    // Case 1.2: Input used with response only
+// Case 1.2: Input used with response only
     elseif manualValveControl and responseEnable and not filterEnable then
-      opening = opening_response; 
-    // Case 1.3: Input used with filter and response
-   // elseif manualValveControl and filterEnable and responseEnable then
-     // opening = opening_response;
-     
+      opening = opening_response; // Case 1.3: Input used with filter and response
+// elseif manualValveControl and filterEnable and responseEnable then
+// opening = opening_response;
     end if;
-  // Case 2: Opening calculated from pressureOpening
+// Case 2: Opening calculated from pressureOpening
   else
     dp = pressureOpening.u;
     opening = pressureOpening.y;
