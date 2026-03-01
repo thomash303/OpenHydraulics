@@ -18,7 +18,7 @@ package GenericOil
   algorithm
     //   for some reason OpenModelica doesn't like this expression being constant... will try to make it constant
     //rho := 850 + 5e-12*(p);
-    rho := 870 + 5e-7*(p);
+    rho := 850 + 5e-10*(p);
     //    rho := 870;
     annotation (smoothOrder=2);
   end density;

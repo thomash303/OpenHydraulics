@@ -18,7 +18,7 @@ equation
   valveOpening = valveCharacteristic(opening);
   Aveff = valveOpening * Av;
 
-  m_flow = homotopy(Aveff * sqrt(system.rho_ambient) * regRoot2(dp,dp_small),Av*m_flow_nominal*dp/dp_nominal);
+  m_flow = homotopy(Cd * Aveff * sqrt(2 * system.rho_ambient) * regRoot2(dp,dp_small),Av*m_flow_nominal*dp/dp_nominal);
   
   // Optional inputs to regRoot2 specify what the conditions are for x>0 and x<0, in that order. Both forward and reverse flows are permitted. Could optionally include the pressure dependent densities as the fallback for forward and reverse flows.
   // homotopy can provide an initial guess to a nonlinear equation

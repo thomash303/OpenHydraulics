@@ -20,10 +20,12 @@ partial model PartialValve "Partial model representing a partial valve"
     Dialog(group = "Valve Characteristics", enable = not manualValveControl));
   
   // Flow coefficient
+  parameter Real Cd = 1 "Discharge coefficient" annotation(
+    Dialog(group = "Flow coefficient")); 
   parameter CvTypes CvData = CvTypes.OpPoint "Selection of flow coefficient" annotation(
     Dialog(group = "Flow coefficient"));
   // Av (default)
-  parameter SI.Area Av(fixed = CvData == CvTypes.Av, start = system.m_flow_nominal/(sqrt(system.rho_ambient*system.dp_small))*valveCharacteristic(opening_nominal)) "Av (metric) flow coefficient" annotation(
+  parameter SI.Area Av(fixed = CvData == CvTypes.Av, start = system.m_flow_nominal/(sqrt(2*system.rho_ambient*system.dp_small))*valveCharacteristic(opening_nominal)) "Av (metric) flow coefficient" annotation(
     Dialog(group = "Flow coefficient", enable = (CvData == Modelica.Fluid.Types.CvTypes.Av)));
   // Kv (metric)
   parameter Real Kv = 0 "Kv (metric) flow coefficient [m3/h]" annotation(

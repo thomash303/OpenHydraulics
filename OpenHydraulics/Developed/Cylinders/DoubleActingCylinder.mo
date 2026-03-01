@@ -83,7 +83,7 @@ model DoubleActingCylinder
     Dialog(tab = "Initialization", group = "Mechanical"));
   parameter SI.Velocity v_init = 0 "Initial velocity" annotation(
     Dialog(tab = "Initialization", group = "Mechanical"));
-  parameter SI.Acceleration a_init = 0 "Initial acceleration" annotation(
+  parameter SI.Acceleration a_init = 0 "Initial acceleration" annotation(Dialog(tab = "Initialization", group = "Mechanical"),
     Placement(visible = false, transformation(origin = {nan, nan}, extent = {{nan, nan}, {nan, nan}})));
   parameter Boolean fixHeadPressure = false "Initialize the pressure at the head side" annotation(
     Dialog(tab = "Initialization", group = "Fluid"));

@@ -30,7 +30,9 @@ model V4_3CC
   parameter Real dampingCoeff = 1 "Damping coefficient of 2nd order response"
     annotation(Dialog(tab="Dynamic Response", enable = responseEnable));
   
-    // Flow coefficient
+  // Flow coefficient
+  parameter Real Cd = 1 "Discharge coefficient" annotation(
+    Dialog(group = "Flow coefficient"));
   parameter CvTypes CvData = CvTypes.OpPoint "Selection of flow coefficient" annotation(
     Dialog(group = "Flow coefficient"));
   // Av (default)
@@ -46,13 +48,13 @@ model V4_3CC
   replaceable function valveCharacteristic = BaseClasses.ValveCharacteristics.linear constrainedby BaseClasses.ValveCharacteristics.baseFun "Valve flow characteristic" annotation(Dialog(group = "Valve Characteristics"),
      choicesAllMatching = true);
 
-  CheckValve vPA(p_crack = p_crack, p_open = p_open, CvData = CvData, Av = Av, manualValveControl = manualValveControl, Kv = Kv, Cv = Cv, redeclare replaceable function valveCharacteristic = valveCharacteristic, responseEnable = responseEnable, bandwidth = bandwidth, dampingCoeff = dampingCoeff, p_init = p_init) annotation(
+  CheckValve vPA(p_crack = p_crack, p_open = p_open, CvData = CvData, Av = Av, manualValveControl = manualValveControl, Kv = Kv, Cv = Cv, redeclare replaceable function valveCharacteristic = valveCharacteristic, responseEnable = responseEnable, bandwidth = bandwidth, dampingCoeff = dampingCoeff, p_init = p_init, Cd = Cd) annotation(
     Placement(transformation(origin = {-68, 0}, extent = {{10, -10}, {-10, 10}}, rotation = -90)));
-  CheckValve vBT(p_crack = p_crack, p_open = p_open, CvData = CvData, Av = Av, manualValveControl = manualValveControl, Kv = Kv, Cv = Cv, redeclare replaceable function valveCharacteristic = valveCharacteristic, responseEnable = responseEnable, bandwidth = bandwidth, dampingCoeff = dampingCoeff, p_init = p_init) annotation(
+  CheckValve vBT(p_crack = p_crack, p_open = p_open, CvData = CvData, Av = Av, manualValveControl = manualValveControl, Kv = Kv, Cv = Cv, redeclare replaceable function valveCharacteristic = valveCharacteristic, responseEnable = responseEnable, bandwidth = bandwidth, dampingCoeff = dampingCoeff, p_init = p_init, Cd = Cd) annotation(
     Placement(transformation(origin = {64, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  CheckValve vAT(p_crack = p_crack, p_open = p_open, CvData = CvData, Av = Av, manualValveControl = manualValveControl, Kv = Kv, Cv = Cv, redeclare replaceable function valveCharacteristic = valveCharacteristic, responseEnable = responseEnable, bandwidth = bandwidth, dampingCoeff = dampingCoeff, p_init = p_init) annotation(
+  CheckValve vAT(p_crack = p_crack, p_open = p_open, CvData = CvData, Av = Av, manualValveControl = manualValveControl, Kv = Kv, Cv = Cv, redeclare replaceable function valveCharacteristic = valveCharacteristic, responseEnable = responseEnable, bandwidth = bandwidth, dampingCoeff = dampingCoeff, p_init = p_init, Cd = Cd) annotation(
     Placement(transformation(origin = {-22, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -0)));
-  CheckValve vPB(p_crack = p_crack, p_open = p_open, CvData = CvData, Av = Av, manualValveControl = false, Kv = Kv, Cv = Cv, redeclare replaceable function valveCharacteristic = valveCharacteristic, responseEnable = responseEnable, bandwidth = bandwidth, dampingCoeff = dampingCoeff, p_init = p_init) annotation(
+  CheckValve vPB(p_crack = p_crack, p_open = p_open, CvData = CvData, Av = Av, manualValveControl = false, Kv = Kv, Cv = Cv, redeclare replaceable function valveCharacteristic = valveCharacteristic, responseEnable = responseEnable, bandwidth = bandwidth, dampingCoeff = dampingCoeff, p_init = p_init, Cd = Cd) annotation(
     Placement(transformation(origin = {20, 0}, extent = {{-10, -10}, {10, 10}})));
   Interfaces.NJunction jB annotation(
     Placement(transformation(origin = {40, 60}, extent = {{-10, -10}, {10, 10}})));

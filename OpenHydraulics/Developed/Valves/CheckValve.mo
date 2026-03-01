@@ -57,7 +57,7 @@ equation
   else
     dp = pressureOpening.u;
     opening = pressureOpening.y;
-    m_flow = homotopy(Aveff * sqrt(system.rho_ambient) * regRoot2(dp,dp_small,1.0,0.0,use_yd0=true,yd0=0.0),Av*m_flow_nominal*dp/dp_nominal);
+    m_flow = homotopy(Cd * Aveff * sqrt(2 * system.rho_ambient) * regRoot2(dp,dp_small,1.0,0.0,use_yd0=true,yd0=0.0),Av*m_flow_nominal*dp/dp_nominal);
   end if;
   
   connect(secondOrderResponse.y, opening_response) annotation(

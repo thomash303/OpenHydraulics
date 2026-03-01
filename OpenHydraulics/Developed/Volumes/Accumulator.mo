@@ -11,7 +11,7 @@ model Accumulator
   // Parameters
   parameter Real gamma = 1.4 "Adiabatic index for an ideal gas(default set assuming dry air)" annotation(
     Dialog(tab = "Sizing"));
-  parameter SI.Volume liquidVolume = 0.001 "Liquid Volume" annotation(
+  parameter SI.Volume liquidVolume = 0.001 "Maximum Liquid Volume (for liquid volume residual. Should be just lower than gasVolume)" annotation(
     Dialog(tab = "Sizing"));
   parameter SI.Volume gasVolume = 0.0011 "Gas Volume (must be larger than liquid volume)" annotation(
     Dialog(tab = "Sizing"));
@@ -34,10 +34,10 @@ model Accumulator
   // Initialization parameters
   parameter Types.AccInit initType = Types.AccInit.Pressure "Type of initialization (defines usage of start values below)" annotation(
     Dialog(tab = "Initialization", group = "Fluid"));
-  parameter SI.Volume V_init = residualVolLiquid "Initial liquid volume" annotation(
+  parameter SI.Volume V_init = residualVolLiquid "Initial liquid volume (for gas volume residual. Should be very small)" annotation(
     Dialog(tab = "Initialization", group = "Fluid"));
   // Fluid components
-  BaseClasses.FluidPower2MechTrans liquidChamber(A = A, residualVolume = residualVolLiquid, maxPressure = p_max, n_ports = 1) annotation(
+  BaseClasses.FluidPower2MechTrans liquidChamber(A = A, residualVolume = residualVolLiquid, maxPressure = p_max, n_ports = 1, V_init = V_init) annotation(
     Placement(transformation(extent = {{20, -10}, {40, 10}})));
   //  OpenHydraulics.Custom.Basic.FluidPower2MechTrans old directory
   

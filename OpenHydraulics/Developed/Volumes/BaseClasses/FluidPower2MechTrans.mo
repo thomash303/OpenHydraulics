@@ -33,10 +33,12 @@ model FluidPower2MechTrans
     Dialog(tab = "Dynamics"));
   parameter SI.TranslationalDampingConstant stopDamping = stopStiffness/10 "damping when chamber becomes empty" annotation(
     Dialog(tab = "Dynamics"));
+  parameter SI.Volume V_init = residualVolume "Initial volume" annotation(
+    Dialog(tab = "Initialization"));
   
   // note: the default stiffness is such that the residual volume is reduced by
   // at most 10 percent
-  SI.Volume V(start = residualVolume) "Volume of oil inside chamber";
+  SI.Volume V(start = V_init) "Volume of oil inside chamber";
   //SI.Mass m(start = residualVolume*system.rho_ambient) "Mass of oil inside chamber";
   SI.Mass m(start = residualVolume*system.rho_ambient);
   
@@ -78,7 +80,7 @@ algorithm
     print("         This could cause erratic behavior of the simulation.");
     print("         (time = " + String(time) + ")");
   end when;
-  
+
 equation
   // Pressure is the same everywhere
   for i in 1:n_ports loop

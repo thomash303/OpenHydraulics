@@ -9,7 +9,7 @@ model ConstantPressure2
     Placement(transformation(origin = {22, 36}, extent = {{-10, -10}, {10, 10}})));
   Volumes.Accumulator lpAccumulator(p_precharge(displayUnit = "bar") = 5e5, liquidVolume = 3*1.25e0, gasVolume = 3*1.75e0, initType = OpenHydraulics.Developed.Types.AccInit.Pressure, p_init(displayUnit = "bar") = 1e6) annotation(
     Placement(transformation(origin = {22, -8}, extent = {{-10, 10}, {10, -10}})));
-  Machines.ConstantDisplacementPump constantDisplacementPump(Dconst = -0.00032, CMotorLeakage = 0.000312, p_init (displayUnit = "bar")= 7e6, leakageEnable = false) annotation(
+  Machines.ConstantDisplacementPump constantDisplacementPump(Dconst = -0.00032, CMotorLeakage = 3.12e-8, p_init (displayUnit = "bar")= 7e6, leakageEnable = false) annotation(
     Placement(transformation(origin = {64, 22}, extent = {{10, 10}, {-10, -10}})));
   Modelica.Mechanics.Translational.Components.Mass mass(m = 7.285e4 + 8.694e4) annotation(
     Placement(transformation(origin = {-56, 50}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
