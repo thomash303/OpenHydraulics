@@ -17,13 +17,13 @@ model dyPTO_fullCircuit_WS
     Placement(transformation(origin = {-64, 72}, extent = {{-10, -10}, {10, 10}})));
   OceanEngineeringToolbox.Multibody.Joints.Fixed fixed(r = {0, 0, -2.5}) annotation(
     Placement(transformation(origin = {-90, -34}, extent = {{-10, -10}, {10, 10}})));
-  Developed.Machines.ConstantDisplacementPump constantDisplacementPump(CMotorLeakage = 0.00025, Dconst = 0.0002, p_init(displayUnit = "bar") = 3e7) annotation(
+  Developed.Machines.ConstantDisplacementPump constantDisplacementPump(CMotorLeakage = 0.00025, Dconst = 0.00039, p_init(displayUnit = "bar") = 2.5e7) annotation(
     Placement(transformation(origin = {58, 14}, extent = {{10, 10}, {-10, -10}})));
-  Developed.Volumes.Accumulator hpAccumulator(gasVolume = 10, initType = Developed.Types.AccInit.Volume, liquidVolume = 9, p_init(displayUnit = "bar") = 3e7, p_precharge(displayUnit = "bar") = 2.2e7, p_max = 2e8, V_init = 0.5) annotation(
+  Developed.Volumes.Accumulator hpAccumulator(gasVolume = 10, initType = Developed.Types.AccInit.Volume, liquidVolume = 9, p_init(displayUnit = "bar") = 2.5e7, p_precharge(displayUnit = "bar") = 2.5e7, p_max = 2e8, V_init = 1) annotation(
     Placement(transformation(origin = {32, 38}, extent = {{-10, -10}, {10, 10}})));
   Developed.Volumes.Accumulator lpAccumulator(gasVolume = 10, initType = OpenHydraulics.Developed.Types.AccInit.Volume, liquidVolume = 9, p_init(displayUnit = "bar"), p_precharge(displayUnit = "bar") = 1e6, p_max = 5e7, V_init = 1) annotation(
     Placement(transformation(origin = {32, -22}, extent = {{-10, 10}, {10, -10}})));
-  Developed.Valves.V4_3CC v4_3cc(p_crack(displayUnit = "bar") = 1e5, p_init(displayUnit = "bar") = 1e6, p_open(displayUnit = "bar") = 2.5e5, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = 0.001, Cd = 1) annotation(
+  Developed.Valves.V4_3CC v4_3cc(p_crack(displayUnit = "bar") = 1e5, p_init(displayUnit = "bar") = 1e6, p_open(displayUnit = "bar") = 2.5e5, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = 0.001, Cd = 0.5) annotation(
     Placement(transformation(origin = {-34, -22}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Custom.Basic.LaminarRestriction laminarRestriction(D = 1, L = 0.01, p_init(displayUnit = "bar") = 1e6) annotation(
     Placement(transformation(origin = {56, -24}, extent = {{-10, -10}, {10, 10}})));

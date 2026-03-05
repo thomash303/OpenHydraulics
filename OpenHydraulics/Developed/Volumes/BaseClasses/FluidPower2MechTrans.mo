@@ -53,7 +53,7 @@ model FluidPower2MechTrans
   Modelica.Units.SI.Density rho "Medium density (only used in compressible fluid models)";
   
   
-  
+  parameter Boolean accumulatorEnable = false;
   // remove
     Modelica.Units.SI.Velocity v_rel(start = 0) "relative velocity";
   //Modelica.Units.SI.Acceleration a_rel(start = 0) "relative acceleration";
@@ -111,7 +111,7 @@ equation
   // Computing mechanical states
   a_rel = der(v_rel);
   //remove
-    v_rel = der(s_rel);
+  v_rel = der(s_rel);
   
   // If empty volume
   empty = s_rel < 0;

@@ -37,14 +37,12 @@ model Accumulator
   parameter SI.Volume V_init = residualVolLiquid "Initial liquid volume (for gas volume residual. Should be very small)" annotation(
     Dialog(tab = "Initialization", group = "Fluid"));
   // Fluid components
-  BaseClasses.FluidPower2MechTrans liquidChamber(A = A, residualVolume = residualVolLiquid, maxPressure = p_max, n_ports = 1, V_init = V_init) annotation(
+  BaseClasses.FluidPower2MechTrans liquidChamber(A = A, residualVolume = residualVolLiquid, maxPressure = p_max, n_ports = 1, V_init = V_init, p_init = p_init, accumulatorEnable = true) annotation(
     Placement(transformation(extent = {{20, -10}, {40, 10}})));
   //  OpenHydraulics.Custom.Basic.FluidPower2MechTrans old directory
-  
   BaseClasses.AirChamber gasChamber(gamma = gamma, V_precharge = V_precharge, p_precharge = p_precharge, A = A, residualVolume = residualVolGas, initializePressure = initType == Types.AccInit.Pressure, p_init = p_init, V_init = gasVolume - V_init) annotation(
     Placement(transformation(extent = {{-40, -10}, {-20, 10}})));
   // OpenHydraulics.Custom.Volumes.BaseClasses.AirChamber old directory
-  
   // Translational components
   Components.Fixed fixedLeft(s0 = 0.0) annotation(
     Placement(transformation(extent = {{-70, -10}, {-50, 10}})));
@@ -58,10 +56,9 @@ model Accumulator
   Interfaces.FluidPort port_a(p(start = p_init)) annotation(
     Placement(transformation(extent = {{-10, -110}, {10, -90}})));
 
-  // NOTE: from a behavioral perspective the surface area of the piston
-// is not really relevant.  We will therefore assume that it is
+// NOTE: from a behavioral perspective the surface area of the piston
+  // is not really relevant.  We will therefore assume that it is
   // equal to the liquidVolume resulting in a total travel of the piston of 1m.
-
   parameter Modelica.Units.SI.Length Lnom = 1 "Dummy nominal length" annotation(
     Placement(visible = false, transformation(extent = {{0, 0}, {0, 0}})));
   parameter Modelica.Units.SI.Area A = liquidVolume/Lnom;

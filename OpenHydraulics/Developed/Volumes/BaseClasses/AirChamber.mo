@@ -35,18 +35,17 @@ protected
 initial equation
   if initializePressure then
     p = p_init;
-    V = V_precharge*(p_precharge/p_init)^(1/gamma);
-    //V = V_precharge*(p_precharge/p_init);
+    //V = V_precharge*(p_precharge/p_init)^(1/gamma); uncomment
   else
-    p = p_precharge*(V_precharge/V_init)^gamma;
+    //p = p_precharge*(V_precharge/V_init)^gamma; uncomment
     V = V_init;
   end if;
 equation
 // behavior of the gas: p*V^gamma = constant
 // NOTE: isothermal gas law replaced with icentropic gas law
   pVgamma = p*V^gamma;
-  //pVgamma = p*V;
-  der(pVgamma) = 0;
+  p = p_precharge * (V_precharge / V)^gamma; //recomment
+  //der(pVgamma) = 0; uncomment
   V = s_rel*A + residualVolume;
   0 = A*(p - system.p_ambient) + f + f_stop;
   
