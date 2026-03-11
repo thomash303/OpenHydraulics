@@ -5,13 +5,13 @@ model MP_HIL_checkpoint1
     Placement(transformation(origin = {-44, 22}, extent = {{-10, -10}, {10, 10}})));
   inner Developed.Systems.System system annotation(
     Placement(transformation(origin = {-64, 72}, extent = {{-10, -10}, {10, 10}})));
-  Developed.Machines.ConstantDisplacementPump constantDisplacementPump(CMotorLeakage = 0.00025, Dconst = 4e-6, p_init(displayUnit = "bar") = 3.5e6) annotation(
+  Developed.Machines.ConstantDisplacementPump constantDisplacementPump(CMotorLeakage = 0.00025, Dconst = 4e-6/(2*3.14), p_init(displayUnit = "bar") = 3.5e6) annotation(
     Placement(transformation(origin = {58, 14}, extent = {{10, 10}, {-10, -10}})));
   Developed.Volumes.Accumulator hpAccumulator(gasVolume = 3.8e-3, initType = Developed.Types.AccInit.Volume, liquidVolume = 2.8e-3, p_init(displayUnit = "bar") = 3.5e6, p_precharge(displayUnit = "bar") = 1e6, p_max = 2e8, V_init = 2.29e-3) annotation(
     Placement(transformation(origin = {32, 38}, extent = {{-10, -10}, {10, 10}})));
   Developed.Volumes.Accumulator lpAccumulator(gasVolume = 1e1, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.8e1, p_init(displayUnit = "bar") = 2e5, p_precharge(displayUnit = "bar") = 2e5, p_max = 5e7) annotation(
     Placement(transformation(origin = {32, -22}, extent = {{-10, 10}, {10, -10}})));
-  Developed.Valves.V4_3CC v4_3cc(p_crack(displayUnit = "bar") = 35000, p_init(displayUnit = "bar") = 1e6, p_open(displayUnit = "bar") = 4e4, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = 4.0786e-8- 0*0.0005e-8, Cd = 1) annotation(
+  Developed.Valves.V4_3CC v4_3cc(p_crack(displayUnit = "bar") = 35000, p_init(displayUnit = "bar") = 1e6, p_open(displayUnit = "bar") = 4e4, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = 5.221e-8*6, Cd = 1) annotation(
     Placement(transformation(origin = {-36, -22}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Custom.Basic.LaminarRestriction laminarRestriction(D = 1, L = 0.01, p_init(displayUnit = "bar") = 2e5) annotation(
     Placement(transformation(origin = {56, -24}, extent = {{-10, -10}, {10, 10}})));

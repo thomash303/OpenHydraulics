@@ -29,8 +29,8 @@ equation
   tau = -D*dp/(2*pi);
   
   // Relate flow to rotational velocity
-  //q_flow_a = D*N/60;
-  q_flow_a = D*omega;
+  q_flow_a = D*N/60;
+  //q_flow_a = D*omega;
 
   // Mass balance
   0 = port_a.m_flow + port_b.m_flow "Mass balance";

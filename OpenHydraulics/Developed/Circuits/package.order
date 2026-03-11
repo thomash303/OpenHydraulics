@@ -8,3 +8,7 @@ dyPTO_fullCircuit_WS
 org_pto
 MP_HIL
 MP_HIL_checkpoint1
+MP_HIL_checkpoint2
+MP_HIL_checkpoint_sens
+DAQ
+CC_HIL_sens

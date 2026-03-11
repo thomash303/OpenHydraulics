@@ -22,7 +22,6 @@ model PressureSensor "Model representing a pressure sensor"
   RealOutput y(unit="Pa", displayUnit="bar") annotation(
     Placement(transformation(origin = {34, 0}, extent = {{60, -10}, {80, 10}}), iconTransformation(extent = {{60, -10}, {80, 10}})));
 
-  SI.Pressure P;
 equation
 // Absolute
   if pressureType == Types.PressureTypes.Absolute then
@@ -30,8 +29,7 @@ equation
   elseif pressureType == Types.PressureTypes.Gauge then
     y = port_a.p - system.p_ambient;
   else
-    P = port_a.p - port_b.p;
-    y = P;
+    y = port_a.p - port_b.p;
   end if;
   
   connect(port_a, volumeClosed_a.port[1]) annotation(

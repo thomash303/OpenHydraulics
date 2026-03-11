@@ -58,7 +58,7 @@ model FluidPower2MechTrans
     Modelica.Units.SI.Velocity v_rel(start = 0) "relative velocity";
   //Modelica.Units.SI.Acceleration a_rel(start = 0) "relative acceleration";
   
-  
+   Real derP = der(p_vol); 
 protected
   // Empty volume
   parameter SI.Position s_relMin = -0.001 "the s_rel value at which the volume is zero";
@@ -106,6 +106,7 @@ equation
   else
     //m = V*system.rho_ambient;
     m = V*system.Medium.density(p_vol);
+    //der(p_vol) = system.beta/V * (der(m) - v_rel*A);
   end if;
   
   // Computing mechanical states

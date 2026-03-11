@@ -2,18 +2,15 @@ within OpenHydraulics.Developed.Cylinders;
 
 model DoubleActingCylinder
   "Double acting hydraulic cylinder model"
-  
   // Inheriting from the OET
   extends Interfaces.BaseClasses.PartialFluidComponent;
   extends Modelica.Mechanics.Translational.Interfaces.PartialTwoFlanges;
-  
   // Importing and inheriting from the MSL
   import Modelica.Units.SI;
   import Modelica.Constants.pi;
   import Modelica.Mechanics.Translational;
   import Modelica.Mechanics.Translational.{Components, Sources};
   import Modelica.Blocks;
-  
   // Additional model improvement flags
   parameter Boolean compressibleEnable = false "Enable fluid compressibility model" annotation(
     Dialog(group = "Non-Ideal Models"),
@@ -27,8 +24,7 @@ model DoubleActingCylinder
   parameter Boolean leakageEnable = false "Enable fluid leakage model" annotation(
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
-    
-  // Stribeck friction parameters
+    // Stribeck friction parameters
   parameter SI.TranslationalDampingConstant Cv = 1 "Viscous damping coefficient" annotation(
     Dialog(group = "Stribeck Friction"));
   parameter SI.Force f_c = 5 "Coulomb friction force" annotation(
@@ -45,7 +41,6 @@ model DoubleActingCylinder
     Dialog(group = "Leakage"));
    parameter Types.HydraulicLeakage CInLeakage = 0 "Cylinder internal leakage coefficient" annotation(
     Dialog(group = "Leakage"));
-  
   // Sizing parameters
   parameter SI.Length boreDiameter = 0.05 "Bore diameter" annotation(
     Dialog(tab = "Sizing", group = "Dimensions"));
@@ -55,7 +50,6 @@ model DoubleActingCylinder
     Dialog(tab = "Sizing", group = "Dimensions"));
   parameter SI.Length closedLength = 0.3 "Total length of cylinder fully retracted" annotation(
     Dialog(tab = "Sizing", group = "Dimensions"));
-  
   // Fluid parameters
   parameter SI.VolumeFlowRate q_nom = 0.01 "Nominal flow rate for in/outlet" annotation(
     Dialog(tab = "Sizing", group = "Hydraulics"));
@@ -63,7 +57,6 @@ model DoubleActingCylinder
     Dialog(tab = "Sizing", group = "Hydraulics"));
   parameter SI.AbsolutePressure maxPressure = 3e7 "Maximum rated pressure" annotation(
     Dialog(tab = "Sizing", group = "Hydraulics"));
-  
   // Dynamics parameters
   parameter SI.Mass pistonRodMass = 0 "Mass of the piston and rod" annotation(
     Dialog(tab = "Dynamics"));
@@ -76,7 +69,7 @@ model DoubleActingCylinder
   parameter SI.TranslationalDampingConstant stopDamping = 1e12 "damping at impact" annotation(
     Dialog(tab = "Dynamics", group = "End-of-travel"));
 
-  // Initialization parameters
+// Initialization parameters
   parameter Types.RevoluteInit initType = Types.RevoluteInit.Free "Type of initialization (defines usage of start values below)" annotation(
     Dialog(tab = "Initialization", group = "Mechanical"));
   parameter SI.Distance s_init = 0 "Initial position >0 and <stroke" annotation(
@@ -89,21 +82,17 @@ model DoubleActingCylinder
     Dialog(tab = "Initialization", group = "Fluid"));
   parameter Boolean fixRodPressure = false "Initialize the pressure at the rod side" annotation(
     Dialog(tab = "Initialization", group = "Fluid"));
-  
   // Fluid ports
   Interfaces.FluidPort port_a annotation(
     Placement(transformation(extent = {{-90, -90}, {-70, -70}})));
   Interfaces.FluidPort port_b annotation(
     Placement(transformation(extent = {{90, -90}, {70, -70}})));
-  
   // Fluid components
-  Volumes.BaseClasses.FluidPower2MechTrans cylinderChamberHead(compressibleEnable = compressibleEnable, A = pi/4*boreDiameter^2, stopStiffness = stopStiffness, stopDamping = stopDamping, n_ports = 3, p_init = p_init, maxPressure = maxPressure*10) annotation(
+  Volumes.BaseClasses.FluidPower2MechTrans cylinderChamberHead(compressibleEnable = compressibleEnable, A = pi/4*boreDiameter^2, stopStiffness = stopStiffness, stopDamping = stopDamping, n_ports = 3, p_init = p_init, maxPressure = maxPressure*10, residualVolume = 3e-4) annotation(
     Placement(transformation(extent = {{-50, -10}, {-30, 10}})));
-  Volumes.BaseClasses.FluidPower2MechTrans cylinderChamberRod(compressibleEnable = compressibleEnable, A = pi/4*(boreDiameter^2 - rodDiameter^2), stopStiffness = stopStiffness, stopDamping = stopDamping, n_ports = 3, p_init = p_init, maxPressure = maxPressure*10) annotation(
+  Volumes.BaseClasses.FluidPower2MechTrans cylinderChamberRod(compressibleEnable = compressibleEnable, A = pi/4*(boreDiameter^2 - rodDiameter^2), stopStiffness = stopStiffness, stopDamping = stopDamping, n_ports = 3, p_init = p_init, maxPressure = maxPressure*10, residualVolume = 3e-4) annotation(
     Placement(transformation(extent = {{30, -10}, {50, 10}})));
   //Volumes.BaseClasses.FluidPower2MechTrans or Custom.Basic.FluidPower2MechTrans
-  
-  
   // Translational components
   Components.Mass piston(m = pistonRodMass) annotation(
     Placement(transformation(extent = {{-10, -10}, {10, 10}})));
@@ -119,12 +108,11 @@ model DoubleActingCylinder
     Placement(transformation(extent = {{90, -10}, {110, 10}})));
   */
 
-  // Fluid junctions
+// Fluid junctions
   Interfaces.NJunction jA(n_ports = 2) annotation(
     Placement(transformation(extent = {{-50, -90}, {-30, -70}})));
   Interfaces.NJunction jB(n_ports = 2) annotation(
     Placement(transformation(extent = {{30, -90}, {50, -70}})));
-  
   // Inertial force
   Sources.Force gravityForce if gravityAccelerationEnable annotation(
     Placement(transformation(origin = {34, 50}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
@@ -132,7 +120,6 @@ model DoubleActingCylinder
     Placement(transformation(origin = {84, 50}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
   BaseClasses.StribeckFriction stribeckFriction(Cv = Cv, f_c = f_c, Cst = Cst, f_st = f_st)  if stribeckFrictionEnable annotation(
     Placement(transformation(origin = {-44, 58}, extent = {{-10, -10}, {10, 10}})));
-  
   // Leakage models
   Volumes.BaseClasses.ConstantPressureSource headEnvSink if leakageEnable annotation(
     Placement(transformation(origin = {-88, -30}, extent = {{-10, -10}, {10, 10}})));
@@ -149,8 +136,7 @@ model DoubleActingCylinder
 initial equation
   assert(cylinderChamberHead.s_rel >= 0, "Initial position is smaller than zero");
   assert(cylinderChamberRod.s_rel >= 0, "Initial position is larger than strokeLength");
-
-  // State initialization
+// State initialization
   if initType == Types.RevoluteInit.Position then
     cylinderChamberHead.s_rel = s_init;
   elseif initType == Types.RevoluteInit.Velocity then
@@ -169,7 +155,7 @@ initial equation
     cylinderChamberHead.v_rel = v_init;
     piston.a = a_init;
   elseif initType == Types.RevoluteInit.Free then
-  // Nothing
+// Nothing
   else
     assert(true, "Invalid initialization type in FluidPower2MechTrans");
   end if;
