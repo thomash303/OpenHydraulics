@@ -1,11 +1,11 @@
 within OpenHydraulics.Developed.Circuits;
 
 model MP_HIL_checkpoint_sens
-  Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.04, compressibleEnable = true, strokeLength = 0.3, pistonRodMass = 1, maxPressure = 2e8, leakageEnable = true, Cv = 1000, f_c = 200, Cst = 5, f_st = 2000, CHeadExLeakage = 0.000000002, CRodExLeakage = 0.000000002, CInLeakage = 0.0000000005, damping = 0, stribeckFrictionEnable = true, rodDiameter(displayUnit = "mm") = 0.029, closedLength = 0.01, p_init = 1e6) annotation(
+  Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.04, compressibleEnable = true, strokeLength = 0.3, pistonRodMass = 1, maxPressure = 2e8, leakageEnable = true, Cv = 1000, f_c = 200, Cst = 5, f_st = 2000, CHeadExLeakage = 0.000000009, CRodExLeakage = 0.000000009, CInLeakage = 0.000000005, damping = 0, stribeckFrictionEnable = false, rodDiameter(displayUnit = "mm") = 0.029, closedLength = 0.0001, p_init = 1e6) annotation(
     Placement(transformation(origin = {-80, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   inner Developed.Systems.System system annotation(
     Placement(transformation(origin = {-64, 72}, extent = {{-10, -10}, {10, 10}})));
-  Developed.Machines.ConstantDisplacementPump constantDisplacementPump(CMotorLeakage = 0.00025, Dconst = 4e-6, p_init(displayUnit = "bar") = 3.5e6) annotation(
+  Developed.Machines.ConstantDisplacementPump constantDisplacementPump(CMotorLeakage = 30e-10, Dconst = 4e-6, p_init(displayUnit = "bar") = 3.5e6, leakageEnable = true) annotation(
     Placement(transformation(origin = {66, 12}, extent = {{10, 10}, {-10, -10}})));
   Developed.Volumes.Accumulator hpAccumulator(gasVolume = 3.8e-3, initType = Developed.Types.AccInit.Volume, liquidVolume = 2.8e-3, p_init(displayUnit = "bar") = 3.5e6, p_precharge(displayUnit = "bar") = 1e6, p_max = 2e8, V_init = 2.29e-3) annotation(
     Placement(transformation(origin = {44, 44}, extent = {{-10, -10}, {10, 10}})));
@@ -29,14 +29,14 @@ model MP_HIL_checkpoint_sens
     Placement(transformation(origin = {96, -24}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.Rotational.Sources.Speed speed1(exact = true) annotation(
     Placement(transformation(origin = {30, -56}, extent = {{10, -10}, {-10, 10}})));
-  Modelica.Blocks.Sources.Ramp ramp(height = -0.1*2*3.14/60, duration = 0) annotation(
+  Modelica.Blocks.Sources.Ramp ramp(height = -1700*2*3.14/60, duration = 0) annotation(
     Placement(transformation(origin = {64, -56}, extent = {{10, -10}, {-10, 10}})));
   Modelica.Units.SI.Force Fpto = doubleActingCylinder.rodDiameter^2/4*3.14*(hpAccumulator.port_a.p - lpAccumulator.port_a.p)*sign(doubleActingCylinder.piston.v);
   // Valve parameter
   parameter Modelica.Units.SI.Pressure p_init = 10e5;
   parameter Modelica.Units.SI.Pressure p_crack = 0.35e5;
   parameter Modelica.Units.SI.Pressure p_open = 0.4e5;
-  parameter Modelica.Units.SI.Area Av = 0.718e-8*6;
+  parameter Modelica.Units.SI.Area Av = 5e-5;
   parameter Real Cd = 1;
   Developed.Valves.CheckValve checkValve1(p_init = 1e6, manualValveControl = false, p_crack = p_crack, p_open = p_open, Cd = Cd, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av) annotation(
     Placement(transformation(origin = {-52, 14}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
@@ -97,10 +97,6 @@ equation
     Line(points = {{20, -56}, {-40, -56}, {-40, -68}}));
   connect(position.flange, doubleActingCylinder.flange_b) annotation(
     Line(points = {{-18, 54}, {-78, 54}, {-78, 38}, {-80, 38}}, color = {0, 127, 0}));
-  connect(doubleActingCylinder.port_a, jA.port[1]) annotation(
-    Line(points = {{-72, 20}, {-70, 20}, {-70, -12}, {-54, -12}}, color = {255, 0, 0}));
-  connect(doubleActingCylinder.port_b, jB.port[1]) annotation(
-    Line(points = {{-72, 36}, {-56, 36}, {-56, 42}, {-42, 42}}, color = {255, 0, 0}));
   connect(lpAccumulator.port_a, jLP.port[1]) annotation(
     Line(points = {{32, -12}, {12, -12}, {12, -4}}, color = {255, 0, 0}));
   connect(checkValve112.port_b, jHP.port[2]) annotation(
@@ -159,6 +155,10 @@ equation
   connect(F2.y, daq.F2);
   connect(constantDisplacementPump1.portP, lpAccumulator.port_a) annotation(
     Line(points = {{-50, -58}, {20, -58}, {20, -12}, {32, -12}}, color = {255, 0, 0}));
+  connect(doubleActingCylinder.port_a, jB.port[1]) annotation(
+    Line(points = {{-72, 20}, {-60, 20}, {-60, 42}, {-42, 42}}, color = {255, 0, 0}));
+  connect(doubleActingCylinder.port_b, jA.port[1]) annotation(
+    Line(points = {{-72, 36}, {-66, 36}, {-66, -12}, {-54, -12}}, color = {255, 0, 0}));
   annotation(
     experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.002),
     uses(OceanEngineeringToolbox(version = "v0.3"), OpenHydraulics(version = "2.0.0")),

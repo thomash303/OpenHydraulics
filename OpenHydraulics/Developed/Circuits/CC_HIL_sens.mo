@@ -1,7 +1,7 @@
 within OpenHydraulics.Developed.Circuits;
 
 model CC_HIL_sens
-  Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.04, compressibleEnable = true, strokeLength = 0.3, pistonRodMass = 1, maxPressure = 2e8, leakageEnable = true, Cv = 1000, f_c = 200, Cst = 5, f_st = 2000, CHeadExLeakage = 0.00000000055, CRodExLeakage = 0.00000000055, CInLeakage = 0.0000000005, damping = 0, stribeckFrictionEnable = false, rodDiameter(displayUnit = "mm") = 0.029, closedLength = 0.01, p_init = 1e6) annotation(
+  Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.04, compressibleEnable = true, strokeLength = 0.3, pistonRodMass = 1, maxPressure = 2e8, leakageEnable = true, Cv = 1000, f_c = 200, Cst = 5, f_st = 2000, CHeadExLeakage = 0.00000000055, CRodExLeakage = 0.00000000055, CInLeakage = 0.0000000005, damping = 0, stribeckFrictionEnable = false, rodDiameter(displayUnit = "mm") = 0.029, closedLength = 0.0001, p_init = 1e6) annotation(
     Placement(transformation(origin = {-90, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   inner Developed.Systems.System system annotation(
     Placement(transformation(origin = {-64, 72}, extent = {{-10, -10}, {10, 10}})));
@@ -21,7 +21,7 @@ model CC_HIL_sens
     Placement(transformation(origin = {-8, 54}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
   Modelica.Mechanics.Translational.Components.Fixed fixed annotation(
     Placement(transformation(origin = {-82, -10}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Sine sine1(amplitude = 0.125, f = 0.33, offset = 0.15) annotation(
+  Modelica.Blocks.Sources.Sine sine1(amplitude = 0.125, f = 0.33, offset = 0.15, phase = 2*3.14*0.33*0.1) annotation(
     Placement(transformation(origin = {40, 76}, extent = {{10, -10}, {-10, 10}})));
   Developed.Machines.ConstantDisplacementPump constantDisplacementPump1(CMotorLeakage = 0.00025, Dconst = -4e-6, p_init(displayUnit = "bar")) annotation(
     Placement(transformation(origin = {-50, -68}, extent = {{10, -10}, {-10, 10}})));
