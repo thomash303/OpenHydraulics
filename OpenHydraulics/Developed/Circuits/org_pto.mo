@@ -2,8 +2,18 @@ within OpenHydraulics.Developed.Circuits;
 
 model org_pto
 
+  // Importing from the OET
+  import OceanEngineeringToolbox.Hydro.*;
+  import OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces.CurrentModels.*;
+  import OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces.WaveModels.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveModels.*;
+
+
   import Modelica.Units.SI;
-  
   // Parameters
   constant Integer m = 3 "Number of phases";
   parameter Modelica.Units.SI.Voltage VNominal = 100 "Nominal RMS voltage per phase";
@@ -23,7 +33,7 @@ model org_pto
     Placement(transformation(origin = {-88, 86}, extent = {{-10, -10}, {10, 10}})));
   inner OceanEngineeringToolbox.DataImport.FileDirectory fileDirectory(file = "C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/RM3HydroCoeff.mat") annotation(
     Placement(transformation(origin = {10, 86}, extent = {{-9, -7.25}, {9, 7.25}})));
-  inner OceanEngineeringToolbox.Environmental.Environment environment(wave(Tp = 15))  annotation(
+  inner OceanEngineeringToolbox.Environmental.Environment environment(redeclare RegularWave wave(file = fileDirectory.file, Tp = 15) "Regular wave")  annotation(
     Placement(transformation(origin = {-24, 86}, extent = {{-10, -8}, {10, 8}})));
   inner Developed.Systems.System system annotation(
     Placement(transformation(origin = {-56, 86}, extent = {{-10, -10}, {10, 10}})));

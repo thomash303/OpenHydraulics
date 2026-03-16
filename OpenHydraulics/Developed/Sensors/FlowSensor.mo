@@ -12,10 +12,10 @@ model FlowSensor
     Placement(transformation(extent = {{-110, -10}, {-90, 10}})));
   Interfaces.FluidPort port_b(p(start = p_init)) annotation(
     Placement(transformation(extent = {{110, -10}, {90, 10}})));
-  RealOutput y annotation(
+  RealOutput m_flow(unit="kg/s") annotation(
     Placement(transformation(origin = {0, -70}, extent = {{-10, -10}, {10, 10}}, rotation = 270)));
 equation
-  y = port_a.m_flow;
+  m_flow = port_a.m_flow;
   connect(port_a, port_b) annotation(
     Line(points = {{-100, 0}, {100, 0}}, color = {255, 0, 0}));
   annotation(

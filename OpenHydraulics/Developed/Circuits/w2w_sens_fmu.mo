@@ -1,6 +1,6 @@
 within OpenHydraulics.Developed.Circuits;
 
-model w2w_sens
+model w2w_sens_fmu
   import Modelica.Units.SI;
   // Parameters
   constant Integer m = 3 "Number of phases";
@@ -10,22 +10,12 @@ model w2w_sens
   parameter Modelica.Units.SI.Torque TLoad = 161.4 "Nominal load torque";
   parameter Modelica.Units.SI.AngularVelocity wLoad(displayUnit = "rev/min") = 1440.45*2*Modelica.Constants.pi/60 "Nominal load speed";
   parameter Modelica.Units.SI.Inertia JLoad = 0.29 "Load's moment of inertia";
-  OceanEngineeringToolbox.Hydro.HydrodynamicBody float(I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, animationEnable = true, bodyColour = {255, 255, 0}, bodyIndex = 1, enableDampingDragForce = true, enableExcitationForce = true, enableHydrostaticForce = true, enableRadiationForce = false, geometryFile = "file://C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/geometry/float.stl", ra_CM = {0, 0, 0.5}, Ad = {0, 0, 5, 0, 0, 0}, Cv = {0, 0, 1e5, 0, 0, 0}) annotation(
-    Placement(transformation(origin = {-53, 37}, extent = {{-15, -15}, {15, 15}})));
-  Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1}, useAxisFlange = true) annotation(
-    Placement(transformation(origin = {-68, -24}, extent = {{10, -10}, {-10, 10}}, rotation = -90)));
   Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.1484, compressibleEnable = true, strokeLength = 3, pistonRodMass = 5, maxPressure = 2e8, leakageEnable = true, Cv = 1000, f_c = 200, Cst = 5, f_st = 2000, CHeadExLeakage = 0.000000002, CRodExLeakage = 0.000000002, CInLeakage = 0.0000000005, damping = 0, stribeckFrictionEnable = true, p_init = 1.5e6, closedLength = 0.001, initType = Developed.Types.RevoluteInit.Position, s_init = 1) annotation(
     Placement(transformation(origin = {-32, -26}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   inner OceanEngineeringToolbox.Multibody.Worlds.World world annotation(
     Placement(transformation(origin = {-88, 86}, extent = {{-10, -10}, {10, 10}})));
-  inner OceanEngineeringToolbox.DataImport.FileDirectory fileDirectory(file = "C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/RM3HydroCoeff.mat") annotation(
-    Placement(transformation(origin = {10, 86}, extent = {{-9, -7.25}, {9, 7.25}})));
-  inner OceanEngineeringToolbox.Environmental.Environment environment(wave(Tp = 15)) annotation(
-    Placement(transformation(origin = {-24, 86}, extent = {{-10, -8}, {10, 8}})));
   inner Developed.Systems.System system annotation(
     Placement(transformation(origin = {-56, 86}, extent = {{-10, -10}, {10, 10}})));
-  OceanEngineeringToolbox.Multibody.Joints.Fixed fixed(r = {0, 0, -2.5}) annotation(
-    Placement(transformation(origin = {-68, -88}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Developed.Machines.ConstantDisplacementPump constantDisplacementPump(CMotorLeakage = 0.00025, Dconst = 312e-6*0.5, p_init(displayUnit = "bar") = 7e6) annotation(
     Placement(transformation(origin = {62, -22}, extent = {{10, 10}, {-10, -10}})));
   Developed.Volumes.Accumulator hpAccumulator(gasVolume = 1, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.95, p_init(displayUnit = "bar") = 7e6, p_precharge(displayUnit = "bar") = 3e6, p_max = 2e8, V_init = 0.5) annotation(
@@ -36,7 +26,7 @@ model w2w_sens
     Placement(transformation(origin = {0, -26}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Custom.Basic.LaminarRestriction laminarRestriction(D = 1, L = 0.01, p_init(displayUnit = "bar") = 1e6) annotation(
     Placement(transformation(origin = {52, -62}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Units.SI.Force Fpto = doubleActingCylinder.boreDiameter^2/4*3.14*(hpAccumulator.port_a.p - lpAccumulator.port_a.p)*sign(float.body.absoluteSensor.v[3]);
+  Modelica.Units.SI.Force Fpto = doubleActingCylinder.boreDiameter^2/4*3.14*(hpAccumulator.port_a.p - lpAccumulator.port_a.p)*sign(v);
   Developed.Volumes.OpenTank tank annotation(
     Placement(transformation(origin = {28, -34}, extent = {{-10, -10}, {10, 10}})));
   Developed.Valves.ReliefValve reliefValve(Av = 0.001, Cd = 1, CvData = Modelica.Fluid.Types.CvTypes.Av, p_init = 7e6, p_open = 4.01e7, p_relief = 4e7) annotation(
@@ -59,39 +49,72 @@ model w2w_sens
     Placement(transformation(origin = {80, -62}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.Rotational.Sensors.TorqueSensor torqueSensor annotation(
     Placement(transformation(origin = {90, -22}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor mbAbsoluteSensor(get_r = true, get_v = true)  annotation(
-    Placement(transformation(origin = {-20, 38}, extent = {{-10, -10}, {10, 10}}, rotation = -0)));
-  Sensors.FlowSensor pistonOutflow(p_init = 3e6)  annotation(
+  Sensors.FlowSensor pistonOutflow(p_init = 3e6) annotation(
     Placement(transformation(origin = {8, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Sensors.FlowSensor motorFlow(p_init = 7e6)  annotation(
+  Sensors.FlowSensor motorFlow(p_init = 7e6) annotation(
     Placement(transformation(origin = {52, 10}, extent = {{-10, -10}, {10, 10}})));
-  Sensors.FlowSensor pistonInflow(p_init = 3e6)  annotation(
+  Sensors.FlowSensor pistonInflow(p_init = 3e6) annotation(
     Placement(transformation(origin = {8, -48}, extent = {{10, -10}, {-10, 10}}, rotation = -90)));
-  Sensors.PressureSensor pA(p_init = 1.5e6, pressureType = OpenHydraulics.Developed.Types.PressureTypes.Gauge)  annotation(
+  Sensors.PressureSensor pA(p_init = 1.5e6, pressureType = Developed.Types.PressureTypes.Gauge) annotation(
     Placement(transformation(origin = {-22, -56}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
-  Sensors.PressureSensor pB(p_init = 1.5e6, pressureType = OpenHydraulics.Developed.Types.PressureTypes.Gauge)  annotation(
+  Sensors.PressureSensor pB(p_init = 1.5e6, pressureType = Developed.Types.PressureTypes.Gauge) annotation(
     Placement(transformation(origin = {-22, 6}, extent = {{-10, -10}, {10, 10}})));
-  Sensors.PressureSensor pHP(p_init = 3e6, pressureType = OpenHydraulics.Developed.Types.PressureTypes.Gauge)  annotation(
+  Sensors.PressureSensor pHP(p_init = 3e6, pressureType = Developed.Types.PressureTypes.Gauge) annotation(
     Placement(transformation(origin = {8, 40}, extent = {{-10, -10}, {10, 10}})));
-  Sensors.PressureSensor pLP(p_init = 3e6, pressureType = OpenHydraulics.Developed.Types.PressureTypes.Gauge)  annotation(
+  Sensors.PressureSensor pLP(p_init = 3e6, pressureType = Developed.Types.PressureTypes.Gauge) annotation(
     Placement(transformation(origin = {46, -86}, extent = {{-10, 10}, {10, -10}})));
   Modelica.Electrical.Machines.Sensors.CurrentQuasiRMSSensor currentRMSSensor annotation(
     Placement(transformation(origin = {136, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Electrical.Machines.Sensors.VoltageQuasiRMSSensor voltageRMSSensor annotation(
     Placement(transformation(origin = {158, -48}, extent = {{10, 10}, {-10, -10}})));
+  Modelica.Mechanics.Translational.Components.GeneralPositionToForceAdaptor positionToForceAdaptor annotation(
+    Placement(transformation(origin = {-78, 8}, extent = {{-14, -18}, {14, 18}})));
+
+  // FMU Modifications
+  // Rigid body mechanics
+  //SI.Height eta  "Wave elevation";
+  //input SI.Position s "Body position";
+  //input SI.Velocity v "Body velocity";
+  
+  //SI.Force Fpto "PTO force";
+  //SI.Force Fexc "Excitation force";
+  
+  // Hydraulics
+  output SI.Pressure PA = daq.sensor_bus.pA "Hydraulic cylinder chamber A pressure";
+  output SI.Pressure PB = daq.sensor_bus.pB "Hydraulic cylinder chamber B pressure";
+  output SI.Pressure PHP = daq.sensor_bus.pHP "High pressure accumulator pressure";
+  output SI.Pressure PLP = daq.sensor_bus.pLP "Low pressure accumulator pressure";
+  
+  output SI.MassFlowRate mHP = daq.sensor_bus.mHP "Mass flow from the hydraulic cylinder";
+  output SI.MassFlowRate mLP = daq.sensor_bus.mLP "Mass flow to the hydraulic cylinder";
+  output SI.MassFlowRate mm = daq.sensor_bus.mm "Mass flow through the motor";
+  
+  // Rotational mechanics
+  output SI.AngularVelocity omega = daq.sensor_bus.omega "Shaft angular velocity";
+  output SI.Torque T = daq.sensor_bus.T "Shaft torque";
+  
+  // Electrial dynamics
+  output SI.Voltage V = daq.sensor_bus.V "Voltage space phasor";
+  
+  output SI.Current i = daq.sensor_bus.i "Current space phasor";
+ 
+  output SI.Force fpto = Fpto "PTO force";
+  
+  Modelica.Blocks.Interfaces.RealOutput f annotation(
+    Placement(transformation(origin = {235, 1}, extent = {{-15, -15}, {15, 15}}), iconTransformation(origin = {118, 0}, extent = {{-18, -18}, {18, 18}})));
+  Modelica.Blocks.Interfaces.RealInput s annotation(
+    Placement(transformation(origin = {-120, 60}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-120, 60}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealInput v annotation(
+    Placement(transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealInput a annotation(
+    Placement(transformation(origin = {-120, -60}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-120, -60}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Mechanics.Translational.Components.Fixed fixed(s0 = -2.5)  annotation(
+    Placement(transformation(origin = {-32, -74}, extent = {{-10, -10}, {10, 10}})));
 equation
-  connect(prismatic.frame_b, float.frame_a) annotation(
-    Line(points = {{-68, -14}, {-68, 37}}, color = {95, 95, 95}));
-  connect(doubleActingCylinder.flange_b, prismatic.axis) annotation(
-    Line(points = {{-32, -16}, {-62, -16}}, color = {0, 127, 0}));
-  connect(fixed.frame_b, prismatic.frame_a) annotation(
-    Line(points = {{-68, -78}, {-68, -34}}, color = {95, 95, 95}));
   connect(laminarRestriction.port_b, constantDisplacementPump.portP) annotation(
     Line(points = {{62, -62}, {62, -32}}, color = {255, 0, 0}));
   connect(laminarRestriction.port_a, lpAccumulator.port_a) annotation(
     Line(points = {{42, -62}, {26, -62}}, color = {255, 0, 0}));
-  connect(prismatic.support, doubleActingCylinder.flange_a) annotation(
-    Line(points = {{-62, -28}, {-50, -28}, {-50, -36}, {-32, -36}}, color = {0, 127, 0}));
   connect(doubleActingCylinder.port_b, v4_3cc.portB) annotation(
     Line(points = {{-24, -18}, {-8, -18}, {-8, -22}}, color = {255, 0, 0}));
   connect(doubleActingCylinder.port_a, v4_3cc.portA) annotation(
@@ -108,64 +131,70 @@ equation
     Line(points = {{112, -12}, {112, -12}}, color = {0, 0, 255}));
   connect(sineVoltage.plug_n, star.plug_p) annotation(
     Line(points = {{168, -20}, {176, -20}}, color = {0, 0, 255}));
-  
-  // Sensing bus
-  daq.eta = environment.wave.SSE;
-  daq.Fexc = float.excitation.excitationForce.F[3];
+// Sensing bus
+  daq.Fexc = 1;
   daq.Fpto = Fpto;
+  daq.eta = 1;
   daq.D = constantDisplacementPump.fluidPower2MechRot.D;
- 
- connect(rotSpeedSensor.flange, constantDisplacementPump.flange_a) annotation(
+  connect(rotSpeedSensor.flange, constantDisplacementPump.flange_a) annotation(
     Line(points = {{70, -62}, {70, -22}, {72, -22}}));
- connect(rotSpeedSensor.w, daq.sensor_bus.omega);
- connect(constantDisplacementPump.flange_a, torqueSensor.flange_a) annotation(
+  connect(rotSpeedSensor.w, daq.sensor_bus.omega);
+  connect(constantDisplacementPump.flange_a, torqueSensor.flange_a) annotation(
     Line(points = {{72, -22}, {80, -22}}));
- connect(torqueSensor.flange_b, aimc.flange) annotation(
+  connect(torqueSensor.flange_b, aimc.flange) annotation(
     Line(points = {{100, -22}, {108, -22}}));
- connect(torqueSensor.tau, daq.sensor_bus.T);
- connect(mbAbsoluteSensor.r[3], daq.sensor_bus.s);
- connect(mbAbsoluteSensor.v[3], daq.sensor_bus.v);
- connect(v4_3cc.portT, pistonOutflow.port_a) annotation(
+  connect(torqueSensor.tau, daq.sensor_bus.T);
+  connect(v4_3cc.portT, pistonOutflow.port_a) annotation(
     Line(points = {{8, -22}, {8, -12}}, color = {255, 0, 0}));
- connect(pistonOutflow.port_b, hpAccumulator.port_a) annotation(
+  connect(pistonOutflow.port_b, hpAccumulator.port_a) annotation(
     Line(points = {{8, 8}, {8, 10}, {28, 10}}, color = {255, 0, 0}));
- connect(hpAccumulator.port_a, motorFlow.port_a) annotation(
+  connect(hpAccumulator.port_a, motorFlow.port_a) annotation(
     Line(points = {{28, 10}, {42, 10}}, color = {255, 0, 0}));
- connect(motorFlow.port_b, constantDisplacementPump.portT) annotation(
+  connect(motorFlow.port_b, constantDisplacementPump.portT) annotation(
     Line(points = {{62, 10}, {62, -12}}, color = {255, 0, 0}));
- connect(lpAccumulator.port_a, pistonInflow.port_a) annotation(
+  connect(lpAccumulator.port_a, pistonInflow.port_a) annotation(
     Line(points = {{26, -62}, {8, -62}, {8, -58}}, color = {255, 0, 0}));
- connect(pistonInflow.port_b, v4_3cc.portP) annotation(
+  connect(pistonInflow.port_b, v4_3cc.portP) annotation(
     Line(points = {{8, -38}, {8, -30}}, color = {255, 0, 0}));
- connect(pistonOutflow.m_flow, daq.sensor_bus.mHP);
- connect(motorFlow.m_flow, daq.sensor_bus.mm);
- connect(pistonInflow.m_flow, daq.sensor_bus.mLP);
- connect(pA.port_a, doubleActingCylinder.port_a) annotation(
+  connect(pistonOutflow.m_flow, daq.sensor_bus.mHP);
+  connect(motorFlow.m_flow, daq.sensor_bus.mm);
+  connect(pistonInflow.m_flow, daq.sensor_bus.mLP);
+  connect(pA.port_a, doubleActingCylinder.port_a) annotation(
     Line(points = {{-24, -46}, {-24, -34}}, color = {255, 0, 0}));
- connect(pB.port_a, doubleActingCylinder.port_b) annotation(
+  connect(pB.port_a, doubleActingCylinder.port_b) annotation(
     Line(points = {{-24, -4}, {-24, -18}}, color = {255, 0, 0}));
- connect(pHP.port_a, hpAccumulator.port_a) annotation(
+  connect(pHP.port_a, hpAccumulator.port_a) annotation(
     Line(points = {{6, 30}, {6, 10}, {28, 10}}, color = {255, 0, 0}));
- connect(pA.p, daq.sensor_bus.pA);
- connect(pB.p, daq.sensor_bus.pB);
- connect(pHP.p, daq.sensor_bus.pHP);
- connect(pLP.p, daq.sensor_bus.pLP);
- connect(terminalBox.plugSupply, currentRMSSensor.plug_p) annotation(
+  connect(pA.p, daq.sensor_bus.pA);
+  connect(pB.p, daq.sensor_bus.pB);
+  connect(pHP.p, daq.sensor_bus.pHP);
+  connect(pLP.p, daq.sensor_bus.pLP);
+  connect(terminalBox.plugSupply, currentRMSSensor.plug_p) annotation(
     Line(points = {{118, -10}, {118, 0}, {126, 0}}, color = {0, 0, 255}));
- connect(currentRMSSensor.plug_n, sineVoltage.plug_p) annotation(
+  connect(currentRMSSensor.plug_n, sineVoltage.plug_p) annotation(
     Line(points = {{146, 0}, {148, 0}, {148, -20}}, color = {0, 0, 255}));
- connect(voltageRMSSensor.plug_p, star.plug_p) annotation(
+  connect(voltageRMSSensor.plug_p, star.plug_p) annotation(
     Line(points = {{168, -48}, {176, -48}, {176, -20}}, color = {0, 0, 255}));
- connect(voltageRMSSensor.plug_n, sineVoltage.plug_p) annotation(
+  connect(voltageRMSSensor.plug_n, sineVoltage.plug_p) annotation(
     Line(points = {{148, -48}, {148, -20}}, color = {0, 0, 255}));
- connect(currentRMSSensor.I, daq.sensor_bus.i);
- connect(voltageRMSSensor.V, daq.sensor_bus.V);
- connect(pLP.port_a, laminarRestriction.port_a) annotation(
+  connect(currentRMSSensor.I, daq.sensor_bus.i);
+  connect(voltageRMSSensor.V, daq.sensor_bus.V);
+  connect(pLP.port_a, laminarRestriction.port_a) annotation(
     Line(points = {{44, -76}, {42, -76}, {42, -62}}, color = {255, 0, 0}));
- connect(mbAbsoluteSensor.frame_a, float.frame_b) annotation(
-    Line(points = {{-30, 38}, {-38, 38}}, color = {95, 95, 95}));
+  connect(s, positionToForceAdaptor.p) annotation(
+    Line(points = {{-120, 60}, {-90, 60}, {-90, 22}, {-82, 22}}, color = {0, 0, 127}));
+  connect(v, positionToForceAdaptor.pder) annotation(
+    Line(points = {{-120, 0}, {-92, 0}, {-92, 18}, {-82, 18}}, color = {0, 0, 127}));
+  connect(a, positionToForceAdaptor.pder2) annotation(
+    Line(points = {{-120, -60}, {-86, -60}, {-86, 12}, {-82, 12}}, color = {0, 0, 127}));
+  connect(positionToForceAdaptor.f, f) annotation(
+    Line(points = {{-82, -6}, {-62, -6}, {-62, 80}, {235, 80}, {235, 1}}, color = {0, 0, 127}));
+  connect(fixed.flange, doubleActingCylinder.flange_a) annotation(
+    Line(points = {{-32, -74}, {-32, -36}}, color = {0, 127, 0}));
+  connect(positionToForceAdaptor.flange, doubleActingCylinder.flange_b) annotation(
+    Line(points = {{-76, 8}, {-32, 8}, {-32, -16}}, color = {0, 127, 0}));
   annotation(
     experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.002),
     uses(OceanEngineeringToolbox(version = "v0.3"), OpenHydraulics(version = "2.0.0")),
     Diagram(coordinateSystem(extent = {{-100, 100}, {220, -100}})));
-end w2w_sens;
+end w2w_sens_fmu;

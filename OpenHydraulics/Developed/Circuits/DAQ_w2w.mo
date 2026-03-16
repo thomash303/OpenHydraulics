@@ -4,9 +4,9 @@ model DAQ_w2w
 
   // Importing from the MSL
   import Modelica.Units.SI;
-  
+  /*
   // Rigid body mechanics
-  SI.Height eta "Wave elevation";
+  SI.Height eta  "Wave elevation";
   SI.Position s "Body position";
   SI.Velocity v "Body velocity";
   
@@ -24,7 +24,7 @@ model DAQ_w2w
   SI.MassFlowRate mm "Mass flow through the motor";
   
   // Rotational mechanics
-  SI.AngularVelocity omega "Shaft angular velocity";
+  SI.AngularVelocity omega = sensor_bus.omega "Shaft angular velocity";
   SI.Torque T "Shaft torque";
   
   // Electrial dynamics
@@ -35,6 +35,14 @@ model DAQ_w2w
   SI.Current ia "Current of A phase";
   SI.Current ib "Current of B phase";
   SI.Current ic "Current of C phase";
+  */
+  
+  SI.Height eta "Wave elevation";
+  SI.Force Fpto "PTO force";
+  SI.Force Fexc "Excitation force";
+  SI.Volume D "Motor displacement";
+  
+  DAQ_w2w_bus sensor_bus;
   
 
 equation
