@@ -28,29 +28,33 @@ model ConstantDisplacementPump "Variable Displacement Pump with losses"
   BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Cv, Cf = Cf, Dmax = Dconst, dp = dp) if frictionEnable annotation(
     Placement(transformation(extent = {{-80, -10}, {-60, 10}})));
   // Fluid components
-  FluidPower2MechRotConst fluidPower2MechRot(final Dconst = Dconst) annotation(
+  FluidPower2MechRotConst fluidPower2MechRot(final Dconst = Dconst, p_init_a = p_init_T, p_init_b = p_init_P) annotation(
     Placement(transformation(extent = {{-10, -10}, {10, 10}})));
-  Interfaces.NJunction j1 annotation(
+  Interfaces.NJunction j1(p_init = p_init_T) annotation(
     Placement(transformation(extent = {{-10, -50}, {10, -30}})));
-  Interfaces.NJunction j2 annotation(
+  Interfaces.NJunction j2(p_init = p_init_P) annotation(
     Placement(transformation(extent = {{-10, 30}, {10, 50}})));
   // Fluid ports
-  Interfaces.FluidPort portP annotation(
+  parameter SI.Pressure p_init_P = p_init "Initial fluid pressure at the inlet" annotation(
+    Dialog(tab = "Initialization", group = "Fluid"));
+  parameter SI.Pressure p_init_T = p_init "Initial fluid pressure at the outlet" annotation(
+    Dialog(tab = "Initialization", group = "Fluid"));
+  Interfaces.FluidPort portP(p(start = p_init_P)) annotation(
     Placement(transformation(extent = {{-10, 90}, {10, 110}})));
-  Interfaces.FluidPort portT annotation(
+  Interfaces.FluidPort portT(p(start = p_init_T)) annotation(
     Placement(transformation(extent = {{-10, -110}, {10, -90}})));
   // Rotational flange
   Flange_a flange_a "(left) driving flange (flange axis directed INTO cut plane)" annotation(
     Placement(transformation(extent = {{-110, -10}, {-90, 10}})));
   // Motor leakage
-  Cylinders.BaseClasses.Leakage motorLeakage(CLeakage = CMotorLeakage) if leakageEnable annotation(
+  Cylinders.BaseClasses.Leakage motorLeakage(CLeakage = CMotorLeakage, p_init_a = p_init_P, p_init_b = p_init_T) if leakageEnable annotation(
     Placement(transformation(origin = {36, -2}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
 protected
   constant Real dispFraction = 1 "introduced as constant to keep equations consistent with other pumps";
-  SI.Pressure dp = portP.p - portT.p;
+  SI.Pressure dp = portP.p - portT.p annotation(
+    Placement(visible = false, transformation(extent = {{0, 0}, {0, 0}})));
 equation
 // Connect the input of the leakage model and the mechanical loss model
-
   connect(portT, j1.port[1]) annotation(
     Line(points = {{0, -100}, {0, -40.6667}}, color = {255, 0, 0}));
   connect(portP, j2.port[1]) annotation(

@@ -42,6 +42,25 @@ model DAQ_w2w
   SI.Force Fexc "Excitation force";
   SI.Volume D "Motor displacement";
   
+  // Double acting cylinder parameters
+  /*
+  
+  SI.Force Fpto "PTO force";
+  SI.Force Finer "Inertial force";
+  SI.Force FgravIner "Gravity component 1of the inertial force";
+  SI.Force FflIner "Fluid inertia component of the inertial force";
+  SI.Force Ffric "Friction force";
+  
+  // Power
+  SI.Power Pcyl_mech "Mechanical power in the cylinder";
+  SI.Power Pcyl_hyd "Hydraulic power in the cylinder";
+  
+  // Energy
+  SI.Energy Ecyl_mech "Mechanical power in the cylinder";
+  SI.Energy Ecyl_hyd "Hydraulic power in the cylinder";
+  
+  
+  */
   DAQ_w2w_bus sensor_bus;
   
 

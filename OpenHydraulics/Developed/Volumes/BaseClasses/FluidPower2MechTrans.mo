@@ -57,18 +57,16 @@ model FluidPower2MechTrans
   // remove
     Modelica.Units.SI.Velocity v_rel(start = 0) "relative velocity";
   //Modelica.Units.SI.Acceleration a_rel(start = 0) "relative acceleration";
-  
-   Real derP = der(p_vol); 
-protected
-  // Empty volume
-  parameter SI.Position s_relMin = -0.001 "the s_rel value at which the volume is zero";
-  Boolean empty "true when chamber reaches end of travel";
-  
+   
   // Force variables
   SI.Force f_inertia "inertial force of the fluid";
   SI.Force f_stop "contact force when chamber is empty";
   SI.Force f_damping "damping force when chamber is empty";
   SI.Force f_contact "contact force when the end of travel is reached";
+protected
+  // Empty volume
+  parameter SI.Position s_relMin = -0.001 "the s_rel value at which the volume is zero";
+  Boolean empty "true when chamber reaches end of travel";
 
 algorithm
   assert(V > 0, "Volume in fluid chamber is negative or zero.\n" + "Increase the residualVolume or the stopStiffness");

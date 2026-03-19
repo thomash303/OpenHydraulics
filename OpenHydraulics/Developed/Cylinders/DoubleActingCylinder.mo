@@ -15,6 +15,9 @@ model DoubleActingCylinder
   parameter Boolean compressibleEnable = false "Enable fluid compressibility model" annotation(
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
+  parameter Boolean fluidInertiaEnable = false "Enable fluid fluid inertia model" annotation(
+    Dialog(group = "Non-Ideal Models"),
+    choices(checkBox = true));
   parameter Boolean gravityAccelerationEnable = false "Enable acceleration due to gravity model" annotation(
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
@@ -83,14 +86,14 @@ model DoubleActingCylinder
   parameter Boolean fixRodPressure = false "Initialize the pressure at the rod side" annotation(
     Dialog(tab = "Initialization", group = "Fluid"));
   // Fluid ports
-  Interfaces.FluidPort port_a annotation(
+  Interfaces.FluidPort port_a(p(start = p_init))  annotation(
     Placement(transformation(extent = {{-90, -90}, {-70, -70}})));
-  Interfaces.FluidPort port_b annotation(
+  Interfaces.FluidPort port_b(p(start = p_init))  annotation(
     Placement(transformation(extent = {{90, -90}, {70, -70}})));
   // Fluid components
-  Volumes.BaseClasses.FluidPower2MechTrans cylinderChamberHead(compressibleEnable = compressibleEnable, A = pi/4*boreDiameter^2, stopStiffness = stopStiffness, stopDamping = stopDamping, n_ports = 3, p_init = p_init, maxPressure = maxPressure*10, residualVolume = 3e-4) annotation(
+  Volumes.BaseClasses.FluidPower2MechTrans cylinderChamberHead(compressibleEnable = compressibleEnable, fluidInertiaEnable = fluidInertiaEnable, A = pi/4*boreDiameter^2, stopStiffness = stopStiffness, stopDamping = stopDamping, n_ports = 3, p_init = p_init, maxPressure = maxPressure*10, residualVolume = 3e-4) annotation(
     Placement(transformation(extent = {{-50, -10}, {-30, 10}})));
-  Volumes.BaseClasses.FluidPower2MechTrans cylinderChamberRod(compressibleEnable = compressibleEnable, A = pi/4*(boreDiameter^2 - rodDiameter^2), stopStiffness = stopStiffness, stopDamping = stopDamping, n_ports = 3, p_init = p_init, maxPressure = maxPressure*10, residualVolume = 3e-4) annotation(
+  Volumes.BaseClasses.FluidPower2MechTrans cylinderChamberRod(compressibleEnable = compressibleEnable, fluidInertiaEnable = fluidInertiaEnable, A = pi/4*(boreDiameter^2 - rodDiameter^2), stopStiffness = stopStiffness, stopDamping = stopDamping, n_ports = 3, p_init = p_init, maxPressure = maxPressure*10, residualVolume = 3e-4) annotation(
     Placement(transformation(extent = {{30, -10}, {50, 10}})));
   //Volumes.BaseClasses.FluidPower2MechTrans or Custom.Basic.FluidPower2MechTrans
   // Translational components
@@ -109,9 +112,9 @@ model DoubleActingCylinder
   */
 
 // Fluid junctions
-  Interfaces.NJunction jA(n_ports = 2) annotation(
+  Interfaces.NJunction jA(n_ports = 2, p_init = p_init) annotation(
     Placement(transformation(extent = {{-50, -90}, {-30, -70}})));
-  Interfaces.NJunction jB(n_ports = 2) annotation(
+  Interfaces.NJunction jB(n_ports = 2, p_init = p_init) annotation(
     Placement(transformation(extent = {{30, -90}, {50, -70}})));
   // Inertial force
   Sources.Force gravityForce if gravityAccelerationEnable annotation(
@@ -133,6 +136,24 @@ model DoubleActingCylinder
     Placement(transformation(origin = {66, -18}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
   Modelica.Mechanics.Translational.Components.Damper damper(d = damping) annotation(
     Placement(transformation(origin = {-22, -44}, extent = {{-48, 58}, {-28, 78}})));
+
+  // PTO Force
+  SI.Area Ap = cylinderChamberHead.A "Piston head area";
+  SI.Area Aa = cylinderChamberRod.A "Piston annulus area";
+  SI.Force Fpto = port_a.p * Ap - port_b.p * Aa + Finer + Ffric "PTO force";
+  SI.Force Finer = FgravIner + FflIner "Inertial force";
+  SI.Force FgravIner "Gravity component 1of the inertial force";
+  SI.Force FflIner = cylinderChamberHead.f_inertia + cylinderChamberRod.f_inertia "Fluid inertia component of the inertial force";
+  SI.Force Ffric "Friction force";
+  
+  // Power
+  SI.Power Pcyl_mech = -Fpto * piston.v "Mechanical power in the cylinder";
+  SI.Power Pcyl_hyd = -(port_a.p * port_a.m_flow / cylinderChamberHead.rho + port_b.p * port_b.m_flow / cylinderChamberRod.rho) "Hydraulic power in the cylinder";
+  
+  // Energy
+  SI.Energy Ecyl_mech "Mechanical power in the cylinder";
+  SI.Energy Ecyl_hyd "Hydraulic power in the cylinder";
+  
 initial equation
   assert(cylinderChamberHead.s_rel >= 0, "Initial position is smaller than zero");
   assert(cylinderChamberRod.s_rel >= 0, "Initial position is larger than strokeLength");
@@ -166,6 +187,23 @@ initial equation
     cylinderChamberRod.p_vol = p_init;
   end if;
 equation
+  // PTO force conditional calculations
+  if gravityAccelerationEnable then
+    FgravIner = gravityForceSource.k;
+  else
+    FgravIner = 0;
+  end if; 
+  
+  if stribeckFrictionEnable then
+    Ffric = -stribeckFriction.f;
+  else  
+    Ffric = 0;
+  end if;
+  
+  // Energy calculations
+  der(Ecyl_mech) = Pcyl_mech;
+  der(Ecyl_hyd) = Pcyl_hyd;
+
   connect(cylinderChamberHead.flange_b, piston.flange_a) annotation(
     Line(points = {{-30, 0}, {-10, 0}}, color = {0, 127, 0}));
   connect(rod.flange_a, piston.flange_b) annotation(

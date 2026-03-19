@@ -17,15 +17,20 @@ model HorizontalTwoPort
   SI.Pressure dp = port_a.p - port_b.p "Pressure drop (negative for pumps)";
  
   // Fluid ports 
-  FluidPort port_a(p(start = p_init)) annotation(
+  parameter SI.Pressure p_init_a = p_init "Initial fluid pressure at the inlet" annotation(
+    Dialog(tab = "Initialization", group = "Fluid"));
+  parameter SI.Pressure p_init_b = p_init "Initial fluid pressure at the outlet" annotation(
+    Dialog(tab = "Initialization", group = "Fluid"));
+  
+  FluidPort port_a(p(start = p_init_a)) annotation(
     Placement(transformation(extent = {{-110, -10}, {-90, 10}})));
-  FluidPort port_b(p(start = p_init)) annotation(
+  FluidPort port_b(p(start = p_init_b)) annotation(
     Placement(transformation(extent = {{110, -10}, {90, 10}})));
 
 protected
   // Fluid port pressures
-  SI.AbsolutePressure p_a(start = p_init) "Fluid properties at the inlet";
-  SI.AbsolutePressure p_b(start = p_init) "Fluid properties at the oulet";
+  SI.AbsolutePressure p_a(start = p_init_a) "Fluid properties at the inlet";
+  SI.AbsolutePressure p_b(start = p_init_b) "Fluid properties at the oulet";
 
 equation
   // Set fluid properties

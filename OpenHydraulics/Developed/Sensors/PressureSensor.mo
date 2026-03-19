@@ -11,13 +11,13 @@ model PressureSensor "Model representing a pressure sensor"
   parameter SI.Volume V = 0 "Volume for non-ideal pressure sensor" annotation(
     Dialog(tab = "Advanced"));
   // Fluid ports
-  Interfaces.FluidPort port_a annotation(
+  Interfaces.FluidPort port_a(p(start = p_init))  annotation(
     Placement(transformation(origin = {-50, 0}, extent = {{-10, -110}, {10, -90}}), iconTransformation(origin = {-30, 0}, extent = {{-10, -110}, {10, -90}})));
-  Interfaces.FluidPort port_b if pressureType == Types.PressureTypes.Relative annotation(
+  Interfaces.FluidPort port_b(p(start = p_init))  if pressureType == Types.PressureTypes.Relative annotation(
     Placement(transformation(origin = {50, 0}, extent = {{-10, -110}, {10, -90}}), iconTransformation(origin = {30, -2}, extent = {{-10, -110}, {10, -90}})));
-  Volumes.BaseClasses.VolumeClosed volumeClosed_a(final V = V, final n_ports = 1) annotation(
+  Volumes.BaseClasses.VolumeClosed volumeClosed_a(final V = V, final n_ports = 1, p_init = p_init) annotation(
     Placement(transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-  Volumes.BaseClasses.VolumeClosed volumeClosed_b(final V = V, final n_ports = 1) if pressureType == Types.PressureTypes.Relative annotation(
+  Volumes.BaseClasses.VolumeClosed volumeClosed_b(final V = V, final n_ports = 1, p_init = p_init) if pressureType == Types.PressureTypes.Relative annotation(
     Placement(transformation(origin = {48, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
   RealOutput p(unit="Pa", displayUnit="bar") annotation(
     Placement(transformation(origin = {34, 0}, extent = {{60, -10}, {80, 10}}), iconTransformation(extent = {{60, -10}, {80, 10}})));

@@ -10,7 +10,7 @@ model w2w_sens_fmu
   parameter Modelica.Units.SI.Torque TLoad = 161.4 "Nominal load torque";
   parameter Modelica.Units.SI.AngularVelocity wLoad(displayUnit = "rev/min") = 1440.45*2*Modelica.Constants.pi/60 "Nominal load speed";
   parameter Modelica.Units.SI.Inertia JLoad = 0.29 "Load's moment of inertia";
-  Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.1484, compressibleEnable = true, strokeLength = 3, pistonRodMass = 5, maxPressure = 2e8, leakageEnable = true, Cv = 1000, f_c = 200, Cst = 5, f_st = 2000, CHeadExLeakage = 0.000000002, CRodExLeakage = 0.000000002, CInLeakage = 0.0000000005, damping = 0, stribeckFrictionEnable = true, p_init = 1.5e6, closedLength = 0.001, initType = Developed.Types.RevoluteInit.Position, s_init = 1) annotation(
+  Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.1484, compressibleEnable = true, strokeLength = 3, pistonRodMass = 5, maxPressure = 2e8, leakageEnable = true, Cv = 1000, f_c = 200, Cst = 5, f_st = 2000, CHeadExLeakage = 0.000000002, CRodExLeakage = 0.000000002, CInLeakage = 0.0000000005, damping = 0, stribeckFrictionEnable = true, p_init = 1.5e6, closedLength = 0.001) annotation(
     Placement(transformation(origin = {-32, -26}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   inner OceanEngineeringToolbox.Multibody.Worlds.World world annotation(
     Placement(transformation(origin = {-88, 86}, extent = {{-10, -10}, {10, 10}})));
@@ -67,7 +67,7 @@ model w2w_sens_fmu
     Placement(transformation(origin = {136, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Electrical.Machines.Sensors.VoltageQuasiRMSSensor voltageRMSSensor annotation(
     Placement(transformation(origin = {158, -48}, extent = {{10, 10}, {-10, -10}})));
-  Modelica.Mechanics.Translational.Components.GeneralPositionToForceAdaptor positionToForceAdaptor annotation(
+  Modelica.Mechanics.Translational.Components.GeneralPositionToForceAdaptor positionToForceAdaptor(use_pder2 = false)  annotation(
     Placement(transformation(origin = {-78, 8}, extent = {{-14, -18}, {14, 18}})));
 
   // FMU Modifications
@@ -100,16 +100,18 @@ model w2w_sens_fmu
  
   output SI.Force fpto = Fpto "PTO force";
   
+  output SI.Position sPist = doubleActingCylinder.piston.s "Piston position";
+  
   Modelica.Blocks.Interfaces.RealOutput f annotation(
     Placement(transformation(origin = {235, 1}, extent = {{-15, -15}, {15, 15}}), iconTransformation(origin = {118, 0}, extent = {{-18, -18}, {18, 18}})));
   Modelica.Blocks.Interfaces.RealInput s annotation(
     Placement(transformation(origin = {-120, 60}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-120, 60}, extent = {{-20, -20}, {20, 20}})));
   Modelica.Blocks.Interfaces.RealInput v annotation(
     Placement(transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}})));
-  Modelica.Blocks.Interfaces.RealInput a annotation(
-    Placement(transformation(origin = {-120, -60}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-120, -60}, extent = {{-20, -20}, {20, 20}})));
-  Modelica.Mechanics.Translational.Components.Fixed fixed(s0 = -2.5)  annotation(
+  Modelica.Mechanics.Translational.Components.Fixed fixed(s0 = -0.72)  annotation(
     Placement(transformation(origin = {-32, -74}, extent = {{-10, -10}, {10, 10}})));
+ Modelica.Mechanics.Translational.Components.Rod rod(L = 1) annotation(
+    Placement(transformation(origin = {-54, 8}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(laminarRestriction.port_b, constantDisplacementPump.portP) annotation(
     Line(points = {{62, -62}, {62, -32}}, color = {255, 0, 0}));
@@ -185,14 +187,14 @@ equation
     Line(points = {{-120, 60}, {-90, 60}, {-90, 22}, {-82, 22}}, color = {0, 0, 127}));
   connect(v, positionToForceAdaptor.pder) annotation(
     Line(points = {{-120, 0}, {-92, 0}, {-92, 18}, {-82, 18}}, color = {0, 0, 127}));
-  connect(a, positionToForceAdaptor.pder2) annotation(
-    Line(points = {{-120, -60}, {-86, -60}, {-86, 12}, {-82, 12}}, color = {0, 0, 127}));
   connect(positionToForceAdaptor.f, f) annotation(
     Line(points = {{-82, -6}, {-62, -6}, {-62, 80}, {235, 80}, {235, 1}}, color = {0, 0, 127}));
   connect(fixed.flange, doubleActingCylinder.flange_a) annotation(
     Line(points = {{-32, -74}, {-32, -36}}, color = {0, 127, 0}));
-  connect(positionToForceAdaptor.flange, doubleActingCylinder.flange_b) annotation(
-    Line(points = {{-76, 8}, {-32, 8}, {-32, -16}}, color = {0, 127, 0}));
+ connect(positionToForceAdaptor.flange, rod.flange_a) annotation(
+    Line(points = {{-76, 8}, {-64, 8}}, color = {0, 127, 0}));
+ connect(rod.flange_b, doubleActingCylinder.flange_b) annotation(
+    Line(points = {{-44, 8}, {-32, 8}, {-32, -16}}, color = {0, 127, 0}));
   annotation(
     experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.002),
     uses(OceanEngineeringToolbox(version = "v0.3"), OpenHydraulics(version = "2.0.0")),

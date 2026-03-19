@@ -16,7 +16,7 @@ model VariableDisplacementPump
   parameter Boolean frictionEnable = false "Enable friction model" annotation(
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
-  parameter Boolean leakageEnable = false "Enable fluid leakage model" annotation(
+  parameter Boolean leakageEnable = true "Enable fluid leakage model" annotation(
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
   
@@ -55,17 +55,21 @@ model VariableDisplacementPump
     Placement(transformation(extent = {{-80, -10}, {-60, 10}})));
   
   // Fluid components
-  Machines.FluidPower2MechRotVar fluidPower2MechRot(final Dmax = Dmax, final Dmin = Dmin, final Dlimit = Dlimit) annotation(
+  Machines.FluidPower2MechRotVar fluidPower2MechRot(final Dmax = Dmax, final Dmin = Dmin, final Dlimit = Dlimit, p_init_a = p_init_T, p_init_b = p_init_P) annotation(
     Placement(transformation(extent = {{-10, -10}, {10, 10}})));
-  Interfaces.NJunction j1 annotation(
+  Interfaces.NJunction j1(p_init = p_init_T)  annotation(
     Placement(transformation(extent = {{-10, -50}, {10, -30}})));
-  Interfaces.NJunction j2 annotation(
+  Interfaces.NJunction j2(p_init = p_init_P)  annotation(
     Placement(transformation(extent = {{-10, 30}, {10, 50}})));
   
   // Fluid ports
-  Interfaces.FluidPort portP annotation(
+    parameter SI.Pressure p_init_P = p_init "Initial fluid pressure at the inlet" annotation(
+    Dialog(tab = "Initialization", group = "Fluid"));
+  parameter SI.Pressure p_init_T = p_init "Initial fluid pressure at the outlet" annotation(
+    Dialog(tab = "Initialization", group = "Fluid"));
+  Interfaces.FluidPort portP(p(start = p_init_P))  annotation(
     Placement(transformation(extent = {{-10, 90}, {10, 110}})));
-  Interfaces.FluidPort portT annotation(
+  Interfaces.FluidPort portT(p(start = p_init_T))  annotation(
     Placement(transformation(extent = {{-10, -110}, {10, -90}})));
   
   // Rotational flange
@@ -76,7 +80,7 @@ model VariableDisplacementPump
     Placement(transformation(extent = {{-100, -96}, {-68, -64}})));
   
   // Motor leakage
-  Cylinders.BaseClasses.Leakage motorLeakage(CLeakage = CMotorLeakage) if leakageEnable annotation(
+  Cylinders.BaseClasses.Leakage motorLeakage(CLeakage = CMotorLeakage, p_init_a = p_init_P, p_init_b = p_init_T) if leakageEnable annotation(
     Placement(transformation(origin = {36, -2}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
 protected
   SI.Pressure dp = portP.p - portT.p;

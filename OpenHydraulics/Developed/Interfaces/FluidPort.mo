@@ -5,7 +5,8 @@ connector FluidPort
 
   // Importing from the MSL
   import Modelica.Units.SI;
-  SI.AbsolutePressure p(stateSelect = StateSelect.prefer) "Pressure in the connection point";
+
+  SI.AbsolutePressure p(start = 101325, stateSelect = StateSelect.prefer) "Pressure in the connection point";
   flow SI.MassFlowRate m_flow(start = 0) "Mass flow rate from the connection point into the component";
   annotation(
     defaultComponentName = "port",

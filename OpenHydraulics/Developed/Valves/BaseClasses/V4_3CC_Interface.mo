@@ -3,15 +3,20 @@ within OpenHydraulics.Developed.Valves.BaseClasses;
 model V4_3CC_Interface
   extends Interfaces.BaseClasses.PartialFluidComponent;
   
-  
+    // Initialization parameters
+  parameter SI.Pressure p_init_P = system.p_ambient "Initial pressure of the P components" annotation(
+    Dialog(tab = "Initialization", group = "Fluid"));
+  parameter SI.Pressure p_init_T = system.p_ambient "Initial pressure of the T components" annotation(
+    Dialog(tab = "Initialization", group = "Fluid"));
+    
   // Ports
-  Interfaces.FluidPort portP annotation(
+  Interfaces.FluidPort portP(p(start = p_init_P)) annotation(
     Placement(transformation(extent = {{-50, -90}, {-30, -70}})));
-  Interfaces.FluidPort portA annotation(
+  Interfaces.FluidPort portA(p(start = p_init)) annotation(
     Placement(transformation(extent = {{-50, 70}, {-30, 90}})));
-  Interfaces.FluidPort portT annotation(
+  Interfaces.FluidPort portT(p(start = p_init_T)) annotation(
     Placement(transformation(extent = {{30, -90}, {50, -70}})));
-  Interfaces.FluidPort portB annotation(
+  Interfaces.FluidPort portB(p(start = p_init)) annotation(
     Placement(transformation(extent = {{30, 70}, {50, 90}})));
   // Control input
   parameter Boolean manualValveControl = false "Enable manual valve control" annotation(Dialog(group = "Valve Characteristics"), choices(checkBox = true));
