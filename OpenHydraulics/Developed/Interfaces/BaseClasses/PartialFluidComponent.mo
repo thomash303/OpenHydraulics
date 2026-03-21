@@ -9,7 +9,7 @@ partial model PartialFluidComponent
   
   // Calling from the top-level model
   outer Systems.System system "System wide properties";
-    outer OpenHydraulics.Circuits.Environment environment;
+
 /*
   // Note: value of dp_start shall be refined by derived model, basing on local dp_nominal
   parameter SI.Pressure dp_start(min = -inf) = system.p_start "Guess value of dp = port_a.p - port_b.p" annotation(

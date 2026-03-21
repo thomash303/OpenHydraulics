@@ -11,8 +11,7 @@ model FluidPower2MechTrans
   import Modelica.Utilities.Streams.print;
   //extends Modelica.Mechanics.Translational.Interfaces.PartialCompliantWithRelativeStates;
   // remove
-    extends Modelica.Mechanics.Translational.Interfaces.PartialCompliant;
-  
+   extends Modelica.Mechanics.Translational.Interfaces.PartialCompliant;
   
   // Additional model improvement flags
   parameter Boolean compressibleEnable = false "Enable fluid compressibility model" annotation(

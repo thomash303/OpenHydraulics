@@ -1,7 +1,7 @@
 within OpenHydraulics.Developed.Media;
 
 package GenericOil
- "Simple medium model for oil"
+ "Simple medium model for ISO VG 46 hydraulic fluid. Temperature dependence on the viscosity, bulk modulus, and density are neglected."
 
   // Importing from the MSL
   import Modelica.Units.SI;
@@ -9,7 +9,8 @@ package GenericOil
   
   extends Media.BaseClasses.PartialMedium(final mediumName = "GenericOil",
     final rho_ambient = 850,
-    final beta = 1.5e9);
+    final beta = 1.86e9,
+    final nu = 46e-6);
     
   redeclare final function extends density
     "Return density as a function of p and T"

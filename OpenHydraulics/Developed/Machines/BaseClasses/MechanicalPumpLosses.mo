@@ -1,7 +1,7 @@
 within OpenHydraulics.Developed.Machines.BaseClasses;
 
 model MechanicalPumpLosses 
-  "Coulomb and viscous friction in pump"
+  "McCandlish and Dory motor mechanical loss model"
   
   // Inheriting from the OET
   
@@ -11,14 +11,13 @@ model MechanicalPumpLosses
   import Modelica.Units.SI;
   import Modelica.Blocks.Interfaces.RealInput;
   
-  
   // Loss parameters
   parameter Real Cv = 0.1 "Coefficient of viscous drag" annotation(
     Dialog(group = "Friction"));
   parameter Real Cf = 0.01 "Coefficient of Coulomb friction (fraction of full stroke torque)" annotation(
     Dialog(group = "Friction"));
   
-  parameter SI.Volume Dmax = 1e-4 "Pump displacement";
+  parameter SI.Volume Dmax = 1e-4 "Maximum pump displacement";
   parameter SI.DynamicViscosity mu = 0.036 "Dynamic Viscosity of liquid";
   
   // Variables
@@ -28,15 +27,14 @@ model MechanicalPumpLosses
   SI.AngularAcceleration a "Absolute angular acceleration of flange_a and flange_b";
 
 
-  RealInput dp annotation(
-    Placement(transformation(extent = {{-120, -80}, {-80, -40}})));
+  SI.Pressure dpMot "Pressure across the motor";
 
 protected
-  parameter SI.TranslationalDampingConstant b = Cv*Dmax*mu "Viscous friction constant";
+  parameter SI.RotationalDampingConstant b = Cv*Dmax*mu "Viscous friction constant";
 
 equation
   // Constant auxiliary variables
-  tau0 = Cf*dp*Dmax;
+  tau0 = Cf*dpMot*Dmax;
   tau0_max = tau0;
   free = false;
   phi = flange_a.phi;
@@ -52,7 +50,7 @@ equation
   0 = flange_a.tau + flange_b.tau - tau;
   
   // Friction torque
-  tau = if locked then sa else (if startForward then tau0 + b*w else if startBackward then -tau0 + b*w else if pre(mode) == Forward then tau0 + b*w else -tau0 + b*w);
+  tau = if locked then sa*unitTorque else (if startForward then tau0 + b*w else if startBackward then -tau0 + b*w else if pre(mode) == Forward then tau0 + b*w else -tau0 + b*w);
   annotation(
     Documentation(info = "<html>
 <p>

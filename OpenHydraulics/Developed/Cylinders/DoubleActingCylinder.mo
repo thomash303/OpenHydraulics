@@ -38,11 +38,11 @@ model DoubleActingCylinder
     Dialog(group = "Stribeck Friction"));
   //SI.Force f_fric "Total friction force";
   // Leakage parameters
-  parameter Types.HydraulicLeakage CHeadExLeakage = 0 "Cylinder head external leakage coefficient" annotation(
+  parameter Types.HydraulicConductance CHeadExLeakage = 0 "Cylinder head external leakage coefficient" annotation(
     Dialog(group = "Leakage"));
-   parameter Types.HydraulicLeakage CRodExLeakage = 0 "Cylinder rod external leakage coefficient" annotation(
+   parameter Types.HydraulicConductance CRodExLeakage = 0 "Cylinder rod external leakage coefficient" annotation(
     Dialog(group = "Leakage"));
-   parameter Types.HydraulicLeakage CInLeakage = 0 "Cylinder internal leakage coefficient" annotation(
+   parameter Types.HydraulicConductance CInLeakage = 0 "Cylinder internal leakage coefficient" annotation(
     Dialog(group = "Leakage"));
   // Sizing parameters
   parameter SI.Length boreDiameter = 0.05 "Bore diameter" annotation(
@@ -128,11 +128,11 @@ model DoubleActingCylinder
     Placement(transformation(origin = {-88, -30}, extent = {{-10, -10}, {10, 10}})));
   Volumes.BaseClasses.ConstantPressureSource rodEnvSink if leakageEnable annotation(
     Placement(transformation(origin = {94, -30}, extent = {{-10, -10}, {10, 10}})));
-  BaseClasses.Leakage internalLeakage(CLeakage = CInLeakage) if leakageEnable annotation(
+  BaseClasses.CylinderLeakage internalLeakage(CLeakage = CInLeakage, p_init_a = p_init, p_init_b = p_init) if leakageEnable annotation(
     Placement(transformation(origin = {0, -26}, extent = {{-10, -10}, {10, 10}})));
-  BaseClasses.Leakage headExternalLeakage(CLeakage = CHeadExLeakage) if leakageEnable annotation(
+  BaseClasses.CylinderLeakage headExternalLeakage(CLeakage = CHeadExLeakage, p_init_b = p_init, p_init_a = system.p_ambient) if leakageEnable annotation(
     Placement(transformation(origin = {-62, -16}, extent = {{-10, -10}, {10, 10}})));
-  BaseClasses.Leakage rodExternalLeakage(CLeakage = CRodExLeakage) if leakageEnable annotation(
+  BaseClasses.CylinderLeakage rodExternalLeakage(CLeakage = CRodExLeakage, p_init_a = system.p_ambient, p_init_b = p_init) if leakageEnable annotation(
     Placement(transformation(origin = {66, -18}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
   Modelica.Mechanics.Translational.Components.Damper damper(d = damping) annotation(
     Placement(transformation(origin = {-22, -44}, extent = {{-48, 58}, {-28, 78}})));
@@ -153,6 +153,10 @@ model DoubleActingCylinder
   // Energy
   SI.Energy Ecyl_mech "Mechanical power in the cylinder";
   SI.Energy Ecyl_hyd "Hydraulic power in the cylinder";
+  
+  // Efficiency
+  Real cylEff = min(abs(Pcyl_hyd), abs(Pcyl_mech)) / (max(abs(Pcyl_hyd), abs(Pcyl_mech))) "Cylinder efficiency";
+
   
 initial equation
   assert(cylinderChamberHead.s_rel >= 0, "Initial position is smaller than zero");

@@ -13,7 +13,7 @@ model FluidPower2MechRotVar
   // Sizing parameters
   parameter SI.Volume Dmax = 0.001 "Maximum pump displacement" annotation(
     Dialog(tab = "Sizing"));
-  parameter SI.Volume Dmin = 0 "Minimum pump displacement" annotation(
+  parameter SI.Volume Dmin = -0.001 "Minimum pump displacement" annotation(
     Dialog(tab = "Sizing"));
   parameter SI.Volume Dlimit = max(abs(Dmax), abs(Dmin)) "Displacement of pump" annotation(
     Dialog(tab = "Sizing"));

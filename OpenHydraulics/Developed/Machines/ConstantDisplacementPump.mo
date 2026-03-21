@@ -7,25 +7,24 @@ model ConstantDisplacementPump "Variable Displacement Pump with losses"
   import Modelica.Units.SI;
   import Modelica.Mechanics.Rotational.Interfaces.Flange_a;
   // Additional model improvement flags
-  parameter Boolean frictionEnable = false "Enable friction model" annotation(
+  parameter Boolean frictionEnable = true "Enable friction model" annotation(
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
-  parameter Boolean leakageEnable = false "Enable fluid leakage model" annotation(
+  parameter Boolean leakageEnable = true "Enable fluid leakage model (only supported for unidirectional flow)" annotation(
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
   // Sizing parameters
   parameter SI.Volume Dconst = 0.001 "Pump displacement" annotation(
     Dialog(tab = "Sizing"));
-  // Fluid leakage parameters
-  parameter Types.HydraulicLeakage CMotorLeakage = 0 "Motor leakage coefficient" annotation(
-    Dialog(group = "Leakage"));
-  // Torque loss parameters
-  parameter Real Cv = 60000 "Coefficient of viscous drag" annotation(
+  // McCandlish and Dory motor loss parameters
+  parameter Types.HydraulicConductance Cs = 0 "Slip coefficient (hydraulic loss)" annotation(
     Dialog(group = "Friction"));
-  parameter Real Cf = 0.007 "Coefficient of Coulomb friction (fraction of full stroke torque)" annotation(
+  parameter Real Cv = 60000 "Coefficient of viscous drag (mechanical loss)" annotation(
+    Dialog(group = "Friction"));
+  parameter Real Cf = 0.007 "Coefficient of Coulomb friction (mechanical loss)" annotation(
     Dialog(group = "Friction"));
   // Friction model
-  BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Cv, Cf = Cf, Dmax = Dconst, dp = dp) if frictionEnable annotation(
+  BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Cv, Cf = Cf, dpMot = dp, Dmax = Dconst, mu = system.mu) if frictionEnable annotation(
     Placement(transformation(extent = {{-80, -10}, {-60, 10}})));
   // Fluid components
   FluidPower2MechRotConst fluidPower2MechRot(final Dconst = Dconst, p_init_a = p_init_T, p_init_b = p_init_P) annotation(
@@ -35,9 +34,9 @@ model ConstantDisplacementPump "Variable Displacement Pump with losses"
   Interfaces.NJunction j2(p_init = p_init_P) annotation(
     Placement(transformation(extent = {{-10, 30}, {10, 50}})));
   // Fluid ports
-  parameter SI.Pressure p_init_P = p_init "Initial fluid pressure at the inlet" annotation(
+  parameter SI.Pressure p_init_P = p_init "Initial fluid pressure at port P" annotation(
     Dialog(tab = "Initialization", group = "Fluid"));
-  parameter SI.Pressure p_init_T = p_init "Initial fluid pressure at the outlet" annotation(
+  parameter SI.Pressure p_init_T = p_init "Initial fluid pressure at port T" annotation(
     Dialog(tab = "Initialization", group = "Fluid"));
   Interfaces.FluidPort portP(p(start = p_init_P)) annotation(
     Placement(transformation(extent = {{-10, 90}, {10, 110}})));
@@ -47,13 +46,41 @@ model ConstantDisplacementPump "Variable Displacement Pump with losses"
   Flange_a flange_a "(left) driving flange (flange axis directed INTO cut plane)" annotation(
     Placement(transformation(extent = {{-110, -10}, {-90, 10}})));
   // Motor leakage
-  Cylinders.BaseClasses.Leakage motorLeakage(CLeakage = CMotorLeakage, p_init_a = p_init_P, p_init_b = p_init_T) if leakageEnable annotation(
-    Placement(transformation(origin = {36, -2}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
+  BaseClasses.FluidLeakage motorLeakage(p_init_a = p_init_P, p_init_b = p_init_T, Cs = Cs, dpMot = dp, Dmax = Dconst, mu = system.mu, portSelect = OpenHydraulics.Developed.Types.HydraulicPort.port_P) if leakageEnable annotation(
+    Placement(transformation(origin = {40, 10}, extent = {{-10, -10}, {10, 10}})));
+
+
+  // Power, energy, and efficiency
+  SI.Power Pmot_hyd "Hydraulic pump/motor power";
+  SI.Power Pmot_mech = flange_a.tau * der(flange_a.phi) "Mechanical pump/motor power";
+  
+  SI.Energy Emot_hyd "Hydraulic pump/motor energy";
+  SI.Energy Emot_mech "Mechanical pump/motor energy";
+  
+  Real motEff = min(abs(Pmot_hyd), abs(Pmot_mech)) / (max(abs(Pmot_hyd), abs(Pmot_mech))) "Pump/motor efficiency";
+  
+
 protected
   constant Real dispFraction = 1 "introduced as constant to keep equations consistent with other pumps";
   SI.Pressure dp = portP.p - portT.p annotation(
-    Placement(visible = false, transformation(extent = {{0, 0}, {0, 0}})));
+    Placement(visible = false, transformation(extent = {{0, 0}, {0, 0}})));public
+  OpenHydraulics.Developed.Volumes.OpenTank tank annotation(
+    Placement(transformation(origin = {72, 20}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
+  OpenHydraulics.Developed.Machines.BaseClasses.FluidLeakage motorLeakage1(Cs = Cs, Dmax = Dconst, dpMot = dp, mu = system.mu, p_init_a = p_init_P, p_init_b = p_init_T, portSelect = OpenHydraulics.Developed.Types.HydraulicPort.port_T) annotation(
+    Placement(transformation(origin = {40, -10}, extent = {{-10, -10}, {10, 10}})));
+  OpenHydraulics.Developed.Volumes.OpenTank tank1 annotation(
+    Placement(transformation(origin = {72, -20}, extent = {{-10, -10}, {10, 10}}, rotation = -0)));
 equation
+// Power
+  if portP.m_flow > 0 then
+// port P is the inlet
+    Pmot_hyd = dp*(-portT.m_flow)/system.rho_ambient;
+  else
+    Pmot_hyd = dp*(-portP.m_flow)/system.rho_ambient;
+  end if;
+// Energy
+  der(Emot_hyd) = Pmot_hyd;
+  der(Emot_mech) = Pmot_mech;
 // Connect the input of the leakage model and the mechanical loss model
   connect(portT, j1.port[1]) annotation(
     Line(points = {{0, -100}, {0, -40.6667}}, color = {255, 0, 0}));
@@ -67,15 +94,19 @@ equation
     Line(points = {{-100, 0}, {-80, 0}}, color = {0, 0, 0}));
   connect(mechanicalPumpLosses.flange_b, fluidPower2MechRot.flange_a) annotation(
     Line(points = {{-60, 0}, {-10, 0}}, color = {0, 0, 0}));
-  connect(motorLeakage.port_a, j2.port[3]) annotation(
-    Line(points = {{36, 8}, {34, 8}, {34, 40}, {0, 40}}, color = {255, 0, 0}));
-  connect(motorLeakage.port_b, j1.port[3]) annotation(
-    Line(points = {{36, -12}, {36, -40}, {0, -40}}, color = {255, 0, 0}));
   if not frictionEnable then
     connect(flange_a, fluidPower2MechRot.flange_a) annotation(
       Line(points = {{-10, 0}, {-100, 0}}));
   end if;
+  connect(motorLeakage.port_b, tank.port) annotation(
+    Line(points = {{50, 10}, {72, 10}}, color = {255, 0, 0}));
+  connect(fluidPower2MechRot.port_b, motorLeakage.port_a) annotation(
+    Line(points = {{0, 10}, {30, 10}}, color = {255, 0, 0}));
+  connect(motorLeakage1.port_b, tank1.port) annotation(
+    Line(points = {{50, -10}, {72, -10}}, color = {255, 0, 0}));
+  connect(motorLeakage1.port_a, fluidPower2MechRot.port_a) annotation(
+    Line(points = {{30, -10}, {0, -10}}, color = {255, 0, 0}));
   annotation(
     Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Ellipse(extent = {{-54, 54}, {54, -54}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Line(points = {{0, -54}, {0, -100}}, color = {255, 0, 0}), Line(points = {{0, 100}, {0, 54}}, color = {255, 0, 0}), Rectangle(extent = {{-90, 8}, {-54, -8}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Text(extent = {{100, -54}, {-100, -90}}, textString = "%name"), Text(extent = {{10, -80}, {40, -120}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "T"), Polygon(points = {{-20, 34}, {0, 54}, {20, 34}, {-20, 34}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Polygon(points = {{-20, -34}, {0, -54}, {20, -34}, {-20, -34}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid), Text(extent = {{10, 120}, {40, 80}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "P")}),
-    Diagram(graphics = {Text(extent = {{52, 76}, {52, 64}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, textString = "section for"), Text(extent = {{52, 88}, {52, 76}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, textString = "see equations"), Rectangle(extent = {{12, 88}, {90, 52}}, lineColor = {0, 0, 255}), Text(extent = {{52, 64}, {52, 52}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, textString = "loss relationships")}));
+    Diagram);
 end ConstantDisplacementPump;

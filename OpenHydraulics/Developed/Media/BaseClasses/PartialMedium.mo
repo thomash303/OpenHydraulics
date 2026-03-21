@@ -12,7 +12,8 @@ partial package PartialMedium
     constant SI.AbsolutePressure p_ambient_med = 101325 "Reference pressure of the medium";
     constant SI.Density rho_ambient = 850 "Reference density of the medium";
     constant SI.BulkModulus beta = 10000 "Effective bulk modulus";
-    constant SI.DynamicViscosity mu = 0.001 "Dynamic viscosity";
+    constant SI.KinematicViscosity nu = 45e-6 "Kinematic viscosity";
+    constant SI.DynamicViscosity mu = nu * rho_ambient "Dynamic viscosity";
    /*
     replaceable model BaseProperties
       

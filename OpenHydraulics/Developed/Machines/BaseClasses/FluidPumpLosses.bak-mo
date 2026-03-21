@@ -1,0 +1,6 @@
+within OpenHydraulics.Developed.Machines.BaseClasses;
+
+model FluidPumpLosses
+equation
+
+end FluidPumpLosses;
