@@ -39,7 +39,7 @@ model org_pto
     Placement(transformation(origin = {-56, 86}, extent = {{-10, -10}, {10, 10}})));
   OceanEngineeringToolbox.Multibody.Joints.Fixed fixed(r = {0, 0, -2.5}) annotation(
     Placement(transformation(origin = {-68, -88}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Developed.Machines.ConstantDisplacementPump constantDisplacementPump(CMotorLeakage = 0.00025, Dconst = 312e-6*0.5, p_init(displayUnit = "bar") = 7e6) annotation(
+  Developed.Machines.ConstantDisplacementPumpMotor constantDisplacementPump(CMotorLeakage = 0.00025, Dconst = 312e-6*0.5, p_init(displayUnit = "bar") = 7e6) annotation(
     Placement(transformation(origin = {62, -22}, extent = {{10, 10}, {-10, -10}})));
   Developed.Volumes.Accumulator hpAccumulator(gasVolume = 1, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.95, p_init(displayUnit = "bar") = 7e6, p_precharge(displayUnit = "bar") = 3e6, p_max = 2e8, V_init = 0.5) annotation(
     Placement(transformation(origin = {28, 20}, extent = {{-10, -10}, {10, 10}})));

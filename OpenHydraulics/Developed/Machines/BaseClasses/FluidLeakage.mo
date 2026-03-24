@@ -9,7 +9,9 @@ model FluidLeakage
   // Importing from the MSL
   import Modelica.Blocks.Interfaces.RealInput;
   
-  parameter Real Cs = 0 "Slip coefficient" annotation(
+  parameter Real Cs[:] = {0, 0, 0} "Slip coefficients" annotation(
+    Dialog(group = "Friction"));
+  parameter SI.AngularVelocity CsW[:] "Angular velocity of slip coefficients" annotation(
     Dialog(group = "Friction"));
   
   parameter SI.Volume Dmax = 1e-4 "Maximum pump displacement";
@@ -19,6 +21,7 @@ model FluidLeakage
   parameter Types.HydraulicPort portSelect = Types.HydraulicPort.port_P "Select port of motor where leakage model is connected";
   
   SI.Pressure dpMot "Pressure across the motor";
+  SI.Volume D "Pump displacement";
   
 equation
 
