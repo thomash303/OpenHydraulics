@@ -8,11 +8,12 @@ model FluidLeakage
   
   // Importing from the MSL
   import Modelica.Blocks.Interfaces.RealInput;
+  import Modelica.Math.Vectors.interpolate;
   
-  parameter Real Cs[:] = {0, 0, 0} "Slip coefficients" annotation(
-    Dialog(group = "Friction"));
-  parameter SI.AngularVelocity CsW[:] "Angular velocity of slip coefficients" annotation(
-    Dialog(group = "Friction"));
+  parameter Real Cs[:] = {0, 0} "Slip coefficients" annotation(
+    Dialog(group = "Leakage"));
+  parameter Real CsD[:] = {0, 1} "Displacement fraction of slip coefficients" annotation(
+    Dialog(group = "Leakage"));
   
   parameter SI.Volume Dmax = 1e-4 "Maximum pump displacement";
   parameter SI.DynamicViscosity mu = 0.036 "Dynamic Viscosity of liquid";
@@ -22,6 +23,7 @@ model FluidLeakage
   
   SI.Pressure dpMot "Pressure across the motor";
   SI.Volume D "Pump displacement";
+  Real cs = interpolate(Cs, CsD, D) "Interpolated slip coefficient";
   
 equation
 
@@ -29,7 +31,7 @@ equation
   if (portSelect == Types.HydraulicPort.port_P and dpMot > 0) or (portSelect == Types.HydraulicPort.port_T and dpMot < 0) then
     port_a.m_flow = 0;
   else
-    port_a.m_flow = Cs * Dmax / mu * abs(dpMot);
+    port_a.m_flow = cs * Dmax / mu * abs(dpMot);
   end if;
   
   // Mass balance

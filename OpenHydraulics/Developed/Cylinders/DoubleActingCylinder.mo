@@ -155,7 +155,7 @@ model DoubleActingCylinder
   SI.Energy Ecyl_hyd "Hydraulic power in the cylinder";
   
   // Efficiency
-  Real cylEff = min(abs(Pcyl_hyd), abs(Pcyl_mech)) / (max(abs(Pcyl_hyd), abs(Pcyl_mech))) "Cylinder efficiency";
+  //Real cylEff = min(abs(Pcyl_hyd), abs(Pcyl_mech)) / (max(abs(Pcyl_hyd), abs(Pcyl_mech))) "Cylinder efficiency";
 
   
 initial equation

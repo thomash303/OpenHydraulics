@@ -10,11 +10,16 @@ model MechanicalPumpLosses
   extends Modelica.Mechanics.Rotational.Interfaces.PartialFriction;
   import Modelica.Units.SI;
   import Modelica.Blocks.Interfaces.RealInput;
+  import Modelica.Math.Vectors.interpolate;
   
   // Loss parameters
-  parameter Real Cv = 0.1 "Coefficient of viscous drag" annotation(
+  parameter Real Cv[:] = {0, 0} "Coefficients of viscous drag" annotation(
     Dialog(group = "Friction"));
-  parameter Real Cf = 0.01 "Coefficient of Coulomb friction (fraction of full stroke torque)" annotation(
+  parameter Real CvD[:] = {0, 1} "Displacement fraction of slip coefficients" annotation(
+    Dialog(group = "Friction"));
+  parameter Real Cf[:] = {0, 0} "Coefficients of Coulomb friction (fraction of full stroke torque)" annotation(
+    Dialog(group = "Friction"));
+  parameter Real CfD[:] = {0, 1} "Displacement fraction of slip coefficients" annotation(
     Dialog(group = "Friction"));
   
   parameter SI.Volume Dmax = 1e-4 "Maximum pump displacement";
@@ -28,13 +33,16 @@ model MechanicalPumpLosses
 
 
   SI.Pressure dpMot "Pressure across the motor";
+  SI.Volume D "Pump displacement";
+  Real cv = interpolate(Cv, CvD, D) "Interpolated coefficient of viscous drag";
+  Real cf = interpolate(Cf, CfD, D) "Interpolated coefficient of Coulomb friction";
 
-protected
-  parameter SI.RotationalDampingConstant b = Cv*Dmax*mu "Viscous friction constant";
+
+  SI.RotationalDampingConstant b = cv*Dmax*mu "Viscous friction constant";
 
 equation
   // Constant auxiliary variables
-  tau0 = Cf*dpMot*Dmax;
+  tau0 = cf*dpMot*Dmax; // Coulomb friction
   tau0_max = tau0;
   free = false;
   phi = flange_a.phi;
