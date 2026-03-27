@@ -11,7 +11,8 @@ model DAQ_w2w_power
   SI.Volume D "Motor displacement";
   
   // Environment
-  //SI.Power
+  SI.Power Pwav "Wave power";
+  
   
   // Double acting cylinder parameters
   
@@ -20,6 +21,7 @@ model DAQ_w2w_power
   SI.Force Finer "Inertial force";
   SI.Force FgravIner "Gravity component 1of the inertial force";
   SI.Force FflIner "Fluid inertia component of the inertial force";
+  SI.Force FpistIner "Inertia of the piston and rod";
   SI.Force Ffric "Friction force";
   
   // Power
@@ -58,11 +60,20 @@ model DAQ_w2w_power
   
   //Real motEff "Pump/motor efficiency";
   
+  // Generator parameters
+  SI.Power Pelec "Electrical (output) power";
+  SI.Energy Eelec "Electrical (output) energy";
   
+  SI.Power Pgen_fric "Generator friction loss power";
+  SI.Power Pgen_cop "Generator copper loss power";  
+  SI.Power Pgen_mech "Generator mechanical power";
+
   
   DAQ_w2w_bus sensor_bus;
   
 
 equation
+
+  der(Eelec) = Pelec;
 
 end DAQ_w2w_power;

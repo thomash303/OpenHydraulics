@@ -117,8 +117,39 @@ equation
 // Sensing bus
   daq.eta = environment.wave.SSE;
   daq.Fexc = float.excitation.excitationForce.F[3];
-  daq.Fpto = Fpto;
+  //daq.Fpto = Fpto;
   daq.D = variableDisplacementPump.fluidPower2MechRot.D;
+  
+  
+    // Environment
+  daq.Pwav = environment.wave.P "Wave power";
+ 
+  daq.Fpto = doubleActingCylinder.Fpto;
+  daq.Finer = doubleActingCylinder.Finer;
+  daq.FpistIner = doubleActingCylinder.FpistIner;
+  daq.FgravIner = doubleActingCylinder.FgravIner;
+  daq.FflIner = doubleActingCylinder.FflIner;
+  daq.Ffric = doubleActingCylinder.Ffric;
+  
+  // Power
+  daq.Pcyl_mech = doubleActingCylinder.Pcyl_mech;
+  daq.Pcyl_hyd = doubleActingCylinder.Pcyl_hyd;
+  
+  // Energy
+  daq.Ecyl_mech = doubleActingCylinder.Ecyl_mech;
+  daq.Ecyl_hyd = doubleActingCylinder.Ecyl_hyd;
+
+  daq.Pmot_mech = variableDisplacementPump.Pmot_mech;
+  
+  daq.E_mech = variableDisplacementPump.Emot_mech;
+  
+  daq.Pelec = aimc.powerBalance.powerStator;
+  
+  daq.Pgen_fric = aimc.powerBalance.lossPowerFriction;
+  daq.Pgen_cop = aimc.powerBalance.lossPowerStatorWinding + aimc.powerBalance.lossPowerRotorWinding;  
+  daq.Pgen_mech = aimc.powerBalance.powerMechanical;
+  
+  
   connect(rotSpeedSensor.flange, variableDisplacementPump.flange_a) annotation(
     Line(points = {{70, -62}, {70, -22}, {72, -22}}));
   connect(rotSpeedSensor.w, daq.sensor_bus.omega);
