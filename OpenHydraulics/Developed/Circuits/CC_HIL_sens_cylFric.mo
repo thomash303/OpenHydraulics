@@ -1,6 +1,6 @@
 within OpenHydraulics.Developed.Circuits;
 
-model CC_HIL_sens
+model CC_HIL_sens_cylFric
   Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.04, compressibleEnable = true, strokeLength = 0.3, pistonRodMass = 1, maxPressure = 2e8, leakageEnable = true, Cv = 100, f_c = 3500, Cst = 5, f_st = 0, CHeadExLeakage = 0.00000000055, CRodExLeakage = 0.00000000055, CInLeakage = 0.0000000005, damping = 0, stribeckFrictionEnable = false, rodDiameter(displayUnit = "mm") = 0.029, closedLength = 0.0001, p_init = 1e6) annotation(
     Placement(transformation(origin = {-90, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   inner Developed.Systems.System system annotation(
@@ -8,7 +8,7 @@ model CC_HIL_sens
   Developed.Machines.ConstantDisplacementPumpMotor constantDisplacementPump(Dconst = 4e-6, p_init(displayUnit = "bar") = 3.5e6) annotation(
     Placement(transformation(origin = {66, 12}, extent = {{10, 10}, {-10, -10}})));
   Developed.Volumes.Accumulator hpAccumulator(gasVolume = 3.8e-3, initType = Developed.Types.AccInit.Volume, liquidVolume = 2.8e-3, p_init(displayUnit = "bar") = 3.5e6, p_precharge(displayUnit = "bar") = 1e6, p_max = 2e8, V_init = 2.045e-3) annotation(
-    Placement(transformation(origin = {44, 44}, extent = {{-10, -10}, {10, 10}})));
+    Placement(transformation(origin = {36, 46}, extent = {{-10, -10}, {10, 10}})));
   Developed.Volumes.Accumulator lpAccumulator(gasVolume = 1e-3, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.8e-3, p_init(displayUnit = "bar") = 2e5, p_precharge(displayUnit = "bar") = 2e5, p_max = 5e7, V_init = 0.6e-3) annotation(
     Placement(transformation(origin = {32, -22}, extent = {{-10, 10}, {10, -10}})));
   Custom.Basic.LaminarRestriction laminarRestriction(D = 1, L = 0.01, p_init(displayUnit = "bar") = 2e5) annotation(
@@ -116,7 +116,7 @@ equation
   connect(checkValve11.port_a, jB.port[4]) annotation(
     Line(points = {{-30, 32}, {-42, 32}, {-42, 42}}, color = {255, 0, 0}));
   connect(reliefValve.port_a, hpAccumulator.port_a) annotation(
-    Line(points = {{36, 0}, {36, 34}, {44, 34}}, color = {255, 0, 0}));
+    Line(points = {{36, 0}, {36, 36}}, color = {255, 0, 0}));
   connect(reliefValve.port_b, tank.port) annotation(
     Line(points = {{56, 0}, {56, -14}, {96, -14}}, color = {255, 0, 0}));
   connect(reliefValve1.port_a, constantDisplacementPump1.portP) annotation(
@@ -132,7 +132,7 @@ equation
   connect(P3.port_a, jHP.port[5]) annotation(
     Line(points = {{18, 46}, {10, 46}, {10, 36}}, color = {255, 0, 0}));
   connect(P4.port_a, hpAccumulator.port_a) annotation(
-    Line(points = {{78, 40}, {44, 40}, {44, 34}}, color = {255, 0, 0}));
+    Line(points = {{78, 40}, {78, 36}, {36, 36}}, color = {255, 0, 0}));
   connect(P5.port_a, constantDisplacementPump.portT) annotation(
     Line(points = {{112, 44}, {88, 44}, {88, 22}, {66, 22}}, color = {255, 0, 0}));
   connect(P6.port_a, jLP.port[5]) annotation(
@@ -140,9 +140,9 @@ equation
   connect(F1.port_a, jHP.port[1]) annotation(
     Line(points = {{14, 22}, {10, 22}, {10, 36}}, color = {255, 0, 0}));
   connect(F1.port_b, hpAccumulator.port_a) annotation(
-    Line(points = {{34, 22}, {44, 22}, {44, 34}}, color = {255, 0, 0}));
+    Line(points = {{34, 22}, {34, 36}, {36, 36}}, color = {255, 0, 0}));
   connect(hpAccumulator.port_a, F2.port_a) annotation(
-    Line(points = {{44, 34}, {50, 34}, {50, 30}}, color = {255, 0, 0}));
+    Line(points = {{36, 36}, {36, 30}, {50, 30}}, color = {255, 0, 0}));
   connect(F2.port_b, constantDisplacementPump.portT) annotation(
     Line(points = {{70, 30}, {66, 30}, {66, 22}}, color = {255, 0, 0}));
   connect(P1.p, daq.P1);
@@ -163,4 +163,4 @@ equation
     experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.002),
     uses(OceanEngineeringToolbox(version = "v0.3"), OpenHydraulics(version = "2.0.0")),
     Diagram);
-end CC_HIL_sens;
+end CC_HIL_sens_cylFric;

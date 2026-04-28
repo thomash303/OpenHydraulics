@@ -1,22 +1,18 @@
 within OpenHydraulics.Developed.Circuits;
 
-model CC_HIL_sens
-  Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.04, compressibleEnable = true, strokeLength = 0.3, pistonRodMass = 1, maxPressure = 2e8, leakageEnable = true, Cv = 100, f_c = 3500, Cst = 5, f_st = 0, CHeadExLeakage = 0.00000000055, CRodExLeakage = 0.00000000055, CInLeakage = 0.0000000005, damping = 0, stribeckFrictionEnable = false, rodDiameter(displayUnit = "mm") = 0.029, closedLength = 0.0001, p_init = 1e6) annotation(
+model CC_HIL_sens_no_rot_val
+  Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.04, compressibleEnable = true, strokeLength = 0.3, pistonRodMass = 1, maxPressure = 2e8, leakageEnable = true, Cv = 1000, f_c = 200, Cst = 5, f_st = 2000, CHeadExLeakage = 0.00000000055, CRodExLeakage = 0.00000000055, CInLeakage = 0.0000000005, damping = 0, stribeckFrictionEnable = false, rodDiameter(displayUnit = "mm") = 0.029, closedLength = 0.0001, p_init = 1e6) annotation(
     Placement(transformation(origin = {-90, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   inner Developed.Systems.System system annotation(
     Placement(transformation(origin = {-64, 72}, extent = {{-10, -10}, {10, 10}})));
   Developed.Machines.ConstantDisplacementPumpMotor constantDisplacementPump(Dconst = 4e-6, p_init(displayUnit = "bar") = 3.5e6) annotation(
     Placement(transformation(origin = {66, 12}, extent = {{10, 10}, {-10, -10}})));
-  Developed.Volumes.Accumulator hpAccumulator(gasVolume = 3.8e-3, initType = Developed.Types.AccInit.Volume, liquidVolume = 2.8e-3, p_init(displayUnit = "bar") = 3.5e6, p_precharge(displayUnit = "bar") = 1e6, p_max = 2e8, V_init = 2.045e-3) annotation(
+  Developed.Volumes.Accumulator hpAccumulator(gasVolume = 3.8e-3, initType = Developed.Types.AccInit.Volume, liquidVolume = 2.8e-3, p_init(displayUnit = "bar") = 3.5e6, p_precharge(displayUnit = "bar") = 1e6, p_max = 2e8, V_init = 2.045e-3+ 0.05e-3) annotation(
     Placement(transformation(origin = {44, 44}, extent = {{-10, -10}, {10, 10}})));
   Developed.Volumes.Accumulator lpAccumulator(gasVolume = 1e-3, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.8e-3, p_init(displayUnit = "bar") = 2e5, p_precharge(displayUnit = "bar") = 2e5, p_max = 5e7, V_init = 0.6e-3) annotation(
     Placement(transformation(origin = {32, -22}, extent = {{-10, 10}, {10, -10}})));
   Custom.Basic.LaminarRestriction laminarRestriction(D = 1, L = 0.01, p_init(displayUnit = "bar") = 2e5) annotation(
     Placement(transformation(origin = {56, -24}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.Rotational.Sources.Speed speed annotation(
-    Placement(transformation(origin = {106, 14}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
-  Modelica.Blocks.Sources.Sine sine(amplitude = 0, f = 1/2.5, offset = 1500*2*3.14/60) annotation(
-    Placement(transformation(origin = {158, 12}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
   Modelica.Mechanics.Translational.Sources.Position position(exact = true) annotation(
     Placement(transformation(origin = {-8, 54}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
   Modelica.Mechanics.Translational.Components.Fixed fixed annotation(
@@ -36,7 +32,7 @@ model CC_HIL_sens
   parameter Modelica.Units.SI.Pressure p_init = 10e5;
   parameter Modelica.Units.SI.Pressure p_crack = 0.35e5;
   parameter Modelica.Units.SI.Pressure p_open = 0.4e5;
-  parameter Modelica.Units.SI.Area Av = 4.2e-5;
+  parameter Modelica.Units.SI.Area Av = 2.9698e-5 - 2.1e-5 - 0.3e-6;
   parameter Real Cd = 1;
   Developed.Valves.CheckValve checkValve1(p_init = 1e6, manualValveControl = false, p_crack = p_crack, p_open = p_open, Cd = Cd, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = Av) annotation(
     Placement(transformation(origin = {-52, 14}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
@@ -78,15 +74,17 @@ model CC_HIL_sens
     Placement(transformation(origin = {60, 30}, extent = {{-10, -10}, {10, 10}})));
   Developed.Circuits.DAQ daq annotation(
     Placement(transformation(origin = {124, -56}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.Rotational.Components.Damper damper(d = 0.0105, w_rel(start = -157.07963267948966, fixed = true, displayUnit = "rpm"))  annotation(
+    Placement(transformation(origin = {134, 12}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.Rotational.Components.Inertia inertia(J = 0.125, w(start = 157.07963267948966, displayUnit = "rpm"))  annotation(
+    Placement(transformation(origin = {100, 12}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.Rotational.Components.Fixed fixed1 annotation(
+    Placement(transformation(origin = {160, -6}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(laminarRestriction.port_b, constantDisplacementPump.portP) annotation(
     Line(points = {{66, -24}, {58, -24}, {58, 2}, {66, 2}}, color = {255, 0, 0}));
   connect(laminarRestriction.port_a, lpAccumulator.port_a) annotation(
     Line(points = {{46, -24}, {32, -24}, {32, -12}}, color = {255, 0, 0}));
-  connect(speed.flange, constantDisplacementPump.flange_a) annotation(
-    Line(points = {{96, 14}, {83, 14}, {83, 12}, {76, 12}}));
-  connect(sine.y, speed.w_ref) annotation(
-    Line(points = {{148, 12}, {118, 12}, {118, 14}}, color = {0, 0, 127}));
   connect(doubleActingCylinder.flange_a, fixed.flange) annotation(
     Line(points = {{-90, 18}, {-90, -10}, {-82, -10}}, color = {0, 127, 0}));
   connect(sine1.y, position.s_ref) annotation(
@@ -159,8 +157,14 @@ equation
     Line(points = {{-42, 42}, {-68, 42}, {-68, 20}, {-82, 20}}, color = {255, 0, 0}));
   connect(jA.port[1], doubleActingCylinder.port_b) annotation(
     Line(points = {{-54, -12}, {-70, -12}, {-70, 36}, {-82, 36}}, color = {255, 0, 0}));
+  connect(damper.flange_b, fixed1.flange) annotation(
+    Line(points = {{144, 12}, {160, 12}, {160, -6}}));
+  connect(inertia.flange_b, damper.flange_a) annotation(
+    Line(points = {{110, 12}, {124, 12}}));
+  connect(inertia.flange_a, constantDisplacementPump.flange_a) annotation(
+    Line(points = {{90, 12}, {76, 12}}));
   annotation(
     experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.002),
     uses(OceanEngineeringToolbox(version = "v0.3"), OpenHydraulics(version = "2.0.0")),
     Diagram);
-end CC_HIL_sens;
+end CC_HIL_sens_no_rot_val;

@@ -35,6 +35,23 @@ equation
   der(E_T) = P_T;
   der(E_P) = P_P;
 
-  annotation(
-    Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{90, 20}, {130, -20}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Text(extent = {{-82, 100}, {-52, 60}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "A"), Text(extent = {{52, 100}, {82, 60}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "B"), Text(extent = {{50, -60}, {80, -100}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "T"), Text(extent = {{-80, -60}, {-50, -100}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid, textString = "P"), Rectangle(extent = {{-90, 30}, {-30, -30}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Rectangle(extent = {{-30, 30}, {30, -30}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Rectangle(extent = {{30, 30}, {90, -30}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid)}));
+annotation(
+  Icon(
+    coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}),
+    graphics = {
+      Rectangle(extent = {{90, 20}, {130, -20}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid),
+
+      Text(extent = {{-82, 100}, {-52, 60}}, lineColor = {0, 0, 0}, textString = "A"),
+      Text(extent = {{52, 100}, {82, 60}}, lineColor = {0, 0, 0}, textString = "B"),
+      Text(extent = {{50, -60}, {80, -100}}, lineColor = {0, 0, 0}, textString = "T"),
+      Text(extent = {{-80, -60}, {-50, -100}}, lineColor = {0, 0, 0}, textString = "P"),
+
+      Rectangle(extent = {{-90, 30}, {-30, -30}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid),
+      Rectangle(extent = {{-30, 30}, {30, -30}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid),
+      Rectangle(extent = {{30, 30}, {90, -30}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid),
+
+      Text(extent = {{-250, 0}, {-60, 10}}, lineColor = {0, 0, 255}, textString = "%name")
+    }
+  )
+);
 end V4_3CC_Interface;

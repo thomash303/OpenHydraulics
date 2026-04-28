@@ -140,10 +140,11 @@ model DoubleActingCylinder
   // PTO Force
   SI.Area Ap = cylinderChamberHead.A "Piston head area";
   SI.Area Aa = cylinderChamberRod.A "Piston annulus area";
-  SI.Force Fpto = port_a.p * Ap - port_b.p * Aa + Finer + Ffric "PTO force";
+  //SI.Force Fpto = port_a.p * Ap - port_b.p * Aa + Finer + Ffric "PTO force";
+  SI.Force Fpto = Ap * (port_a.p - port_b.p) + Finer + Ffric "PTO force";
   SI.Force Finer = FgravIner + FflIner + FpistIner "Inertial force";
-  SI.Force FpistIner "Inertia of the piston and rod";
-  SI.Force FgravIner = piston.a * pistonRodMass "Gravity component 1of the inertial force";
+  SI.Force FpistIner = pistonRodMass * piston.a "Inertia of the piston and rod";
+  SI.Force FgravIner "Gravity component of the inertial force";
   SI.Force FflIner = cylinderChamberHead.f_inertia + cylinderChamberRod.f_inertia "Fluid inertia component of the inertial force";
   SI.Force Ffric "Friction force";
   
