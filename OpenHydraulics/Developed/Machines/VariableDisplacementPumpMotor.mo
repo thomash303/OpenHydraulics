@@ -24,7 +24,7 @@ model VariableDisplacementPumpMotor "Variable Displacement Pump/motor with losse
   // McCandlish and Dory motor loss parameters
   parameter Real Cs[:] = {0, 0} "Slips coefficient (hydraulic loss)" annotation(
     Dialog(group = "Losses"));
-  parameter Real CsD[:] = {0, 1} "Angular velocity of slip coefficients" annotation(
+  parameter Real CsD[:] = {0, 1} "Displacement fraction of slip coefficients" annotation(
     Dialog(group = "Losses"));
   parameter Real Cv[:] = {0, 0} "Coefficients of viscous drag (mechanical loss)" annotation(
     Dialog(group = "Losses"));
@@ -35,7 +35,7 @@ model VariableDisplacementPumpMotor "Variable Displacement Pump/motor with losse
   parameter Real CfD[:] = {0, 1} "Displacement fraction of slip coefficients" annotation(
     Dialog(group = "Losses"));
   // Friction
-  BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Cv, CvD = CvD, Cf = Cf, CfD = CfD, dpMot = dp, Dmax = Dlimit, D = fluidPower2MechRot.D, mu = system.mu) if frictionEnable annotation(
+  BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Cv, CvD = CvD, Cf = Cf, CfD = CfD, dpMot = dp, Dmax = Dlimit, alpha = dispFraction, mu = system.mu) if frictionEnable annotation(
     Placement(transformation(extent = {{-80, -10}, {-60, 10}})));
   // Fluid components
   Machines.FluidPower2MechRotVar fluidPower2MechRot(final Dmax = Dmax, final Dmin = Dmin, final Dlimit = Dlimit, p_init_a = p_init_T, p_init_b = p_init_P) annotation(
@@ -59,11 +59,11 @@ model VariableDisplacementPumpMotor "Variable Displacement Pump/motor with losse
   RealInput dispFraction annotation(
     Placement(transformation(extent = {{-100, -96}, {-68, -64}})));
   // Motor leakage
-  BaseClasses.FluidLeakage motorLeakage(p_init_a = p_init_P, p_init_b = p_init_T, Cs = Cs, CsD = CsD, dpMot = dp, Dmax = Dlimit, D = fluidPower2MechRot.D, mu = system.mu, portSelect = OpenHydraulics.Developed.Types.HydraulicPort.port_P) if leakageEnable annotation(
+  BaseClasses.FluidLeakage motorLeakage(p_init_a = p_init_P, p_init_b = p_init_T, Cs = Cs, CsD = CsD, dpMot = dp, Dmax = Dlimit, alpha = dispFraction, mu = system.mu, portSelect = OpenHydraulics.Developed.Types.HydraulicPort.port_P) if leakageEnable annotation(
     Placement(transformation(origin = {36, 10}, extent = {{-10, -10}, {10, 10}})));
   Volumes.OpenTank tank if leakageEnable annotation(
     Placement(transformation(origin = {68, 20}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
-  OpenHydraulics.Developed.Machines.BaseClasses.FluidLeakage motorLeakage1(Cs = Cs, CsD = CsD, Dmax = Dlimit, D = fluidPower2MechRot.D, dpMot = dp, mu = system.mu, p_init_a = p_init_P, p_init_b = p_init_T, portSelect = OpenHydraulics.Developed.Types.HydraulicPort.port_T) if leakageEnable annotation(
+  OpenHydraulics.Developed.Machines.BaseClasses.FluidLeakage motorLeakage1(Cs = Cs, CsD = CsD, Dmax = Dlimit, alpha = dispFraction, dpMot = dp, mu = system.mu, p_init_a = p_init_P, p_init_b = p_init_T, portSelect = OpenHydraulics.Developed.Types.HydraulicPort.port_T) if leakageEnable annotation(
     Placement(transformation(origin = {36, -10}, extent = {{-10, -10}, {10, 10}})));
   OpenHydraulics.Developed.Volumes.OpenTank tank1 if leakageEnable annotation(
     Placement(transformation(origin = {68, -20}, extent = {{-10, -10}, {10, 10}}, rotation = -0)));
@@ -72,7 +72,7 @@ model VariableDisplacementPumpMotor "Variable Displacement Pump/motor with losse
   SI.Power Pmot_mech = flange_a.tau*der(flange_a.phi) "Mechanical pump/motor power";
   //SI.Energy Emot_hyd "Hydraulic pump/motor energy";
   SI.Energy Emot_mech "Mechanical pump/motor energy";
-  Real motEff = min(abs(Pmot_hyd), abs(Pmot_mech))/(max(abs(Pmot_hyd), abs(Pmot_mech))) "Pump/motor efficiency";
+ // Real motEff = min(abs(Pmot_hyd), abs(Pmot_mech))/(max(abs(Pmot_hyd), abs(Pmot_mech))) "Pump/motor efficiency";
   SI.Pressure dp = portP.p - portT.p;
 equation
 // Power

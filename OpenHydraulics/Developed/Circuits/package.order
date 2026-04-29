@@ -13,3 +13,14 @@ MP_HIL_checkpoint_sens
 DAQ
 CC_HIL_sens
 DF
+DAQ_w2w
+DAQ_w2w_bus
+DAQ_w2w_power
+pidTest
+w2w_sens
+w2w_sens_control
+w2w_sens_fmu
+CC_HIL_sens_no_rot
+CC_HIL_sens_cylFric
+CC_HIL_sens_no_rot_val
+CC_HIL_sens_no_rot_val_mot

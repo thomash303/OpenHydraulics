@@ -10,7 +10,7 @@ model FluidLeakage
   import Modelica.Blocks.Interfaces.RealInput;
   import Modelica.Math.Vectors.interpolate;
   
-  parameter Real Cs[:] = {0, 0} "Slip coefficients" annotation(
+  parameter Real Cs[:] = {0, 1} "Slip coefficients" annotation(
     Dialog(group = "Leakage"));
   parameter Real CsD[:] = {0, 1} "Displacement fraction of slip coefficients" annotation(
     Dialog(group = "Leakage"));
@@ -22,8 +22,8 @@ model FluidLeakage
   parameter Types.HydraulicPort portSelect = Types.HydraulicPort.port_P "Select port of motor where leakage model is connected";
   
   SI.Pressure dpMot "Pressure across the motor";
-  SI.Volume D "Pump displacement";
-  Real cs = interpolate(Cs, CsD, D) "Interpolated slip coefficient";
+  Real alpha "Pump displacement fraction";
+  Real cs = interpolate(CsD, Cs, alpha) "Interpolated slip coefficient";
   
 equation
 

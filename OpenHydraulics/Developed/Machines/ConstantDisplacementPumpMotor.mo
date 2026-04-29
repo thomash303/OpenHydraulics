@@ -19,7 +19,7 @@ model ConstantDisplacementPumpMotor "Variable Displacement Pump/Motor with losse
   // McCandlish and Dory motor loss parameters
   parameter Real Cs[:] = {0, 0} "Slips coefficient (hydraulic loss)" annotation(
     Dialog(group = "Losses"));
-  parameter Real CsD[:] = {0, 1} "Angular velocity of slip coefficients" annotation(
+  parameter Real CsD[:] = {0, 1} "Displacement fraction of slip coefficients" annotation(
     Dialog(group = "Losses"));
   parameter Real Cv[:] = {0, 0} "Coefficients of viscous drag (mechanical loss)" annotation(
     Dialog(group = "Losses"));
@@ -30,7 +30,7 @@ model ConstantDisplacementPumpMotor "Variable Displacement Pump/Motor with losse
   parameter Real CfD[:] = {0, 1} "Displacement fraction of slip coefficients" annotation(
     Dialog(group = "Losses"));
   // Friction model
-  BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Cv, CvD = CvD, Cf = Cf, CfD = CfD, dpMot = dp, Dmax = Dconst, D = Dconst, mu = system.mu) if frictionEnable annotation(
+  BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Cv, CvD = CvD, Cf = Cf, CfD = CfD, dpMot = dp, Dmax = Dconst, alpha = dispFraction, mu = system.mu) if frictionEnable annotation(
     Placement(transformation(extent = {{-80, -10}, {-60, 10}})));
   // Fluid components
   FluidPower2MechRotConst fluidPower2MechRot(final Dconst = Dconst, p_init_a = p_init_T, p_init_b = p_init_P) annotation(
@@ -53,11 +53,11 @@ model ConstantDisplacementPumpMotor "Variable Displacement Pump/Motor with losse
     Placement(transformation(extent = {{-110, -10}, {-90, 10}})));
   
   // Motor leakage
-  BaseClasses.FluidLeakage motorLeakage(p_init_a = p_init_P, p_init_b = p_init_T, Cs = Cs, CsD = CsD, dpMot = dp, Dmax = Dconst, D = Dconst, mu = system.mu, portSelect = OpenHydraulics.Developed.Types.HydraulicPort.port_P) if leakageEnable annotation(
+  BaseClasses.FluidLeakage motorLeakage(p_init_a = p_init_P, p_init_b = p_init_T, Cs = Cs, CsD = CsD, dpMot = dp, Dmax = Dconst, alpha = dispFraction, mu = system.mu, portSelect = OpenHydraulics.Developed.Types.HydraulicPort.port_P) if leakageEnable annotation(
     Placement(transformation(origin = {40, 10}, extent = {{-10, -10}, {10, 10}})));
   OpenHydraulics.Developed.Volumes.OpenTank tank if leakageEnable annotation(
     Placement(transformation(origin = {72, 20}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
-  OpenHydraulics.Developed.Machines.BaseClasses.FluidLeakage motorLeakage1(Cs = Cs, CsD = CsD, Dmax = Dconst, D = Dconst, dpMot = dp, mu = system.mu, p_init_a = p_init_P, p_init_b = p_init_T, portSelect = OpenHydraulics.Developed.Types.HydraulicPort.port_T) if leakageEnable annotation(
+  OpenHydraulics.Developed.Machines.BaseClasses.FluidLeakage motorLeakage1(Cs = Cs, CsD = CsD, Dmax = Dconst, alpha = dispFraction, dpMot = dp, mu = system.mu, p_init_a = p_init_P, p_init_b = p_init_T, portSelect = OpenHydraulics.Developed.Types.HydraulicPort.port_T) if leakageEnable annotation(
     Placement(transformation(origin = {40, -10}, extent = {{-10, -10}, {10, 10}})));
   OpenHydraulics.Developed.Volumes.OpenTank tank1 if leakageEnable annotation(
     Placement(transformation(origin = {72, -20}, extent = {{-10, -10}, {10, 10}}, rotation = -0)));
