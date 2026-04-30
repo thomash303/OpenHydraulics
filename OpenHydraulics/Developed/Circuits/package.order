@@ -24,3 +24,5 @@ CC_HIL_sens_no_rot
 CC_HIL_sens_cylFric
 CC_HIL_sens_no_rot_val
 CC_HIL_sens_no_rot_val_mot
+CC_HIL_sens_no_rot_val_mot_boost
+CC_HIL_sens_no_rot_val_mot_boost_c
