@@ -18,21 +18,13 @@ model FluidLeakage
   parameter SI.Volume Dmax = 1e-4 "Maximum pump displacement";
   parameter SI.DynamicViscosity mu = 0.036 "Dynamic Viscosity of liquid";
   
-  
-  parameter Types.HydraulicPort portSelect = Types.HydraulicPort.port_P "Select port of motor where leakage model is connected";
-  
-  SI.Pressure dpMot "Pressure across the motor";
   Real alpha "Pump displacement fraction";
   Real cs = interpolate(CsD, Cs, alpha) "Interpolated slip coefficient";
   
 equation
 
   // Mass flow
-  if (portSelect == Types.HydraulicPort.port_P and dpMot > 0) or (portSelect == Types.HydraulicPort.port_T and dpMot < 0) then
-    port_a.m_flow = 0;
-  else
-    port_a.m_flow = cs * Dmax / mu * abs(dpMot);
-  end if;
+  port_a.m_flow = cs * Dmax * dp / mu;
   
   // Mass balance
   0 = port_a.m_flow + port_b.m_flow "Mass balance";

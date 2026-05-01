@@ -1,6 +1,6 @@
 within OpenHydraulics.Developed.Machines;
 
-model VariableDisplacementPumpMotor "Variable Displacement Pump/motor with losses"
+model VariableDisplacementPump "Variable Displacement Pump/motor with losses"
   // Inheriting from the OET
   extends Interfaces.BaseClasses.PartialFluidComponent;
   // Importing from the MSL
@@ -21,19 +21,19 @@ model VariableDisplacementPumpMotor "Variable Displacement Pump/motor with losse
     Dialog(tab = "Sizing"));
   parameter SI.Volume Dlimit = max(abs(Dmax), abs(Dmin)) "Displacement of pump" annotation(
     Dialog(tab = "Sizing"));
-  // McCandlish and Dory motor loss parameters
-  parameter Real Cs[:] = {0, 0} "Slips coefficient (hydraulic loss)" annotation(
-    Dialog(group = "Losses"));
+  // McCandish and Dory motor loss parameters
+  parameter Real Cs[:] = {0, 0} "Slips coefficient (hydraulic loss)"  annotation(
+    Dialog(group = "Losses", enable = leakageEnable));
   parameter Real CsD[:] = {0, 1} "Displacement fraction of slip coefficients" annotation(
-    Dialog(group = "Losses"));
+    Dialog(group = "Losses", enable = leakageEnable));
   parameter Real Cv[:] = {0, 0} "Coefficients of viscous drag (mechanical loss)" annotation(
-    Dialog(group = "Losses"));
+    Dialog(group = "Losses", enable = frictionEnable));
   parameter Real CvD[:] = {0, 1} "Displacement fraction of slip coefficients" annotation(
-    Dialog(group = "Losses"));
+    Dialog(group = "Losses", enable = frictionEnable));
   parameter Real Cf[:] = {0, 0} "Coefficients of Coulomb friction (mechanical loss)" annotation(
-    Dialog(group = "Losses"));
+    Dialog(group = "Losses", enable = frictionEnable));
   parameter Real CfD[:] = {0, 1} "Displacement fraction of slip coefficients" annotation(
-    Dialog(group = "Losses"));
+    Dialog(group = "Losses", enable = frictionEnable));
   // Friction
   BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Cv, CvD = CvD, Cf = Cf, CfD = CfD, dpMot = dp, Dmax = Dlimit, alpha = dispFraction, mu = system.mu) if frictionEnable annotation(
     Placement(transformation(extent = {{-80, -10}, {-60, 10}})));
@@ -62,15 +62,15 @@ model VariableDisplacementPumpMotor "Variable Displacement Pump/motor with losse
   BaseClasses.FluidLeakage motorLeakage(p_init_a = p_init_P, p_init_b = p_init_T, Cs = Cs, CsD = CsD, Dmax = Dlimit, alpha = dispFraction, mu = system.mu) if leakageEnable annotation(
     Placement(transformation(origin = {36, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   // Power, energy, and efficiency
-  SI.Power Pmot_hyd "Hydraulic pump/motor power";
+  //SI.Power Pmot_hyd "Hydraulic pump/motor power";
   SI.Power Pmot_mech = flange_a.tau*der(flange_a.phi) "Mechanical pump/motor power";
   //SI.Energy Emot_hyd "Hydraulic pump/motor energy";
   SI.Energy Emot_mech "Mechanical pump/motor energy";
- // Real motEff = min(abs(Pmot_hyd), abs(Pmot_mech))/(max(abs(Pmot_hyd), abs(Pmot_mech))) "Pump/motor efficiency";
+  //Real motEff = min(abs(Pmot_hyd), abs(Pmot_mech))/(max(abs(Pmot_hyd), abs(Pmot_mech))) "Pump/motor efficiency";
   SI.Pressure dp = portP.p - portT.p;
 equation
 // Power
-  Pmot_hyd = smooth(1, noEvent(dp*(if portP.m_flow >= 0 then -portT.m_flow else -portP.m_flow)/system.rho_ambient));
+//Pmot_hyd = smooth(1, noEvent(dp*(if portP.m_flow >= 0 then -portT.m_flow else -portP.m_flow)/system.rho_ambient));
 // Energy
 //der(Emot_hyd) = Pmot_hyd;
   der(Emot_mech) = Pmot_mech;
@@ -92,11 +92,11 @@ equation
     connect(flange_a, fluidPower2MechRot.flange_a) annotation(
       Line(points = {{-10, 0}, {-100, 0}}));
   end if;
- connect(j2.port[3], motorLeakage.port_a) annotation(
+  connect(j2.port[3], motorLeakage.port_a) annotation(
     Line(points = {{0, 40}, {36, 40}, {36, 10}}, color = {255, 0, 0}));
- connect(motorLeakage.port_b, j1.port[3]) annotation(
+  connect(motorLeakage.port_b, j1.port[3]) annotation(
     Line(points = {{36, -10}, {36, -40}, {0, -40}}, color = {255, 0, 0}));
   annotation(
-    Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Ellipse(fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-54, 54}, {54, -54}}), Line(points = {{0, -54}, {0, -100}}, color = {255, 0, 0}), Line(points = {{0, 100}, {0, 54}}, color = {255, 0, 0}), Rectangle(fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-90, 8}, {-54, -8}}), Text(extent = {{100, -54}, {-100, -90}}, textString = "%name"), Text(extent = {{10, -80}, {40, -120}}, textString = "T"), Polygon(origin = {0, -8},fillPattern = FillPattern.Solid, points = {{-20, 34}, {0, 54}, {20, 34}, {-20, 34}}), Polygon(origin = {0, 16},fillPattern = FillPattern.Solid, points = {{-20, -34}, {0, -54}, {20, -34}, {-20, -34}}), Text(extent = {{10, 120}, {40, 80}}, textString = "P"), Polygon(fillPattern = FillPattern.Solid, points = {{80, 80}, {52, 66}, {66, 52}, {80, 80}}), Line(points = {{-80, -80}, {80, 80}}), Polygon(origin = {0, 84},fillPattern = FillPattern.Solid, points = {{-20, -34}, {0, -54}, {20, -34}, {-20, -34}}), Polygon(origin = {0, -84}, fillPattern = FillPattern.Solid, points = {{-20, 34}, {0, 54}, {20, 34}, {-20, 34}})}),
+    Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-120, 120}, {140, -120}}), graphics = {Ellipse(fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-54, 54}, {54, -54}}), Line(points = {{0, -54}, {0, -100}}, color = {255, 0, 0}), Line(points = {{0, 100}, {0, 54}}, color = {255, 0, 0}), Rectangle(fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-90, 8}, {-54, -8}}), Text(extent = {{10, -80}, {40, -120}}, textString = "T"), Text(extent = {{10, 120}, {40, 80}}, textString = "P"), Polygon(fillPattern = FillPattern.Solid, points = {{80, 80}, {52, 66}, {66, 52}, {80, 80}}), Line(points = {{-80, -80}, {80, 80}}), Polygon( rotation = 180, fillPattern = FillPattern.Solid, points = {{-20, -34}, {0, -54}, {20, -34}, {-20, -34}}), Text(origin = {-64, 10}, textColor = {0, 0, 255}, extent = {{200, 0}, {110, -20}}, textString = "%name")}),
     Diagram(graphics));
-end VariableDisplacementPumpMotor;
+end VariableDisplacementPump;

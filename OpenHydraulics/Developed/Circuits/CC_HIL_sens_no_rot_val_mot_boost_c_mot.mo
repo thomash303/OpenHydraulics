@@ -1,12 +1,12 @@
 within OpenHydraulics.Developed.Circuits;
 
-model CC_HIL_sens_no_rot_val_mot_boost_c
+model CC_HIL_sens_no_rot_val_mot_boost_c_mot
   Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.04, compressibleEnable = true, strokeLength = 0.3, pistonRodMass = 4, maxPressure = 2e8, leakageEnable = true, Cv = 1000, f_c = 200, Cst = 5, f_st = 2000, CHeadExLeakage = 0.00000000055, CRodExLeakage = 0.00000000055, CInLeakage = 0.0000000005, damping = 0, stribeckFrictionEnable = false, rodDiameter(displayUnit = "mm") = 0.029, closedLength = 0.0001, p_init = 1e6, fluidInertiaEnable = true, gravityAccelerationEnable = true) annotation(
     Placement(transformation(origin = {-90, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   inner Developed.Systems.System system annotation(
     Placement(transformation(origin = {-64, 72}, extent = {{-10, -10}, {10, 10}})));
-  Developed.Machines.VariableDisplacementMotor constantDisplacementPump(p_init(displayUnit = "bar") = 3.5e6, CsD = {0, 25, 50, 75, 100}, CvD = {0, 25, 50, 75, 100}, CfD = {0, 25, 50, 75, 100}, Cs = {0, 3.2576e-9, 2.7658e-9, 2.1634e-9, 2.8241e-9}, Cv = {0, 207433, 249350, 286122, 313991}, frictionEnable = true, leakageEnable = true, Dmax = 4e-6, Dmin = -4e-6, Cf = {0, -0.0012, -0.0017, -0.0017, -0.0003}) annotation(
-    Placement(transformation(origin = {66, 12}, extent = {{10, 10}, {-10, -10}})));
+  Developed.Machines.VariableDisplacementMotor variableDisplacementMotor(p_init(displayUnit = "bar") = 3.5e6, CsD = {0, 25, 50, 75, 100}, CvD = {0, 25, 50, 75, 100}, CfD = {0, 25, 50, 75, 100}, Cs = {0, 3.2576e-9, 2.7658e-9, 2.1634e-9, 2.8241e-9}, Cv = {0, 207433, 249350, 286122, 313991}, frictionEnable = true, leakageEnable = true, Dmax = 4e-6, Dmin = -4e-6, Cf = {0, -0.0012, -0.0017, -0.0017, -0.0003}) annotation(
+    Placement(transformation(origin = {70, 12}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
   Developed.Volumes.Accumulator hpAccumulator(gasVolume = 3.8e-3, initType = Developed.Types.AccInit.Volume, liquidVolume = 2.8e-3, p_init(displayUnit = "bar") = 3.5e6, p_precharge(displayUnit = "bar") = 1e6, p_max = 2e8, V_init = 2.1e-3) annotation(
     Placement(transformation(origin = {44, 44}, extent = {{-10, -10}, {10, 10}})));
   Developed.Volumes.Accumulator lpAccumulator(gasVolume = 1e-3, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.8e-3, p_init(displayUnit = "bar") = 2e5, p_precharge(displayUnit = "bar") = 2e5, p_max = 5e7, V_init = 0.75e-3) annotation(
@@ -17,13 +17,13 @@ model CC_HIL_sens_no_rot_val_mot_boost_c
     Placement(transformation(origin = {-82, -10}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Blocks.Sources.Sine sine1(amplitude = 0.125, f = 0.33, offset = 0.15, phase = 2*3.14*0.33*0.1) annotation(
     Placement(transformation(origin = {40, 76}, extent = {{10, -10}, {-10, 10}})));
-  Developed.Machines.ConstantDisplacementPumpMotor constantDisplacementPump1(Dconst = -4e-6, p_init(displayUnit = "bar")) annotation(
-    Placement(transformation(origin = {-50, -68}, extent = {{10, -10}, {-10, 10}})));
+  Developed.Machines.VariableDisplacementPump variableDisplacementPump(Dmax = 4e-6, Dmin = -4e-6, p_init(displayUnit = "bar"), frictionEnable = false, leakageEnable = false) annotation(
+    Placement(transformation(origin = {-58, -64}, extent = {{10, -10}, {-10, 10}})));
   Developed.Volumes.OpenTank tank annotation(
     Placement(transformation(origin = {96, -24}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.Rotational.Sources.Speed speed1(exact = true) annotation(
     Placement(transformation(origin = {30, -56}, extent = {{10, -10}, {-10, 10}})));
-  Modelica.Blocks.Sources.Ramp ramp(height = -47*2*3.14/60, duration = 0) annotation(
+  Modelica.Blocks.Sources.Ramp ramp(height = 47*2*3.14/60, duration = 0) annotation(
     Placement(transformation(origin = {64, -56}, extent = {{10, -10}, {-10, 10}})));
   Modelica.Units.SI.Force Fpto = doubleActingCylinder.Fpto;
   // Valve parameter
@@ -80,6 +80,8 @@ model CC_HIL_sens_no_rot_val_mot_boost_c
     Placement(transformation(origin = {160, -6}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Blocks.Sources.Ramp ramp1(height = 1, duration = 0) annotation(
     Placement(transformation(origin = {154, 40}, extent = {{10, -10}, {-10, 10}})));
+  Modelica.Blocks.Sources.Ramp ramp11(duration = 0, height = 1) annotation(
+    Placement(transformation(origin = {12, -86}, extent = {{10, -10}, {-10, 10}})));
 equation
   connect(doubleActingCylinder.flange_a, fixed.flange) annotation(
     Line(points = {{-90, 18}, {-90, -10}, {-82, -10}}, color = {0, 127, 0}));
@@ -87,8 +89,8 @@ equation
     Line(points = {{30, 76}, {4, 76}, {4, 54}}, color = {0, 0, 127}));
   connect(ramp.y, speed1.w_ref) annotation(
     Line(points = {{54, -56}, {42, -56}}, color = {0, 0, 127}));
-  connect(speed1.flange, constantDisplacementPump1.flange_a) annotation(
-    Line(points = {{20, -56}, {-40, -56}, {-40, -68}}));
+  connect(speed1.flange, variableDisplacementPump.flange_a) annotation(
+    Line(points = {{20, -56}, {-40, -56}, {-40, -64}, {-50, -64}}));
   connect(position.flange, doubleActingCylinder.flange_b) annotation(
     Line(points = {{-18, 54}, {-78, 54}, {-78, 38}, {-90, 38}}, color = {0, 127, 0}));
   connect(lpAccumulator.port_a, jLP.port[1]) annotation(
@@ -113,10 +115,10 @@ equation
     Line(points = {{36, 0}, {36, 34}, {44, 34}}, color = {255, 0, 0}));
   connect(reliefValve.port_b, tank.port) annotation(
     Line(points = {{56, 0}, {56, -14}, {96, -14}}, color = {255, 0, 0}));
-  connect(reliefValve1.port_a, constantDisplacementPump1.portP) annotation(
-    Line(points = {{-30, -64}, {-36, -64}, {-36, -58}, {-50, -58}}, color = {255, 0, 0}));
-  connect(constantDisplacementPump1.portT, circuitTank.port_a) annotation(
-    Line(points = {{-50, -78}, {-52, -78}, {-52, -90}, {-42, -90}}, color = {255, 0, 0}));
+  connect(reliefValve1.port_a, variableDisplacementPump.portP) annotation(
+    Line(points = {{-30, -64}, {-36, -64}, {-36, -56}, {-57, -56}}, color = {255, 0, 0}));
+  connect(variableDisplacementPump.portT, circuitTank.port_a) annotation(
+    Line(points = {{-57, -72}, {-52, -72}, {-52, -90}, {-42, -90}}, color = {255, 0, 0}));
   connect(circuitTank.port_b, reliefValve1.port_b) annotation(
     Line(points = {{-22, -90}, {-10, -90}, {-10, -64}}, color = {255, 0, 0}));
   connect(P2.port_a, jA.port[5]) annotation(
@@ -127,8 +129,6 @@ equation
     Line(points = {{18, 46}, {10, 46}, {10, 36}}, color = {255, 0, 0}));
   connect(P4.port_a, hpAccumulator.port_a) annotation(
     Line(points = {{78, 40}, {44, 40}, {44, 34}}, color = {255, 0, 0}));
-  connect(P5.port_a, constantDisplacementPump.portT) annotation(
-    Line(points = {{112, 44}, {88, 44}, {88, 22}, {66, 22}}, color = {255, 0, 0}));
   connect(P6.port_a, jLP.port[5]) annotation(
     Line(points = {{-114, -76}, {12, -76}, {12, -4}}, color = {255, 0, 0}));
   connect(F1.port_a, jHP.port[1]) annotation(
@@ -137,8 +137,6 @@ equation
     Line(points = {{34, 22}, {44, 22}, {44, 34}}, color = {255, 0, 0}));
   connect(hpAccumulator.port_a, F2.port_a) annotation(
     Line(points = {{44, 34}, {50, 34}, {50, 30}}, color = {255, 0, 0}));
-  connect(F2.port_b, constantDisplacementPump.portT) annotation(
-    Line(points = {{70, 30}, {66, 30}, {66, 22}}, color = {255, 0, 0}));
   connect(P1.p, daq.P1);
   connect(P2.p, daq.P2);
   connect(P3.p, daq.P3);
@@ -147,8 +145,8 @@ equation
   connect(P6.p, daq.P6);
   connect(F1.m_flow, daq.F1);
   connect(F2.m_flow, daq.F2);
-  connect(constantDisplacementPump1.portP, lpAccumulator.port_a) annotation(
-    Line(points = {{-50, -58}, {20, -58}, {20, -12}, {32, -12}}, color = {255, 0, 0}));
+  connect(variableDisplacementPump.portP, lpAccumulator.port_a) annotation(
+    Line(points = {{-57, -56}, {20, -56}, {20, -12}, {32, -12}}, color = {255, 0, 0}));
   connect(jB.port[1], doubleActingCylinder.port_a) annotation(
     Line(points = {{-42, 42}, {-68, 42}, {-68, 20}, {-82, 20}}, color = {255, 0, 0}));
   connect(jA.port[1], doubleActingCylinder.port_b) annotation(
@@ -157,14 +155,20 @@ equation
     Line(points = {{144, 12}, {160, 12}, {160, -6}}));
   connect(inertia.flange_b, damper.flange_a) annotation(
     Line(points = {{110, 12}, {124, 12}}));
-  connect(inertia.flange_a, constantDisplacementPump.flange_a) annotation(
-    Line(points = {{90, 12}, {76, 12}}));
-  connect(ramp1.y, constantDisplacementPump.dispFraction) annotation(
-    Line(points = {{144, 40}, {74, 40}, {74, 18}}, color = {0, 0, 127}));
-  connect(lpAccumulator.port_a, constantDisplacementPump.portP) annotation(
-    Line(points = {{32, -12}, {66, -12}, {66, 4}}, color = {255, 0, 0}));
+  connect(inertia.flange_a, variableDisplacementMotor.flange_a) annotation(
+    Line(points = {{90, 12}, {78, 12}}));
+  connect(ramp1.y, variableDisplacementMotor.dispFraction) annotation(
+    Line(points = {{144, 40}, {144, 5}, {77, 5}}, color = {0, 0, 127}));
+  connect(F2.port_b, variableDisplacementMotor.portP) annotation(
+    Line(points = {{70, 30}, {70, 20}}, color = {255, 0, 0}));
+  connect(P5.port_a, variableDisplacementMotor.portP) annotation(
+    Line(points = {{112, 44}, {98, 44}, {98, 20}, {70, 20}}, color = {255, 0, 0}));
+  connect(variableDisplacementMotor.portT, lpAccumulator.port_a) annotation(
+    Line(points = {{70, 4}, {68, 4}, {68, -12}, {32, -12}}, color = {255, 0, 0}));
+  connect(ramp11.y, variableDisplacementPump.dispFraction) annotation(
+    Line(points = {{2, -86}, {-50, -86}, {-50, -70}}, color = {0, 0, 127}));
   annotation(
     experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.002),
     uses(OceanEngineeringToolbox(version = "v0.3"), OpenHydraulics(version = "2.0.0")),
     Diagram);
-end CC_HIL_sens_no_rot_val_mot_boost_c;
+end CC_HIL_sens_no_rot_val_mot_boost_c_mot;

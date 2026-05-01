@@ -3,3 +3,5 @@ FluidPower2MechRotConst
 FluidPower2MechRotVar
 ConstantDisplacementPumpMotor
 VariableDisplacementPumpMotor
+VariableDisplacementMotor
+VariableDisplacementPump

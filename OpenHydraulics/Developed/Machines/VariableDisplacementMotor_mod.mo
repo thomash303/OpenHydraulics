@@ -1,6 +1,6 @@
 within OpenHydraulics.Developed.Machines;
 
-model VariableDisplacementPumpMotor "Variable Displacement Pump/motor with losses"
+model VariableDisplacementMotor_mod "Variable Displacement Pump/motor with losses"
   // Inheriting from the OET
   extends Interfaces.BaseClasses.PartialFluidComponent;
   // Importing from the MSL
@@ -38,8 +38,8 @@ model VariableDisplacementPumpMotor "Variable Displacement Pump/motor with losse
   BaseClasses.MechanicalPumpLosses mechanicalPumpLosses(Cv = Cv, CvD = CvD, Cf = Cf, CfD = CfD, dpMot = dp, Dmax = Dlimit, alpha = dispFraction, mu = system.mu) if frictionEnable annotation(
     Placement(transformation(extent = {{-80, -10}, {-60, 10}})));
   // Fluid components
-  Machines.FluidPower2MechRotVar fluidPower2MechRot(final Dmax = Dmax, final Dmin = Dmin, final Dlimit = Dlimit, p_init_a = p_init_T, p_init_b = p_init_P) annotation(
-    Placement(transformation(extent = {{-10, -10}, {10, 10}})));
+  Machines.FluidPower2MechRotVar fluidPower2MechRot(final Dmax = Dmax, final Dmin = Dmin, final Dlimit = Dlimit, p_init_a = p_init_P, p_init_b = p_init_T) annotation(
+    Placement(transformation(extent = {{-10, 10}, {10, -10}}, rotation = -0)));
   Interfaces.NJunction j1(p_init = p_init_T) annotation(
     Placement(transformation(extent = {{-10, -50}, {10, -30}})));
   Interfaces.NJunction j2(p_init = p_init_P) annotation(
@@ -57,33 +57,29 @@ model VariableDisplacementPumpMotor "Variable Displacement Pump/motor with losse
   Flange_a flange_a "(left) driving flange (flange axis directed INTO cut plane)" annotation(
     Placement(transformation(extent = {{-110, -10}, {-90, 10}})));
   RealInput dispFraction annotation(
-    Placement(transformation(extent = {{-100, -96}, {-68, -64}})));
+    Placement(transformation(extent = {{-100, 96}, {-68, 64}}, rotation = -0), iconTransformation(extent = {{-100, -96}, {-68, -64}})));
   // Motor leakage
   BaseClasses.FluidLeakage motorLeakage(p_init_a = p_init_P, p_init_b = p_init_T, Cs = Cs, CsD = CsD, Dmax = Dlimit, alpha = dispFraction, mu = system.mu) if leakageEnable annotation(
     Placement(transformation(origin = {36, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   // Power, energy, and efficiency
-  SI.Power Pmot_hyd "Hydraulic pump/motor power";
+  //SI.Power Pmot_hyd "Hydraulic pump/motor power";
   SI.Power Pmot_mech = flange_a.tau*der(flange_a.phi) "Mechanical pump/motor power";
   //SI.Energy Emot_hyd "Hydraulic pump/motor energy";
   SI.Energy Emot_mech "Mechanical pump/motor energy";
- // Real motEff = min(abs(Pmot_hyd), abs(Pmot_mech))/(max(abs(Pmot_hyd), abs(Pmot_mech))) "Pump/motor efficiency";
+  //Real motEff = min(abs(Pmot_hyd), abs(Pmot_mech))/(max(abs(Pmot_hyd), abs(Pmot_mech))) "Pump/motor efficiency";
   SI.Pressure dp = portP.p - portT.p;
 equation
 // Power
-  Pmot_hyd = smooth(1, noEvent(dp*(if portP.m_flow >= 0 then -portT.m_flow else -portP.m_flow)/system.rho_ambient));
+//Pmot_hyd = smooth(1, noEvent(dp*(if portP.m_flow >= 0 then -portT.m_flow else -portP.m_flow)/system.rho_ambient));
 // Energy
 //der(Emot_hyd) = Pmot_hyd;
   der(Emot_mech) = Pmot_mech;
   connect(fluidPower2MechRot.dispFraction, dispFraction) annotation(
-    Line(points = {{-8.5, -8}, {-42, -8}, {-42, -80}, {-84, -80}}, color = {0, 0, 127}));
+    Line(points = {{-8.5, 8}, {-42, 8}, {-42, 80}, {-84, 80}}, color = {0, 0, 127}));
   connect(portT, j1.port[1]) annotation(
     Line(points = {{0, -100}, {0, -40.6667}}, color = {255, 0, 0}));
   connect(portP, j2.port[1]) annotation(
     Line(points = {{0, 100}, {0, 39.3333}}, color = {255, 0, 0}));
-  connect(fluidPower2MechRot.port_b, j2.port[2]) annotation(
-    Line(points = {{0, 10}, {0, 40}}, color = {255, 0, 0}));
-  connect(fluidPower2MechRot.port_a, j1.port[2]) annotation(
-    Line(points = {{0, -10}, {0, -40}}, color = {255, 0, 0}));
   connect(flange_a, mechanicalPumpLosses.flange_a) annotation(
     Line(points = {{-100, 0}, {-80, 0}}, color = {0, 0, 0}));
   connect(mechanicalPumpLosses.flange_b, fluidPower2MechRot.flange_a) annotation(
@@ -92,11 +88,15 @@ equation
     connect(flange_a, fluidPower2MechRot.flange_a) annotation(
       Line(points = {{-10, 0}, {-100, 0}}));
   end if;
- connect(j2.port[3], motorLeakage.port_a) annotation(
+  connect(j2.port[3], motorLeakage.port_a) annotation(
     Line(points = {{0, 40}, {36, 40}, {36, 10}}, color = {255, 0, 0}));
- connect(motorLeakage.port_b, j1.port[3]) annotation(
+  connect(motorLeakage.port_b, j1.port[3]) annotation(
     Line(points = {{36, -10}, {36, -40}, {0, -40}}, color = {255, 0, 0}));
+  connect(j2.port[2], fluidPower2MechRot.port_a) annotation(
+    Line(points = {{0, 40}, {0, 10}}, color = {255, 0, 0}));
+  connect(j1.port[2], fluidPower2MechRot.port_b) annotation(
+    Line(points = {{0, -40}, {0, -10}}, color = {255, 0, 0}));
   annotation(
-    Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}}), graphics = {Ellipse(fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-54, 54}, {54, -54}}), Line(points = {{0, -54}, {0, -100}}, color = {255, 0, 0}), Line(points = {{0, 100}, {0, 54}}, color = {255, 0, 0}), Rectangle(fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-90, 8}, {-54, -8}}), Text(extent = {{100, -54}, {-100, -90}}, textString = "%name"), Text(extent = {{10, -80}, {40, -120}}, textString = "T"), Polygon(origin = {0, -8},fillPattern = FillPattern.Solid, points = {{-20, 34}, {0, 54}, {20, 34}, {-20, 34}}), Polygon(origin = {0, 16},fillPattern = FillPattern.Solid, points = {{-20, -34}, {0, -54}, {20, -34}, {-20, -34}}), Text(extent = {{10, 120}, {40, 80}}, textString = "P"), Polygon(fillPattern = FillPattern.Solid, points = {{80, 80}, {52, 66}, {66, 52}, {80, 80}}), Line(points = {{-80, -80}, {80, 80}}), Polygon(origin = {0, 84},fillPattern = FillPattern.Solid, points = {{-20, -34}, {0, -54}, {20, -34}, {-20, -34}}), Polygon(origin = {0, -84}, fillPattern = FillPattern.Solid, points = {{-20, 34}, {0, 54}, {20, 34}, {-20, 34}})}),
+    Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-120, 120}, {140, -120}}), graphics = {Ellipse(fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-54, 54}, {54, -54}}), Line(points = {{0, -54}, {0, -100}}, color = {255, 0, 0}), Line(points = {{0, 100}, {0, 54}}, color = {255, 0, 0}), Rectangle(fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-90, 8}, {-54, -8}}), Text(extent = {{10, -80}, {40, -120}}, textString = "T"), Text(extent = {{10, 120}, {40, 80}}, textString = "P"), Polygon(fillPattern = FillPattern.Solid, points = {{80, 80}, {52, 66}, {66, 52}, {80, 80}}), Line(points = {{-80, -80}, {80, 80}}), Polygon(origin = {0, -84}, rotation = 180, fillPattern = FillPattern.Solid, points = {{-20, -34}, {0, -54}, {20, -34}, {-20, -34}}), Text(origin = {-64, 10}, textColor = {0, 0, 255}, extent = {{200, 0}, {110, -20}}, textString = "%name")}),
     Diagram(graphics));
-end VariableDisplacementPumpMotor;
+end VariableDisplacementMotor_mod;
