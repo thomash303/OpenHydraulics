@@ -6,22 +6,15 @@ model DAQ
   import Modelica.Blocks.Interfaces.RealInput;
   import Modelica.Units.SI;
   
-  RealInput P1 annotation(
-    Placement(transformation(origin = {-120, 80}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-108, 82}, extent = {{-20, -20}, {20, 20}})));
-  RealInput P2 annotation(
-    Placement(transformation(origin = {-120, 46}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-110, 44}, extent = {{-20, -20}, {20, 20}})));
-  RealInput P3 annotation(
-    Placement(transformation(origin = {-120, 16}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-110, 10}, extent = {{-20, -20}, {20, 20}})));
-  RealInput P4 annotation(
-    Placement(transformation(origin = {-120, -22}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-110, -18}, extent = {{-20, -20}, {20, 20}})));
-  RealInput P5 annotation(
-    Placement(transformation(origin = {-120, -58}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-112, -66}, extent = {{-20, -20}, {20, 20}})));
-  RealInput P6 annotation(
-    Placement(transformation(origin = {-120, -88}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-110, -84}, extent = {{-20, -20}, {20, 20}})));
-  RealInput F1 annotation(
-    Placement(transformation(origin = {120, 50}, extent = {{20, -20}, {-20, 20}}, rotation = -0), iconTransformation(origin = {124, 40}, extent = {{-20, -20}, {20, 20}})));
-  RealInput F2 annotation(
-    Placement(transformation(origin = {122, -50}, extent = {{20, -20}, {-20, 20}}, rotation = -0), iconTransformation(origin = {132, -60}, extent = {{-20, -20}, {20, 20}})));
+    
+  RealInput P1;
+  RealInput P2;
+  RealInput P3;
+  RealInput P4;
+  RealInput P5;
+  RealInput P6;
+  RealInput F1;
+  RealInput F2;
 
   SI.Pressure p1 = P1;
   SI.Pressure p2 = P2;
@@ -42,5 +35,40 @@ model DAQ
   
 
 equation
+
+annotation (
+  Icon(
+    coordinateSystem(preserveAspectRatio=true, extent={{-100,-100},{100,100}}),
+    graphics={
+      Rectangle(
+        extent={{-80,60},{80,-60}},
+        lineColor={0,0,0},
+        fillColor={200,200,200},
+        fillPattern=FillPattern.Solid),
+        Text(textColor = {0, 0, 255}, extent = {{0, 110}, {0, 74}}, textString = "%name"),
+      Text(
+        extent={{-60,20},{60,-20}},
+        lineColor={0,0,0},
+        textString="DAQ",
+        fontSize=24),
+      Line(points={{-80,30},{-60,30}}, color={0,0,255}),
+      Line(points={{-80,10},{-60,10}}, color={0,0,255}),
+      Line(points={{-80,-10},{-60,-10}}, color={0,0,255}),
+      Line(points={{-80,-30},{-60,-30}}, color={0,0,255}),
+      Line(points={{60,30},{80,30}},   color={255,0,0}),
+      Line(points={{60,10},{80,10}},   color={255,0,0}),
+      Line(points={{60,-10},{80,-10}}, color={255,0,0}),
+      Line(points={{60,-30},{80,-30}}, color={255,0,0})
+    }),
+  Diagram(
+    coordinateSystem(extent={{-100,-100},{100,100}}),
+    graphics={
+      Rectangle(
+        extent={{-80,60},{80,-60}},
+        lineColor={0,0,0},
+        fillColor={230,230,230},
+        fillPattern=FillPattern.Solid)
+    })
+);
 
 end DAQ;
