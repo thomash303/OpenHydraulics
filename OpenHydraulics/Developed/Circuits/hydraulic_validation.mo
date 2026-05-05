@@ -1,7 +1,7 @@
 within OpenHydraulics.Developed.Circuits;
 
 model hydraulic_validation
-  Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.04, compressibleEnable = true, strokeLength = 0.3, pistonRodMass = 4, maxPressure = 2e8, leakageEnable = true, Cv = 100, f_c = 75, Cst = 0.05, f_st = 50, CHeadExLeakage = 0.00000000055, CRodExLeakage = 0.00000000055, CInLeakage = 0.0000000005, damping = 0, stribeckFrictionEnable = true, rodDiameter(displayUnit = "mm") = 0.029, closedLength = 0.0001, p_init = 1e6, fluidInertiaEnable = true, gravityAccelerationEnable = true) annotation(
+  Developed.Cylinders.DoubleActingCylinder doubleActingCylinder(boreDiameter = 0.04, compressibleEnable = true, strokeLength = 0.3, pistonRodMass = 4, maxPressure = 2e8, leakageEnable = true, Cv = 100, f_c = 75, Cst = 0.05, f_st = 50, CHeadExLeakage = 0.00000000055, CRodExLeakage = 0.00000000055, CInLeakage = 0.0000000005, damping = 0, stribeckFrictionEnable = true, rodDiameter(displayUnit = "mm") = 0.028, closedLength = 0.0001, p_init = 1e6, fluidInertiaEnable = true, gravityAccelerationEnable = true) annotation(
     Placement(transformation(origin = {-82, 10}, extent = {{-10, 10}, {10, -10}}, rotation = -90)));
   inner Developed.Systems.System system annotation(
     Placement(transformation(origin = {-138, 60}, extent = {{-10, -10}, {10, 10}})));
@@ -23,7 +23,7 @@ model hydraulic_validation
     Placement(transformation(origin = {38, -26}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.Rotational.Sources.Speed speed(exact = true) annotation(
     Placement(transformation(origin = {46, -88}, extent = {{10, -10}, {-10, 10}})));
-  Modelica.Blocks.Sources.Ramp pumpSpeed(height = 47*2*3.14/60, duration = 0) annotation(
+  Modelica.Blocks.Sources.Ramp pumpSpeed(height = (47 - 57)*2*3.14/60, duration = 60, offset = (47 + 10)*2*3.14/60, startTime = 60) annotation(
     Placement(transformation(origin = {79, -89}, extent = {{7, -7}, {-7, 7}})));
   Modelica.Units.SI.Force Fpto = doubleActingCylinder.Fpto;
   // Valve parameter
@@ -50,7 +50,7 @@ model hydraulic_validation
     Placement(transformation(origin = {-30, -56}, extent = {{-10, -10}, {10, 10}})));
   Developed.Valves.ReliefValve reliefValve(p_relief = 1e7, p_open = 1.01e7, Cd = 1, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = 0.001) annotation(
     Placement(transformation(origin = {38, -6}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  Developed.Valves.ReliefValve reliefValve1(Av = 1e-4, Cd = 1, CvData = Modelica.Fluid.Types.CvTypes.Av, p_open = 9.5e5, p_relief = 9e5) annotation(
+  Developed.Valves.ReliefValve reliefValve1(Av = 1e-4, Cd = 1, CvData = Modelica.Fluid.Types.CvTypes.Av, p_open = 7.5e5, p_relief = 7e5) annotation(
     Placement(transformation(origin = {14, -72}, extent = {{-10, -10}, {10, 10}})));
   Developed.Volumes.CircuitTank circuitTank(V_max = 1000, V_init = 100) annotation(
     Placement(transformation(origin = {2, -110}, extent = {{-10, -10}, {10, 10}})));
