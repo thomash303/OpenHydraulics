@@ -7,14 +7,14 @@ model NJunction "Splitting/joining component with static balances for an infinit
   import Modelica.Units.SI;
   
   // Junction parameters
-  parameter Integer n_ports(min = 1) = 5 "Number of ports (min=1)";
-  parameter SI.Volume V = 1e-6 "Volume of junction" annotation(
+  parameter Integer n_ports(min = 1) = 5 "Number of ports (min=1)" annotation(HideResult = true);
+  parameter SI.Volume V = 1e-6 "Volume of junction" annotation(HideResult = true,
     Dialog(tab = "Sizing"));
-  parameter Boolean fixPressure = false "True if pressure at junction is fixed" annotation(
+  parameter Boolean fixPressure = false "True if pressure at junction is fixed" annotation(HideResult = true,
     Dialog(tab = "Initialization"));
   FluidPort port[n_ports](m_flow(each start = 0), p(each start = p_init)) annotation(
     Placement(transformation(extent = {{-10, -10}, {10, 10}})));
-  Volumes.BaseClasses.VolumeClosed volumeClosed(final n_ports = n_ports, final V = V, compressible = false) annotation(
+  Volumes.BaseClasses.VolumeClosed volumeClosed(final n_ports = n_ports, final V = V, compressible = false) annotation(HideResult = true,
     Placement(transformation(extent = {{-10, -40}, {10, -20}})));
 initial equation
   if fixPressure then

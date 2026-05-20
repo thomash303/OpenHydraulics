@@ -14,23 +14,23 @@ model FluidPower2MechTrans
    extends Modelica.Mechanics.Translational.Interfaces.PartialCompliant;
   
   // Additional model improvement flags
-  parameter Boolean compressibleEnable = false "Enable fluid compressibility model" annotation(
+  parameter Boolean compressibleEnable = false "Enable fluid compressibility model" annotation(HideResult = true,
     Dialog(tab = "Sizing"),
     choices(checkBox = true));
-  parameter Boolean fluidInertiaEnable = false "Enable fluid inertia model" annotation(
+  parameter Boolean fluidInertiaEnable = false "Enable fluid inertia model" annotation(HideResult = true,
     Dialog(tab = "Sizing"),
     choices(checkBox = true));
   
   // Parameters
-  parameter SI.Area A = 0.01 "Area of piston" annotation(
+  parameter SI.Area A = 0.01 "Area of piston" annotation(HideResult = true,
     Dialog(tab = "Sizing"));
-  parameter SI.AbsolutePressure maxPressure = 3e7 "Maximum rated pressure" annotation(
+  parameter SI.AbsolutePressure maxPressure = 3e7 "Maximum rated pressure" annotation(HideResult = true,
     Dialog(tab = "Sizing"));
-  parameter SI.Volume residualVolume = 1e-6 "Volume remaining when s_rel<=0" annotation(
+  parameter SI.Volume residualVolume = 1e-6 "Volume remaining when s_rel<=0" annotation(HideResult = true,
     Dialog(tab = "Sizing"));
-  parameter SI.TranslationalSpringConstant stopStiffness = maxPressure*A*A/residualVolume "stiffness when chamber becomes empty" annotation(
+  parameter SI.TranslationalSpringConstant stopStiffness = maxPressure*A*A/residualVolume "stiffness when chamber becomes empty" annotation(HideResult = true,
     Dialog(tab = "Dynamics"));
-  parameter SI.TranslationalDampingConstant stopDamping = stopStiffness/10 "damping when chamber becomes empty" annotation(
+  parameter SI.TranslationalDampingConstant stopDamping = stopStiffness/10 "damping when chamber becomes empty" annotation(HideResult = true,
     Dialog(tab = "Dynamics"));
   parameter SI.Volume V_init = residualVolume "Initial volume" annotation(
     Dialog(tab = "Initialization"));
@@ -52,7 +52,7 @@ model FluidPower2MechTrans
   Modelica.Units.SI.Density rho "Medium density (only used in compressible fluid models)";
   
   
-  parameter Boolean accumulatorEnable = false;
+  parameter Boolean accumulatorEnable = false annotation(HideResult = true);
   // remove
     Modelica.Units.SI.Velocity v_rel(start = 0) "relative velocity";
   //Modelica.Units.SI.Acceleration a_rel(start = 0) "relative acceleration";

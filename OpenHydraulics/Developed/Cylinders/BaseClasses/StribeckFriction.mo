@@ -6,16 +6,16 @@ model StribeckFriction "Stribeck friction"
   extends Modelica.Mechanics.Translational.Interfaces.PartialCompliantWithRelativeStates;
   //extends Modelica.Mechanics.Translational.Interfaces.PartialFriction;
   // Relative kinematics
-  SI.Acceleration a_rel(start = 0) "Relative acceleration";
+  SI.Acceleration a_rel(start = 0) "Relative acceleration" annotation(HideResult = true);
   // Friction forces
-  parameter SI.TranslationalDampingConstant Cv = 1 "Viscous damping coefficient" annotation(
+  parameter SI.TranslationalDampingConstant Cv = 1 "Viscous damping coefficient" annotation(HideResult = true,
     Dialog(group = "Friction"));
   //SI.Force f_v(start = 0) "Viscous friction force";
-  parameter SI.Force f_c(start = 5) "Coulomb friction force" annotation(
+  parameter SI.Force f_c(start = 5) "Coulomb friction force" annotation(HideResult = true,
     Dialog(group = "Friction"));
-  parameter SI.Velocity Cst(start = 0.5) "Stribeck characteristic velocity" annotation(
+  parameter SI.Velocity Cst(start = 0.5) "Stribeck characteristic velocity" annotation(HideResult = true,
     Dialog(group = "Friction"));
-  parameter SI.Force f_st(start = 10) "Stribeck friction force" annotation(
+  parameter SI.Force f_st(start = 10) "Stribeck friction force" annotation(HideResult = true,
     Dialog(group = "Friction"));
 
 equation

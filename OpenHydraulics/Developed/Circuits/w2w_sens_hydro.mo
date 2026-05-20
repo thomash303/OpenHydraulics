@@ -1,7 +1,17 @@
 within OpenHydraulics.Developed.Circuits;
 
-model w2w_sens
+model w2w_sens_hydro
   import Modelica.Units.SI;
+    // Importing from the OET
+  import OceanEngineeringToolbox.Hydro.*;
+  import OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces.CurrentModels.*;
+  import OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces.WaveModels.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveModels.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType.*;
   // Parameters
   constant Integer m = 3 "Number of phases";
   parameter Modelica.Units.SI.Voltage VNominal = 100 "Nominal RMS voltage per phase";
@@ -10,7 +20,7 @@ model w2w_sens
   parameter Modelica.Units.SI.Torque TLoad = 161.4 "Nominal load torque";
   parameter Modelica.Units.SI.AngularVelocity wLoad(displayUnit = "rev/min") = 1440.45*2*Modelica.Constants.pi/60 "Nominal load speed";
   parameter Modelica.Units.SI.Inertia JLoad = 0.29 "Load's moment of inertia";
-  OceanEngineeringToolbox.Hydro.HydrodynamicBody float(I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, animationEnable = true, bodyColour = {255, 255, 0}, bodyIndex = 1, enableDampingDragForce = true, enableExcitationForce = true, enableHydrostaticForce = true, enableRadiationForce = false, geometryFile = "file://C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/geometry/float.stl", ra_CM = {0, 0, 0.5}, Ad = {0, 0, 5, 0, 0, 0}, Cv = {0, 0, 1e5, 0, 0, 0}) annotation(
+  OceanEngineeringToolbox.Hydro.HydrodynamicBody float(I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, animationEnable = true, bodyColour = {255, 255, 0}, bodyIndex = 1, enableDampingDragForce = false, enableExcitationForce = true, enableHydrostaticForce = true, enableRadiationForce = false, geometryFile = "file://C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/geometry/float.stl", ra_CM = {0, 0, 0.5}, Ad = {0, 0, 5, 0, 0, 0}, Cv = {0, 0, 1e5, 0, 0, 0}, morison(morisonForce(redeclare NoCurrent currentModel "No current", redeclare LinearWaveKin waveModel(file = fileDirectory.file) "Linear wave kinematics")), Cd = {{1}, {1}}, Ac = {{19.6350}, {19.6350}}) annotation(
     Placement(transformation(origin = {-53, 37}, extent = {{-15, -15}, {15, 15}})));
   Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1}, useAxisFlange = true) annotation(
     Placement(transformation(origin = {-68, -24}, extent = {{10, -10}, {-10, 10}}, rotation = -90)));
@@ -59,21 +69,21 @@ model w2w_sens
     Placement(transformation(origin = {92, 4}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.Rotational.Sensors.TorqueSensor torqueSensor annotation(
     Placement(transformation(origin = {90, -22}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor mbAbsoluteSensor(get_r = true, get_v = true)  annotation(
+  Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor mbAbsoluteSensor(get_r = true, get_v = true) annotation(
     Placement(transformation(origin = {-20, 38}, extent = {{-10, -10}, {10, 10}}, rotation = -0)));
-  Sensors.FlowSensor pistonOutflow(p_init = 3e6)  annotation(
+  Sensors.FlowSensor pistonOutflow(p_init = 3e6) annotation(
     Placement(transformation(origin = {8, -2}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Sensors.FlowSensor motorFlow(p_init = 7e6)  annotation(
+  Sensors.FlowSensor motorFlow(p_init = 7e6) annotation(
     Placement(transformation(origin = {52, 10}, extent = {{-10, -10}, {10, 10}})));
-  Sensors.FlowSensor pistonInflow(p_init = 3e6)  annotation(
+  Sensors.FlowSensor pistonInflow(p_init = 3e6) annotation(
     Placement(transformation(origin = {8, -48}, extent = {{10, -10}, {-10, 10}}, rotation = -90)));
-  Sensors.PressureSensor pA(p_init = 1.5e6, pressureType = OpenHydraulics.Developed.Types.PressureTypes.Gauge)  annotation(
+  Sensors.PressureSensor pA(p_init = 1.5e6, pressureType = Developed.Types.PressureTypes.Gauge) annotation(
     Placement(transformation(origin = {-22, -56}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
-  Sensors.PressureSensor pB(p_init = 1.5e6, pressureType = OpenHydraulics.Developed.Types.PressureTypes.Gauge)  annotation(
+  Sensors.PressureSensor pB(p_init = 1.5e6, pressureType = Developed.Types.PressureTypes.Gauge) annotation(
     Placement(transformation(origin = {-22, 6}, extent = {{-10, -10}, {10, 10}})));
-  Sensors.PressureSensor pHP(p_init = 3e6, pressureType = OpenHydraulics.Developed.Types.PressureTypes.Gauge)  annotation(
+  Sensors.PressureSensor pHP(p_init = 3e6, pressureType = Developed.Types.PressureTypes.Gauge) annotation(
     Placement(transformation(origin = {8, 40}, extent = {{-10, -10}, {10, 10}})));
-  Sensors.PressureSensor pLP(p_init = 3e6, pressureType = OpenHydraulics.Developed.Types.PressureTypes.Gauge)  annotation(
+  Sensors.PressureSensor pLP(p_init = 3e6, pressureType = Developed.Types.PressureTypes.Gauge) annotation(
     Placement(transformation(origin = {46, -86}, extent = {{-10, 10}, {10, -10}})));
   Modelica.Electrical.Machines.Sensors.CurrentQuasiRMSSensor currentRMSSensor annotation(
     Placement(transformation(origin = {136, 0}, extent = {{-10, -10}, {10, 10}})));
@@ -108,102 +118,91 @@ equation
     Line(points = {{112, -12}, {112, -12}}, color = {0, 0, 255}));
   connect(sineVoltage.plug_n, star.plug_p) annotation(
     Line(points = {{168, -20}, {176, -20}}, color = {0, 0, 255}));
-  
-  // Sensing bus
-  //daq.eta = environment.wave.SSE;
-  //daq.Fexc = float.excitation.excitationForce.F[3];
-  //daq.Fpto = Fpto;
-  //daq.D = variableDisplacementMotor.fluidPower2MechRot.D;
- 
- // Sensing bus
+// Sensing bus
+//daq.eta = environment.wave.SSE;
+//daq.Fexc = float.excitation.excitationForce.F[3];
+//daq.Fpto = Fpto;
+//daq.D = variableDisplacementMotor.fluidPower2MechRot.D;
+// Sensing bus
   daq.eta = environment.wave.SSE;
   daq.Fexc = float.excitation.excitationForce.F[3];
-  //daq.Fpto = Fpto;
+//daq.Fpto = Fpto;
   daq.D = variableDisplacementMotor.fluidPower2MechRot.D;
-  
-    // Environment
+// Environment
   daq.Pwav = environment.wave.P "Wave power";
- 
   daq.Fpto = doubleActingCylinder.Fpto;
   daq.Finer = doubleActingCylinder.Finer;
   daq.FpistIner = doubleActingCylinder.FpistIner;
   daq.FgravIner = doubleActingCylinder.FgravIner;
   daq.FflIner = doubleActingCylinder.FflIner;
   daq.Ffric = doubleActingCylinder.Ffric;
-  
-  // Power
+// Power
   daq.Pcyl_mech = doubleActingCylinder.Pcyl_mech;
   daq.Pcyl_hyd = doubleActingCylinder.Pcyl_hyd;
-  
-  // Energy
+// Energy
   daq.Ecyl_mech = doubleActingCylinder.Ecyl_mech;
   daq.Ecyl_hyd = doubleActingCylinder.Ecyl_hyd;
-
   daq.Pmot_mech = variableDisplacementMotor.Pmot_mech;
-  
   daq.E_mech = variableDisplacementMotor.Emot_mech;
-  
   daq.Pelec = aimc.powerBalance.powerStator;
-  
   daq.Pgen_fric = aimc.powerBalance.lossPowerFriction;
-  daq.Pgen_cop = aimc.powerBalance.lossPowerStatorWinding + aimc.powerBalance.lossPowerRotorWinding;  
+  daq.Pgen_cop = aimc.powerBalance.lossPowerStatorWinding + aimc.powerBalance.lossPowerRotorWinding;
   daq.Pgen_mech = aimc.powerBalance.powerMechanical;
- 
- connect(rotSpeedSensor.flange, variableDisplacementMotor.flange_a) annotation(
+  connect(rotSpeedSensor.flange, variableDisplacementMotor.flange_a) annotation(
     Line(points = {{82, 4}, {70, 4}, {70, -22}}));
- connect(rotSpeedSensor.w, daq.sensor_bus.omega);
- connect(variableDisplacementMotor.flange_a, torqueSensor.flange_a) annotation(
+  connect(rotSpeedSensor.w, daq.sensor_bus.omega);
+  connect(variableDisplacementMotor.flange_a, torqueSensor.flange_a) annotation(
     Line(points = {{70, -22}, {80, -22}}));
- connect(torqueSensor.flange_b, aimc.flange) annotation(
+  connect(torqueSensor.flange_b, aimc.flange) annotation(
     Line(points = {{100, -22}, {108, -22}}));
- connect(torqueSensor.tau, daq.sensor_bus.T);
- connect(mbAbsoluteSensor.r[3], daq.sensor_bus.s);
- connect(mbAbsoluteSensor.v[3], daq.sensor_bus.v);
- connect(v4_3cc.portT, pistonOutflow.port_a) annotation(
+  connect(torqueSensor.tau, daq.sensor_bus.T);
+  connect(mbAbsoluteSensor.r[3], daq.sensor_bus.s);
+  connect(mbAbsoluteSensor.v[3], daq.sensor_bus.v);
+  connect(v4_3cc.portT, pistonOutflow.port_a) annotation(
     Line(points = {{8, -22}, {8, -12}}, color = {255, 0, 0}));
- connect(pistonOutflow.port_b, hpAccumulator.port_a) annotation(
+  connect(pistonOutflow.port_b, hpAccumulator.port_a) annotation(
     Line(points = {{8, 8}, {8, 10}, {28, 10}}, color = {255, 0, 0}));
- connect(hpAccumulator.port_a, motorFlow.port_a) annotation(
+  connect(hpAccumulator.port_a, motorFlow.port_a) annotation(
     Line(points = {{28, 10}, {42, 10}}, color = {255, 0, 0}));
- connect(lpAccumulator.port_a, pistonInflow.port_a) annotation(
+  connect(lpAccumulator.port_a, pistonInflow.port_a) annotation(
     Line(points = {{26, -62}, {8, -62}, {8, -58}}, color = {255, 0, 0}));
- connect(pistonInflow.port_b, v4_3cc.portP) annotation(
+  connect(pistonInflow.port_b, v4_3cc.portP) annotation(
     Line(points = {{8, -38}, {8, -30}}, color = {255, 0, 0}));
- connect(pistonOutflow.m_flow, daq.sensor_bus.mHP);
- connect(motorFlow.m_flow, daq.sensor_bus.mm);
- connect(pistonInflow.m_flow, daq.sensor_bus.mLP);
- connect(pA.port_a, doubleActingCylinder.port_a) annotation(
+  connect(pistonOutflow.m_flow, daq.sensor_bus.mHP);
+  connect(motorFlow.m_flow, daq.sensor_bus.mm);
+  connect(pistonInflow.m_flow, daq.sensor_bus.mLP);
+  connect(pA.port_a, doubleActingCylinder.port_a) annotation(
     Line(points = {{-24, -46}, {-24, -34}}, color = {255, 0, 0}));
- connect(pB.port_a, doubleActingCylinder.port_b) annotation(
+  connect(pB.port_a, doubleActingCylinder.port_b) annotation(
     Line(points = {{-24, -4}, {-24, -18}}, color = {255, 0, 0}));
- connect(pHP.port_a, hpAccumulator.port_a) annotation(
+  connect(pHP.port_a, hpAccumulator.port_a) annotation(
     Line(points = {{6, 30}, {6, 10}, {28, 10}}, color = {255, 0, 0}));
- connect(pA.p, daq.sensor_bus.pA);
- connect(pB.p, daq.sensor_bus.pB);
- connect(pHP.p, daq.sensor_bus.pHP);
- connect(pLP.p, daq.sensor_bus.pLP);
- connect(terminalBox.plugSupply, currentRMSSensor.plug_p) annotation(
+  connect(pA.p, daq.sensor_bus.pA);
+  connect(pB.p, daq.sensor_bus.pB);
+  connect(pHP.p, daq.sensor_bus.pHP);
+  connect(pLP.p, daq.sensor_bus.pLP);
+  connect(terminalBox.plugSupply, currentRMSSensor.plug_p) annotation(
     Line(points = {{118, -10}, {118, 0}, {126, 0}}, color = {0, 0, 255}));
- connect(currentRMSSensor.plug_n, sineVoltage.plug_p) annotation(
+  connect(currentRMSSensor.plug_n, sineVoltage.plug_p) annotation(
     Line(points = {{146, 0}, {148, 0}, {148, -20}}, color = {0, 0, 255}));
- connect(voltageRMSSensor.plug_p, star.plug_p) annotation(
+  connect(voltageRMSSensor.plug_p, star.plug_p) annotation(
     Line(points = {{168, -48}, {176, -48}, {176, -20}}, color = {0, 0, 255}));
- connect(voltageRMSSensor.plug_n, sineVoltage.plug_p) annotation(
+  connect(voltageRMSSensor.plug_n, sineVoltage.plug_p) annotation(
     Line(points = {{148, -48}, {148, -20}}, color = {0, 0, 255}));
- connect(currentRMSSensor.I, daq.sensor_bus.i);
- connect(voltageRMSSensor.V, daq.sensor_bus.V);
- connect(pLP.port_a, laminarRestriction.port_a) annotation(
+  connect(currentRMSSensor.I, daq.sensor_bus.i);
+  connect(voltageRMSSensor.V, daq.sensor_bus.V);
+  connect(pLP.port_a, laminarRestriction.port_a) annotation(
     Line(points = {{44, -76}, {42, -76}, {42, -62}}, color = {255, 0, 0}));
- connect(mbAbsoluteSensor.frame_a, float.frame_b) annotation(
+  connect(mbAbsoluteSensor.frame_a, float.frame_b) annotation(
     Line(points = {{-30, 38}, {-38, 38}}, color = {95, 95, 95}));
- connect(motorDisplacementFraction.y, variableDisplacementMotor.dispFraction) annotation(
+  connect(motorDisplacementFraction.y, variableDisplacementMotor.dispFraction) annotation(
     Line(points = {{91, -54}, {69, -54}, {69, -29}}, color = {0, 0, 127}));
- connect(laminarRestriction.port_b, variableDisplacementMotor.portT) annotation(
+  connect(laminarRestriction.port_b, variableDisplacementMotor.portT) annotation(
     Line(points = {{62, -62}, {62, -30}}, color = {255, 0, 0}));
- connect(motorFlow.port_b, variableDisplacementMotor.portP) annotation(
+  connect(motorFlow.port_b, variableDisplacementMotor.portP) annotation(
     Line(points = {{62, 10}, {62, -14}}, color = {255, 0, 0}));
   annotation(
     experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.002),
     uses(OceanEngineeringToolbox(version = "v0.3"), OpenHydraulics(version = "2.0.0")),
     Diagram(coordinateSystem(extent = {{-100, 100}, {220, -100}})));
-end w2w_sens;
+end w2w_sens_hydro;

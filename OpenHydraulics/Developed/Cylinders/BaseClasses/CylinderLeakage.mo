@@ -6,7 +6,7 @@ model CylinderLeakage
   // Inheriting from the OET
   extends Interfaces.HorizontalTwoPort;
   
-  parameter Types.HydraulicConductance CLeakage = 0 "Leakage coefficient";
+  parameter Types.HydraulicConductance CLeakage = 0 "Leakage coefficient" annotation(HideResult = true);
   
 equation
 

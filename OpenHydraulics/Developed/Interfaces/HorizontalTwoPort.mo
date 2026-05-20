@@ -10,16 +10,16 @@ model HorizontalTwoPort
  /* SI.VolumeFlowRate q_flow_a = port_a.m_flow/system.rho_ambient;
   SI.VolumeFlowRate q_flow_b = port_b.m_flow/system.rho_ambient;
   */
-  SI.VolumeFlowRate q_flow_a = port_a.m_flow/system.Medium.density(p_a);
-  SI.VolumeFlowRate q_flow_b = port_b.m_flow/system.Medium.density(p_b);
+  SI.VolumeFlowRate q_flow_a = port_a.m_flow/system.Medium.density(p_a) annotation(HideResult = true);
+  SI.VolumeFlowRate q_flow_b = port_b.m_flow/system.Medium.density(p_b) annotation(HideResult = true);
   
   // Pressure change
   SI.Pressure dp = port_a.p - port_b.p "Pressure drop (negative for pumps)";
  
   // Fluid ports 
-  parameter SI.Pressure p_init_a = p_init "Initial fluid pressure at the inlet" annotation(
+  parameter SI.Pressure p_init_a = p_init "Initial fluid pressure at the inlet" annotation(HideResult = true,
     Dialog(tab = "Initialization", group = "Fluid"));
-  parameter SI.Pressure p_init_b = p_init "Initial fluid pressure at the outlet" annotation(
+  parameter SI.Pressure p_init_b = p_init "Initial fluid pressure at the outlet" annotation(HideResult = true,
     Dialog(tab = "Initialization", group = "Fluid"));
   
   FluidPort port_a(p(start = p_init_a)) annotation(

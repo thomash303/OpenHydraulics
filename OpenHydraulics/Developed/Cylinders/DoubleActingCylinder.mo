@@ -12,19 +12,19 @@ model DoubleActingCylinder
   import Modelica.Mechanics.Translational.{Components, Sources};
   import Modelica.Blocks;
   // Additional model improvement flags
-  parameter Boolean compressibleEnable = false "Enable fluid compressibility model" annotation(
+  parameter Boolean compressibleEnable = false "Enable fluid compressibility model" annotation(HideResult = true,
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
-  parameter Boolean fluidInertiaEnable = false "Enable fluid fluid inertia model" annotation(
+  parameter Boolean fluidInertiaEnable = false "Enable fluid fluid inertia model" annotation(HideResult = true,
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
-  parameter Boolean gravityAccelerationEnable = false "Enable acceleration due to gravity model" annotation(
+  parameter Boolean gravityAccelerationEnable = false "Enable acceleration due to gravity model" annotation(HideResult = true,
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
-  parameter Boolean stribeckFrictionEnable = false "Enable Stribeck friction model" annotation(
+  parameter Boolean stribeckFrictionEnable = false "Enable Stribeck friction model" annotation(HideResult = true,
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
-  parameter Boolean leakageEnable = false "Enable fluid leakage model" annotation(
+  parameter Boolean leakageEnable = false "Enable fluid leakage model" annotation(HideResult = true,
     Dialog(group = "Non-Ideal Models"),
     choices(checkBox = true));
     // Stribeck friction parameters
@@ -73,17 +73,17 @@ model DoubleActingCylinder
     Dialog(tab = "Dynamics", group = "End-of-travel"));
 
 // Initialization parameters
-  parameter Types.RevoluteInit initType = Types.RevoluteInit.Free "Type of initialization (defines usage of start values below)" annotation(
+  parameter Types.RevoluteInit initType = Types.RevoluteInit.Free "Type of initialization (defines usage of start values below)" annotation(HideResult = true,
     Dialog(tab = "Initialization", group = "Mechanical"));
   parameter SI.Distance s_init = 0 "Initial position >0 and <stroke" annotation(
     Dialog(tab = "Initialization", group = "Mechanical"));
   parameter SI.Velocity v_init = 0 "Initial velocity" annotation(
     Dialog(tab = "Initialization", group = "Mechanical"));
-  parameter SI.Acceleration a_init = 0 "Initial acceleration" annotation(Dialog(tab = "Initialization", group = "Mechanical"),
+  parameter SI.Acceleration a_init = 0 "Initial acceleration" annotation(HideResult = true, Dialog(tab = "Initialization", group = "Mechanical"),
     Placement(visible = false, transformation(origin = {nan, nan}, extent = {{nan, nan}, {nan, nan}})));
-  parameter Boolean fixHeadPressure = false "Initialize the pressure at the head side" annotation(
+  parameter Boolean fixHeadPressure = false "Initialize the pressure at the head side" annotation(HideResult = true,
     Dialog(tab = "Initialization", group = "Fluid"));
-  parameter Boolean fixRodPressure = false "Initialize the pressure at the rod side" annotation(
+  parameter Boolean fixRodPressure = false "Initialize the pressure at the rod side" annotation(HideResult = true,
     Dialog(tab = "Initialization", group = "Fluid"));
   // Fluid ports
   Interfaces.FluidPort port_a(p(start = p_init))  annotation(
@@ -138,8 +138,8 @@ model DoubleActingCylinder
     Placement(transformation(origin = {-22, -44}, extent = {{-48, 58}, {-28, 78}})));
 
   // PTO Force
-  SI.Area Ap = cylinderChamberHead.A "Piston head area";
-  SI.Area Aa = Ap - cylinderChamberRod.A "Piston annulus area";
+  SI.Area Ap = cylinderChamberHead.A "Piston head area" annotation(HideResult = true);
+  SI.Area Aa = Ap - cylinderChamberRod.A "Piston annulus area"annotation(HideResult = true);
   //SI.Force Fpto = port_a.p * Ap - port_b.p * Aa + Finer + Ffric "PTO force";
   SI.Force Fpto = Ap * (port_a.p  - port_b.p) + Finer + Ffric "PTO force";
   //SI.Force Fpto = Ap * (port_a.p - port_b.p) + Finer + Ffric "PTO force";

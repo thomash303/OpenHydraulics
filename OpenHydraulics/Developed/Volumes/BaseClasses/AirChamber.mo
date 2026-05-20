@@ -11,18 +11,18 @@ model AirChamber
   outer Systems.System system;
 
   // Parameters
-  parameter SI.Area A = 1 "Area of piston";
-  parameter SI.AbsolutePressure p_precharge = 1e6 "precharge pressure";
-  parameter SI.Volume V_precharge = 0.5 "initial precharge volume";
-  parameter Real gamma = 1.4 "Adiabatic index for an ideal gas(default set assuming dry air)";
-  parameter SI.Volume residualVolume = 0 "Volume when chamber is fully compressed";
-  parameter SI.TranslationalSpringConstant stopStiffness = 1e9 "stiffness when piston reaches stop";
-  parameter Boolean initializePressure = true "true = pressure; false = volume" annotation(
+  parameter SI.Area A = 1 "Area of piston" annotation(HideResult = true);
+  parameter SI.AbsolutePressure p_precharge = 1e6 "precharge pressure" annotation(HideResult = true);
+  parameter SI.Volume V_precharge = 0.5 "initial precharge volume" annotation(HideResult = true);
+  parameter Real gamma = 1.4 "Adiabatic index for an ideal gas(default set assuming dry air)" annotation(HideResult = true);
+  parameter SI.Volume residualVolume = 0 "Volume when chamber is fully compressed" annotation(HideResult = true);
+  parameter SI.TranslationalSpringConstant stopStiffness = 1e9 "stiffness when piston reaches stop" annotation(HideResult = true);
+  parameter Boolean initializePressure = true "true = pressure; false = volume" annotation(HideResult = true,
     Dialog(tab = "Initialization"),
     Evaluate = true);
-  parameter SI.AbsolutePressure p_init "Initial pressure" annotation(
+  parameter SI.AbsolutePressure p_init "Initial pressure" annotation(HideResult = true,
     Dialog(tab = "Initialization", enable = initializePressure));
-  parameter SI.Volume V_init = V_precharge "Initial volume" annotation(
+  parameter SI.Volume V_init = V_precharge "Initial volume" annotation(HideResult = true,
     Dialog(tab = "Initialization", enable = not initializePressure));
   SI.AbsolutePressure p(start = p_precharge) "pressure of air in chamber";
   SI.Volume V "Volume of air in chamber";
