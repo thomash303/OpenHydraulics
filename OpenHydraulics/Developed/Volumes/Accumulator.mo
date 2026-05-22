@@ -15,7 +15,7 @@ model Accumulator
     Dialog(tab = "Sizing"));
   parameter SI.Volume gasVolume = 0.0011 "Gas Volume (must be larger than liquid volume)" annotation(
     Dialog(tab = "Sizing"));
-  parameter SI.Volume V_precharge = gasVolume "initial precharge volume" annotation(
+  parameter SI.Volume V_precharge = gasVolume "initial precharge volume" annotation(HideResult = true,
     Dialog(tab = "Sizing"));
   parameter SI.AbsolutePressure p_precharge = 101325 "Gas precharge pressure" annotation(
     Dialog(tab = "Sizing"));
@@ -23,16 +23,16 @@ model Accumulator
     Dialog(tab = "Sizing"));
   // Advanced parameters
   // default residual is 2% of the total volume
-  parameter SI.Volume residualVolLiquid = liquidVolume*0.02 "Residual volume of liquid when accumulator is empty" annotation(
+  parameter SI.Volume residualVolLiquid = liquidVolume*0.02 "Residual volume of liquid when accumulator is empty" annotation(HideResult = true,
     Dialog(tab = "Advanced"));
-  parameter SI.Volume residualVolGas = gasVolume - liquidVolume "Residual volume of gas when accumulator is full" annotation(
+  parameter SI.Volume residualVolGas = gasVolume - liquidVolume "Residual volume of gas when accumulator is full" annotation(HideResult = true,
     Dialog(tab = "Advanced"));
   parameter SI.Mass pistonMass = 0.01 "Mass of bladder or piston" annotation(
     Dialog(tab = "Advanced"));
   parameter SI.TranslationalDampingConstant pistonDamping(final min = 0) = 1 "Damping constant for bladder or piston" annotation(
     Dialog(tab = "Advanced"));
   // Initialization parameters
-  parameter Types.AccInit initType = Types.AccInit.Pressure "Type of initialization (defines usage of start values below)" annotation(
+  parameter Types.AccInit initType = Types.AccInit.Pressure "Type of initialization (defines usage of start values below)" annotation(HideResult = true,
     Dialog(tab = "Initialization", group = "Fluid"));
   parameter SI.Volume V_init = residualVolLiquid "Initial liquid volume (for gas volume residual. Should be very small)" annotation(
     Dialog(tab = "Initialization", group = "Fluid"));
@@ -61,7 +61,7 @@ model Accumulator
   // equal to the liquidVolume resulting in a total travel of the piston of 1m.
   parameter Modelica.Units.SI.Length Lnom = 1 "Dummy nominal length" annotation(
     Placement(visible = false, transformation(extent = {{0, 0}, {0, 0}})));
-  parameter Modelica.Units.SI.Area A = liquidVolume/Lnom;
+  parameter Modelica.Units.SI.Area A = liquidVolume/Lnom annotation(HideResult = true);
   
 initial equation
   assert(gasVolume > liquidVolume, "gasVolume must be larger than liquidVolume");

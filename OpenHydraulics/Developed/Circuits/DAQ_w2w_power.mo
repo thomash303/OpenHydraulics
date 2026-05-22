@@ -76,4 +76,38 @@ equation
 
   der(Eelec) = Pelec;
 
+annotation (
+  Icon(
+    coordinateSystem(preserveAspectRatio=true, extent={{-100,-100},{100,100}}),
+    graphics={
+      Rectangle(
+        extent={{-80,60},{80,-60}},
+        lineColor={0,0,0},
+        fillColor={200,200,200},
+        fillPattern=FillPattern.Solid),
+        Text(textColor = {0, 0, 255}, extent = {{0, 110}, {0, 74}}, textString = "%name"),
+      Text(
+        extent={{-60,20},{60,-20}},
+        lineColor={0,0,0},
+        textString="DAQ",
+        fontSize=24),
+      Line(points={{-80,30},{-60,30}}, color={0,0,255}),
+      Line(points={{-80,10},{-60,10}}, color={0,0,255}),
+      Line(points={{-80,-10},{-60,-10}}, color={0,0,255}),
+      Line(points={{-80,-30},{-60,-30}}, color={0,0,255}),
+      Line(points={{60,30},{80,30}},   color={255,0,0}),
+      Line(points={{60,10},{80,10}},   color={255,0,0}),
+      Line(points={{60,-10},{80,-10}}, color={255,0,0}),
+      Line(points={{60,-30},{80,-30}}, color={255,0,0})
+    }),
+  Diagram(
+    coordinateSystem(extent={{-100,-100},{100,100}}),
+    graphics={
+      Rectangle(
+        extent={{-80,60},{80,-60}},
+        lineColor={0,0,0},
+        fillColor={230,230,230},
+        fillPattern=FillPattern.Solid)
+    })
+);
 end DAQ_w2w_power;

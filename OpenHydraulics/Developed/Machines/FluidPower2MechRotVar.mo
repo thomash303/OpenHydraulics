@@ -11,11 +11,11 @@ model FluidPower2MechRotVar
   import Modelica.Blocks.Interfaces.RealInput;
   
   // Sizing parameters
-  parameter SI.Volume Dmax = 0.001 "Maximum pump displacement" annotation(
+  parameter SI.Volume Dmax = 0.001 "Maximum pump displacement" annotation(HideResult = true,
     Dialog(tab = "Sizing"));
-  parameter SI.Volume Dmin = -0.001 "Minimum pump displacement" annotation(
+  parameter SI.Volume Dmin = -0.001 "Minimum pump displacement" annotation(HideResult = true,
     Dialog(tab = "Sizing"));
-  parameter SI.Volume Dlimit = max(abs(Dmax), abs(Dmin)) "Displacement of pump" annotation(
+  parameter SI.Volume Dlimit = max(abs(Dmax), abs(Dmin)) "Displacement of pump" annotation(HideResult = true,
     Dialog(tab = "Sizing"));
   
   // Variable displacement fraction input
