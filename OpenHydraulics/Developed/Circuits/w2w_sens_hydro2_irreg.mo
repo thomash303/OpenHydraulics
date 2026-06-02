@@ -1,7 +1,17 @@
 within OpenHydraulics.Developed.Circuits;
 
-model w2w_sens_hydro2
+model w2w_sens_hydro2_irreg
   import Modelica.Units.SI;
+      // Importing from the OET
+  import OceanEngineeringToolbox.Hydro.*;
+  import OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces.CurrentModels.*;
+  import OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces.WaveModels.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveModels.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType.*;
   // Parameters
   constant Integer m = 3 "Number of phases";
   parameter Modelica.Units.SI.Voltage VNominal = 100 "Nominal RMS voltage per phase";
@@ -20,7 +30,7 @@ model w2w_sens_hydro2
     Placement(transformation(origin = {-88, 86}, extent = {{-10, -10}, {10, 10}})));
   inner OceanEngineeringToolbox.DataImport.FileDirectory fileDirectory(file = "C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/W2W/hydro/Radiation_heave_only/SPHERE_3480phydroCoeff_FOAMM.mat") annotation(
     Placement(transformation(origin = {10, 86}, extent = {{-9, -7.25}, {9, 7.25}})));
-  inner OceanEngineeringToolbox.Environmental.Environment environment(wave(Tp = 15)) annotation(
+  inner OceanEngineeringToolbox.Environmental.Environment environment(redeclare RegularWave wave(file = fileDirectory.file, Tp = 15) "Regular wave", Trmp = 50) annotation(
     Placement(transformation(origin = {-24, 86}, extent = {{-10, -8}, {10, 8}})));
   inner Developed.Systems.System system annotation(
     Placement(transformation(origin = {-56, 86}, extent = {{-10, -10}, {10, 10}})));
@@ -80,7 +90,7 @@ model w2w_sens_hydro2
   Modelica.Electrical.Machines.Sensors.VoltageQuasiRMSSensor voltageRMSSensor annotation(
     Placement(transformation(origin = {158, -48}, extent = {{10, 10}, {-10, -10}})));
   Modelica.Blocks.Sources.Ramp motorDisplacementFraction(duration = 0, height = 1) annotation(
-    Placement(transformation(origin = {100, -54}, extent = {{8, -8}, {-8, 8}})));
+    Placement(transformation(origin = {76, -50}, extent = {{8, -8}, {-8, 8}})));
 equation
   connect(prismatic.frame_b, float.frame_a) annotation(
     Line(points = {{-68, -14}, {-68, 37}}, color = {95, 95, 95}));
@@ -185,14 +195,14 @@ equation
     Line(points = {{44, -76}, {42, -76}, {42, -62}}, color = {255, 0, 0}));
   connect(mbAbsoluteSensor.frame_a, float.frame_b) annotation(
     Line(points = {{-30, 38}, {-38, 38}}, color = {95, 95, 95}));
-  connect(motorDisplacementFraction.y, variableDisplacementMotor.dispFraction) annotation(
-    Line(points = {{91, -54}, {69, -54}, {69, -29}}, color = {0, 0, 127}));
   connect(laminarRestriction.port_b, variableDisplacementMotor.portT) annotation(
     Line(points = {{62, -62}, {62, -30}}, color = {255, 0, 0}));
   connect(motorFlow.port_b, variableDisplacementMotor.portP) annotation(
     Line(points = {{62, 10}, {62, -14}}, color = {255, 0, 0}));
+  connect(motorDisplacementFraction.y, variableDisplacementMotor.dispFraction) annotation(
+    Line(points = {{68, -50}, {68, -39}, {70, -39}, {70, -28}}, color = {0, 0, 127}));
   annotation(
     experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.002),
     uses(OceanEngineeringToolbox(version = "v0.3"), OpenHydraulics(version = "2.0.0")),
     Diagram(coordinateSystem(extent = {{-100, 100}, {220, -100}})));
-end w2w_sens_hydro2;
+end w2w_sens_hydro2_irreg;
