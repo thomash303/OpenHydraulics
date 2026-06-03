@@ -1,6 +1,6 @@
 within OpenHydraulics.Developed.Circuits;
 
-model w2w_sens_hydro2_cont_PI
+model w2w_sens_hydro2_cont_PI2
   import Modelica.Units.SI;
       // Importing from the OET
   import OceanEngineeringToolbox.Hydro.*;
@@ -30,26 +30,26 @@ model w2w_sens_hydro2_cont_PI
     Placement(transformation(origin = {-88, 86}, extent = {{-10, -10}, {10, 10}})));
   inner OceanEngineeringToolbox.DataImport.FileDirectory fileDirectory(file = "C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/W2W/hydro/Radiation_heave_only/SPHERE_3480phydroCoeff_FOAMM.mat") annotation(
     Placement(transformation(origin = {10, 86}, extent = {{-9, -7.25}, {9, 7.25}})));
-  inner OceanEngineeringToolbox.Environmental.Environment environment(redeclare IrregularWave wave(file = fileDirectory.file, localSeedPhase = 31506, globalSeedPhase = 64503) "Irregular wave", Trmp = 30) annotation(
+  inner OceanEngineeringToolbox.Environmental.Environment environment(redeclare IrregularWave wave(file = fileDirectory.file, localSeedPhase = 31506, globalSeedPhase = 64503) "Irregular wave", Trmp = 10) annotation(
     Placement(transformation(origin = {-24, 86}, extent = {{-10, -8}, {10, 8}})));
   inner Developed.Systems.System system annotation(
     Placement(transformation(origin = {-56, 86}, extent = {{-10, -10}, {10, 10}})));
   OceanEngineeringToolbox.Multibody.Joints.Fixed fixed(r = {0, 0, -2}) annotation(
     Placement(transformation(origin = {-68, -88}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Developed.Machines.VariableDisplacementMotor variableDisplacementMotor(Dmax = 312e-6*0.75, Dmin = 312e-6*0.75, p_init(displayUnit = "bar") = 4.5e6, CsD = {0, 25, 50, 75, 100}, CvD = {0, 25, 50, 75, 100}, CfD = {0, 25, 50, 75, 100}, Cs = {0, 3.2576e-9, 2.7658e-9, 2.1634e-9, 2.8241e-9}, Cv = {0, 207433, 249350, 286122, 313991}, frictionEnable = true, leakageEnable = true, Cf = {0, -0.0012, -0.0017, -0.0017, -0.0003}, p_init_P = 4.5e6, p_init_T = 1e6) annotation(
+  Developed.Machines.VariableDisplacementMotor variableDisplacementMotor(Dmax = 312e-6*0.6, Dmin = -312e-6*0.6, p_init(displayUnit = "bar") = 4.5e6, CsD = {0, 25, 50, 75, 100}, CvD = {0, 25, 50, 75, 100}, CfD = {0, 25, 50, 75, 100}, Cs = {0, 3.2576e-9, 2.7658e-9, 2.1634e-9, 2.8241e-9}, Cv = {0, 207433, 249350, 286122, 313991}, frictionEnable = true, leakageEnable = true, Cf = {0, -0.0012, -0.0017, -0.0017, -0.0003}, p_init_P = 4.5e6, p_init_T = 1e6) annotation(
     Placement(transformation(origin = {62, -22}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
-  Developed.Volumes.Accumulator hpAccumulator(gasVolume = 1, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.95, p_init(displayUnit = "bar") = 4.5e6, p_precharge(displayUnit = "bar") = 3e6, p_max = 2e8, V_init = 0.65) annotation(
+  Developed.Volumes.Accumulator hpAccumulator(gasVolume = 1, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.95, p_init(displayUnit = "bar") = 3.5e6, p_precharge(displayUnit = "bar") = 3e6, p_max = 2e8, V_init = 0.2) annotation(
     Placement(transformation(origin = {28, 20}, extent = {{-10, -10}, {10, 10}})));
-  Developed.Volumes.Accumulator lpAccumulator(gasVolume = 1, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.48, p_init(displayUnit = "bar") = 2e5, p_precharge(displayUnit = "bar") = 1e6, p_max = 5e7, V_init = 0.05) annotation(
+  Developed.Volumes.Accumulator lpAccumulator(gasVolume = 0.5, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.48, p_init(displayUnit = "bar") = 2e5, p_precharge(displayUnit = "bar") = 1e6, p_max = 5e7, V_init = 0.05) annotation(
     Placement(transformation(origin = {26, -72}, extent = {{-10, 10}, {10, -10}})));
-  Developed.Valves.V4_3CC v4_3cc(p_crack(displayUnit = "Pa") = 0.25, p_init(displayUnit = "bar") = 3e6, p_open(displayUnit = "bar") = 27000, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = 6e-4 + 1e-4, Cd = 1) annotation(
+  Developed.Valves.V4_3CC v4_3cc(p_crack(displayUnit = "Pa") = 0.25, p_init(displayUnit = "bar") = 3e6, p_open(displayUnit = "bar") = 27000, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = 6e-4 + 3e-4, Cd = 1) annotation(
     Placement(transformation(origin = {0, -26}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Custom.Basic.LaminarRestriction laminarRestriction(D = 1, L = 0.01, p_init(displayUnit = "bar") = 1e6) annotation(
     Placement(transformation(origin = {52, -62}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Units.SI.Force Fpto = doubleActingCylinder.boreDiameter^2/4*3.14*(hpAccumulator.port_a.p - lpAccumulator.port_a.p)*sign(float.body.absoluteSensor.v[3]);
   Developed.Volumes.OpenTank tank annotation(
     Placement(transformation(origin = {28, -34}, extent = {{-10, -10}, {10, 10}})));
-  Developed.Valves.ReliefValve reliefValve(Av = 0.001, Cd = 1, CvData = Modelica.Fluid.Types.CvTypes.Av, p_init = 7e6, p_open = 4.01e7, p_relief = 4e7) annotation(
+  Developed.Valves.ReliefValve reliefValve(Av = 0.001, Cd = 1, CvData = Modelica.Fluid.Types.CvTypes.Av, p_init = 7e6, p_open = 1.51e7, p_relief = 1.5e7) annotation(
     Placement(transformation(origin = {28, -6}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   Modelica.Electrical.Machines.BasicMachines.InductionMachines.IM_SquirrelCage aimc(Jr = aimcData.Jr, Js = aimcData.Js, Lm = aimcData.Lm, Lrsigma = aimcData.Lrsigma, Lssigma = aimcData.Lssigma, Lszero = aimcData.Lszero, Rr = aimcData.Rr, Rs = aimcData.Rs, TrOperational = 293.15, TrRef(displayUnit = "K") = 0, TsOperational = 293.15, TsRef(displayUnit = "K") = 0, alpha20r = 0, alpha20s(displayUnit = "1/K") = 0, frictionParameters(PRef = 0, wRef = 0.10471975511965978, power_w = 1), fsNominal = aimcData.fsNominal, p = aimcData.p, phiMechanical(fixed = false, start = 0), statorCoreParameters(VRef = 0), strayLoadParameters(IRef = 0, power_w = 0), wMechanical(fixed = false, start = 0)) annotation(
     Placement(transformation(origin = {108, 18}, extent = {{20, -50}, {0, -30}})));
@@ -97,6 +97,10 @@ model w2w_sens_hydro2_cont_PI
   //  Placement(transformation(origin = {113, 67}, extent = {{7, -7}, {-7, 7}})));
   Modelica.Blocks.Continuous.LimPID PID(controllerType = Modelica.Blocks.Types.SimpleController.P, Ti = 0.1, Td = 0.1, yMax = 1, yMin = 0.1, initType = Modelica.Blocks.Types.Init.InitialOutput, y_start = 0.35)  annotation(
     Placement(transformation(origin = {104, 38}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
+ Modelica.Mechanics.Rotational.Components.Fixed fixed1 annotation(
+    Placement(transformation(origin = {96, -62}, extent = {{-10, -10}, {10, 10}})));
+ Modelica.Mechanics.Rotational.Components.Damper damper(d = 0.001)  annotation(
+    Placement(transformation(origin = {96, -48}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
 equation
   connect(prismatic.frame_b, float.frame_a) annotation(
     Line(points = {{-68, -14}, {-68, 37}}, color = {95, 95, 95}));
@@ -211,8 +215,12 @@ equation
     Line(points = {{94, 38}, {76, 38}, {76, -28}, {70, -28}}, color = {0, 0, 127}));
  connect(motorDisplacementFraction.y, PID.u_s) annotation(
     Line(points = {{160, 36}, {116, 36}, {116, 38}}, color = {0, 0, 127}));
+ connect(fixed1.flange, damper.flange_a) annotation(
+    Line(points = {{96, -62}, {96, -58}}));
+ connect(damper.flange_b, aimc.flange) annotation(
+    Line(points = {{96, -38}, {108, -38}, {108, -22}}));
   annotation(
     experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.002),
     uses(OceanEngineeringToolbox(version = "v0.3"), OpenHydraulics(version = "2.0.0")),
     Diagram(coordinateSystem(extent = {{-100, 100}, {220, -100}})));
-end w2w_sens_hydro2_cont_PI;
+end w2w_sens_hydro2_cont_PI2;
