@@ -1,6 +1,6 @@
 within OpenHydraulics.Developed.Circuits;
 
-model w2w_sens_hydro2_cont_PI2
+model w2w_sens_hydro2_cont_PI3
   import Modelica.Units.SI;
       // Importing from the OET
   import OceanEngineeringToolbox.Hydro.*;
@@ -38,9 +38,9 @@ model w2w_sens_hydro2_cont_PI2
     Placement(transformation(origin = {-68, -88}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Developed.Machines.VariableDisplacementMotor variableDisplacementMotor(Dmax = 312e-6*0.65, Dmin = -312e-6*0.65, p_init(displayUnit = "bar") = 4.5e6, CsD = {0, 25, 50, 75, 100}, CvD = {0, 25, 50, 75, 100}, CfD = {0, 25, 50, 75, 100}, Cs = {0, 3.2576e-9, 2.7658e-9, 2.1634e-9, 2.8241e-9}, Cv = {0, 207433, 249350, 286122, 313991}, frictionEnable = true, leakageEnable = true, Cf = {0, -0.0012, -0.0017, -0.0017, -0.0003}, p_init_P = 4.5e6, p_init_T = 1e6) annotation(
     Placement(transformation(origin = {62, -22}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
-  Developed.Volumes.Accumulator hpAccumulator(gasVolume = 1, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.95, p_init(displayUnit = "bar") = 3.5e6, p_precharge(displayUnit = "bar") = 3e6, p_max = 2e8, V_init = 0.2) annotation(
+  Developed.Volumes.Accumulator hpAccumulator(gasVolume = 1, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.95, p_init(displayUnit = "bar") = 4.2e6, p_precharge(displayUnit = "bar") = 2e6, p_max = 2e8, V_init = 0.35) annotation(
     Placement(transformation(origin = {28, 20}, extent = {{-10, -10}, {10, 10}})));
-  Developed.Volumes.Accumulator lpAccumulator(gasVolume = 0.5, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.48, p_init(displayUnit = "bar") = 2e5, p_precharge(displayUnit = "bar") = 1e6, p_max = 5e7, V_init = 0.2) annotation(
+  Developed.Volumes.Accumulator lpAccumulator(gasVolume = 0.5, initType = Developed.Types.AccInit.Volume, liquidVolume = 0.4, p_init(displayUnit = "bar") = 1.9e6, p_precharge(displayUnit = "bar") = 1e6, p_max = 5e7, V_init = 0.2) annotation(
     Placement(transformation(origin = {26, -72}, extent = {{-10, 10}, {10, -10}})));
   Developed.Valves.V4_3CC v4_3cc(p_crack(displayUnit = "bar") = 25000, p_init(displayUnit = "bar") = 3e6, p_open(displayUnit = "bar") = 3e4, CvData = Modelica.Fluid.Types.CvTypes.Av, Av = 6e-4 + 8e-4, Cd = 1) annotation(
     Placement(transformation(origin = {0, -26}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
@@ -223,4 +223,4 @@ equation
     experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.002),
     uses(OceanEngineeringToolbox(version = "v0.3"), OpenHydraulics(version = "2.0.0")),
     Diagram(coordinateSystem(extent = {{-100, 100}, {220, -100}})));
-end w2w_sens_hydro2_cont_PI2;
+end w2w_sens_hydro2_cont_PI3;

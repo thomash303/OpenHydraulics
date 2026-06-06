@@ -1,6 +1,6 @@
 within OpenHydraulics.Developed.Circuits;
 
-model w2w_sens_hydro2_cont_PI2
+model w2w_sens_hydro2_cont_PI2_dup
   import Modelica.Units.SI;
       // Importing from the OET
   import OceanEngineeringToolbox.Hydro.*;
@@ -223,4 +223,4 @@ equation
     experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.002),
     uses(OceanEngineeringToolbox(version = "v0.3"), OpenHydraulics(version = "2.0.0")),
     Diagram(coordinateSystem(extent = {{-100, 100}, {220, -100}})));
-end w2w_sens_hydro2_cont_PI2;
+end w2w_sens_hydro2_cont_PI2_dup;

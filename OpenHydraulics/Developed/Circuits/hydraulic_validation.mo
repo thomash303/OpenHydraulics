@@ -15,7 +15,7 @@ model hydraulic_validation
     Placement(transformation(origin = {-110, -10}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.Translational.Components.Fixed fixed annotation(
     Placement(transformation(origin = {-82, 60}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
-  Modelica.Blocks.Sources.Sine inputDisplacement(amplitude = 0.125, f = 0.33, offset = 0.15, phase = 2*3.14*0.33*0.1) annotation(
+  Modelica.Blocks.Sources.Sine inputDisplacement(amplitude = -0.125, f = 0.33, offset = 0.15, phase = 2*3.14*0.33*0.1) annotation(
     Placement(transformation(origin = {-144, -10}, extent = {{-10, -10}, {10, 10}})));
   Developed.Machines.VariableDisplacementPump variableDisplacementPump(Dmax = 4e-6, Dmin = -4e-6, p_init(displayUnit = "bar"), frictionEnable = false, leakageEnable = false) annotation(
     Placement(transformation(origin = {-8, -88}, extent = {{10, -10}, {-10, 10}})));
@@ -168,7 +168,7 @@ equation
   connect(pumpSpeed.y, speed.w_ref) annotation(
     Line(points = {{72, -88}, {58, -88}}, color = {0, 0, 127}));
   annotation(
-    experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.002),
+    experiment(StartTime = 0, StopTime = 200, Tolerance = 1e-06, Interval = 0.01),
     uses(OceanEngineeringToolbox(version = "v0.3"), OpenHydraulics(version = "2.0.0")),
     Diagram(coordinateSystem(extent = {{-160, 80}, {160, -120}})));
 end hydraulic_validation;
